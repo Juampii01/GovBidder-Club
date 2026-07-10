@@ -97,8 +97,12 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .crm-btn{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(196,42,61,.25);transition:transform .15s ease,box-shadow .15s ease;}
 .crm-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(196,42,61,.32);}
 .crm-btn svg{width:14px;height:14px;stroke:currentColor;}
-.member-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold-soft);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:10px;}
-.member-badge svg{width:13px;height:13px;stroke:currentColor;fill:var(--gold-soft);}
+.member-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:7px 13px;border-radius:10px;}
+.member-badge svg{width:13px;height:13px;stroke:currentColor;fill:currentColor;fill-opacity:.15;}
+.member-badge.plan-legacy{background:var(--gold-soft);color:var(--gold);}
+.member-badge.plan-elevate{background:var(--red-soft);color:var(--red);}
+.member-badge.plan-prime{background:rgba(59,130,246,.12);color:#1d4ed8;}
+[data-theme="dark"] .member-badge.plan-prime{background:rgba(59,130,246,.18);color:#8ec0f8;}
 .top-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;flex-shrink:0;transition:transform .15s ease;}
 .top-avatar:hover{transform:scale(1.06);}
 .theme-toggle-btn{width:34px;height:34px;border-radius:10px;background:var(--line-soft);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s ease,color .15s ease;}
@@ -639,7 +643,7 @@ tr:hover td{background:var(--line-soft);}
       <div class="topbar-sep"></div>
 
       <a href="https://app.govbidder.net/" target="_blank" class="crm-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>GovBidder App</a>
-      <div class="member-badge" id="plan-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>LEGACY</div>
+      <div class="member-badge plan-legacy" id="plan-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><span id="plan-badge-text">LEGACY</span></div>
 
       <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" class="theme-toggle-btn">
         <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
@@ -1647,24 +1651,14 @@ function applyMemberProfile(member) {
   const avatarEl = document.getElementById('top-avatar');
   if (avatarEl) avatarEl.textContent = initials;
 
-  // Plan colors
-  const planColors = {
-    Legacy:  'linear-gradient(135deg,var(--gold),#a8883b)',
-    Prime:   'linear-gradient(135deg,var(--navy),var(--blue2))',
-    Elevate: 'linear-gradient(135deg,var(--red),var(--accent2))'
-  };
-  const planBadgeColors = {
-    Legacy:  'background:rgba(200,168,75,.3);color:#fde68a;border:1px solid rgba(200,168,75,.4);',
-    Prime:   'background:rgba(147,197,253,.2);color:#93c5fd;border:1px solid rgba(147,197,253,.3);',
-    Elevate: 'background:rgba(228,45,44,.2);color:#fca5a5;border:1px solid rgba(228,45,44,.3);'
-  };
+  // Plan → badge variant class (matches .plan-legacy/.plan-prime/.plan-elevate)
+  const planClass = 'plan-' + (member.plan || 'elevate').toLowerCase();
 
   // Topbar badge
-  const badge = document.getElementById('plan-badge');
-  if (badge) {
-    badge.textContent      = '⭐ ' + (member.plan || '').toUpperCase();
-    badge.style.background = planColors[member.plan] || planColors.Elevate;
-  }
+  const badge     = document.getElementById('plan-badge');
+  const badgeText = document.getElementById('plan-badge-text');
+  if (badge)     badge.className = 'member-badge ' + planClass;
+  if (badgeText) badgeText.textContent = (member.plan || '').toUpperCase();
 
   // Dropdown menu fields
   const menuName  = document.getElementById('menu-name');
@@ -1672,7 +1666,7 @@ function applyMemberProfile(member) {
   const menuPlan  = document.getElementById('menu-plan-badge');
   if (menuName)  menuName.textContent  = member.name  || initials;
   if (menuEmail) menuEmail.textContent = member.email || '—';
-  if (menuPlan)  menuPlan.innerHTML    = `<span style="${planBadgeColors[member.plan]||planBadgeColors.Elevate}font-size:8.5px;font-weight:800;padding:2px 9px;border-radius:10px;">⭐ ${(member.plan||'').toUpperCase()}</span>`;
+  if (menuPlan)  menuPlan.innerHTML    = `<span class="member-badge ${planClass}" style="font-size:10px;padding:3px 10px;">${(member.plan||'').toUpperCase()}</span>`;
 
   // NAICS filter
   const naicsEl = document.getElementById('f-naics');
