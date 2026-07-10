@@ -83,6 +83,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         token: data.session.access_token,
+        refreshToken: data.session.refresh_token,
         member: shapeMember(profile),
         message: 'Trial de 7 días activado. ¡Bienvenido a GovBidder Command Center!'
       });
@@ -126,6 +127,38 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         token: data.session.access_token,
+        refreshToken: data.session.refresh_token,
+        member: shapeMember(profile)
+      });
+    }
+
+    // ── REFRESH SESSION (renew an expired/expiring access token) ──
+    if (action === 'refresh') {
+      let refreshToken = '';
+      if (req.method === 'POST' && req.body) refreshToken = req.body.refreshToken || '';
+
+      if (!refreshToken) return res.status(400).json({ success: false, error: 'refreshToken requerido' });
+
+      const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
+      if (error || !data.session) return res.status(401).json({ success: false, error: 'Sesión expirada' });
+
+      const profile = await getProfile(data.user.id);
+      if (!profile || !profile.active) {
+        return res.status(401).json({ success: false, error: 'Miembro no encontrado' });
+      }
+
+      if (isExpired(profile)) {
+        return res.status(403).json({
+          success: false,
+          error: profile.is_trial ? 'Tu trial de 7 días ha expirado.' : 'Tu membresía ha expirado.',
+          [profile.is_trial ? 'trialExpired' : 'expired']: true
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        token: data.session.access_token,
+        refreshToken: data.session.refresh_token,
         member: shapeMember(profile)
       });
     }

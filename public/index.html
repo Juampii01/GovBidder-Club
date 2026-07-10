@@ -1556,30 +1556,71 @@ function nav(el, page) {
 }
 
 // ── AUTH ──────────────────────────────────────────────────
+function storeSession(data) {
+  localStorage.setItem('gb_token', data.token);
+  if (data.refreshToken) localStorage.setItem('gb_refresh_token', data.refreshToken);
+}
+
+function clearSession() {
+  localStorage.removeItem('gb_token');
+  localStorage.removeItem('gb_refresh_token');
+}
+
+async function refreshSession() {
+  const refreshToken = localStorage.getItem('gb_refresh_token');
+  if (!refreshToken) return null;
+  try {
+    const res  = await fetch('/api/auth?action=refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken })
+    });
+    const data = await res.json();
+    if (data.success) { storeSession(data); return data; }
+  } catch(e) { /* fall through to null */ }
+  return null;
+}
+
 async function checkSession() {
   const token = localStorage.getItem('gb_token');
   if (!token) { showLogin(); return; }
   try {
-    const res  = await fetch('/api/auth?action=verify', {
+    let res  = await fetch('/api/auth?action=verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token })
     });
-    const data = await res.json();
+    let data = await res.json();
+
+    // Access token vencido/inválido — intentar renovar con el refresh token antes de cerrar sesión.
+    if (!data.success) data = await refreshSession() || data;
+
     if (data.success) {
       currentMember = data.member;
       applyMemberProfile(data.member);
       hideLogin();
       fetchOpps();
       fetchGrants();
+      scheduleSessionRefresh();
     } else {
-      localStorage.removeItem('gb_token');
+      clearSession();
       showLogin();
     }
   } catch(e) {
-    localStorage.removeItem('gb_token');
+    clearSession();
     showLogin();
   }
+}
+
+// Renueva la sesión ~5 min antes de que expire el access token (vida útil: 1h),
+// para que una sesión activa no se corte a mitad de uso.
+let sessionRefreshTimer = null;
+function scheduleSessionRefresh() {
+  if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
+  sessionRefreshTimer = setTimeout(async () => {
+    const data = await refreshSession();
+    if (data) scheduleSessionRefresh();
+  }, 55 * 60 * 1000);
 }
 
 async function doLogin() {
@@ -1608,9 +1649,10 @@ async function doLogin() {
     const data = await res.json();
 
     if (data.success) {
-      localStorage.setItem('gb_token', data.token);
+      storeSession(data);
       currentMember = data.member;
       applyMemberProfile(data.member);
+      scheduleSessionRefresh();
       if (btnText) btnText.innerHTML = '✅ ¡Bienvenido!';
       if (btn) btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
       setTimeout(() => { hideLogin(); fetchOpps(); fetchGrants(); }, 700);
@@ -1626,7 +1668,8 @@ async function doLogin() {
 
 function doLogout() {
   if (!confirm('¿Cerrar sesión?')) return;
-  localStorage.removeItem('gb_token');
+  if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
+  clearSession();
   currentMember = null;
   const emailEl = document.getElementById('login-email');
   const passEl  = document.getElementById('login-password');
