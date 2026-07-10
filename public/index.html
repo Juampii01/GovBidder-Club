@@ -238,12 +238,25 @@ tr:hover td{background:var(--line-soft);}
 <body>
 
 <!-- ═══════════════════════════════════════════════════════
+     BOOT LOADER — visible mientras checkSession() verifica el
+     token guardado, para no mostrar el login ni el dashboard
+     hasta saber cuál corresponde (evita el "flash" al refrescar).
+═══════════════════════════════════════════════════════ -->
+<div id="boot-loader" style="
+  position:fixed;inset:0;z-index:10000;
+  background:linear-gradient(135deg,#0a0c14 0%,#0f1e5c 50%,#1a0505 100%);
+  display:flex;align-items:center;justify-content:center;
+">
+  <div style="width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:#E42D2C;border-radius:50%;animation:spin .8s linear infinite;"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
      LOGIN OVERLAY
 ═══════════════════════════════════════════════════════ -->
 <div id="login-overlay" style="
   position:fixed;inset:0;z-index:9999;
   background:linear-gradient(135deg,#0a0c14 0%,#0f1e5c 50%,#1a0505 100%);
-  display:flex;align-items:center;justify-content:center;
+  display:none;align-items:center;justify-content:center;
   font-family:'Segoe UI',system-ui,sans-serif;
 ">
   <!-- STARS -->
@@ -1735,10 +1748,16 @@ document.addEventListener('click', function(e) {
   }
 });
 
+function hideBootLoader() {
+  const boot = document.getElementById('boot-loader');
+  if (boot) boot.style.display = 'none';
+}
+
 function showLogin() {
   const overlay = document.getElementById('login-overlay');
   const main    = document.getElementById('main');
   const sidebar = document.getElementById('sidebar');
+  hideBootLoader();
   if (overlay) overlay.style.display = 'flex';
   if (main)    main.style.display    = 'none';
   if (sidebar) sidebar.style.display = 'none';
@@ -1748,6 +1767,7 @@ function hideLogin() {
   const overlay = document.getElementById('login-overlay');
   const main    = document.getElementById('main');
   const sidebar = document.getElementById('sidebar');
+  hideBootLoader();
   if (overlay) overlay.style.display = 'none';
   if (main)    main.style.display    = 'flex';
   if (sidebar) sidebar.style.display = 'flex';
