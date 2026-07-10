@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GovBidder Command Center</title>
+<link rel="icon" type="image/png" href="/logo-square.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f4f6fb;--sidebar:#1e3fad;--sidebar2:#152990;
+  --accent:#E42D2C;--accent2:#a01e1d;--blue:#152978;--blue2:#0f1e6a;
+  --text:#1a1f36;--muted:#6b7a99;--border:#e2e6f0;
+  --card:#fff;--green:#16a34a;--yellow:#d97706;--gold:#c8a84b;
+  --r-sm:9px;--r-md:13px;--r-lg:18px;
+  --sh-xs:0 1px 2px rgba(16,24,40,.05);
+  --sh-sm:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
+  --sh-md:0 10px 24px rgba(16,24,40,.08),0 2px 6px rgba(16,24,40,.04);
+  --sh-lg:0 24px 56px rgba(16,24,40,.16),0 6px 14px rgba(16,24,40,.06);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
+  background:
+    radial-gradient(1100px 560px at 105% -12%,rgba(21,41,120,.06),transparent 60%),
+    radial-gradient(900px 500px at -8% 108%,rgba(228,45,44,.05),transparent 60%),
+    var(--bg);
+  color:var(--text);display:flex;height:100vh;overflow:hidden;}
+::selection{background:rgba(228,45,44,.22);color:var(--text);}
+#sidebar{width:234px;min-width:234px;background:linear-gradient(190deg,var(--sidebar) 0%,var(--sidebar2) 100%);display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden;display:none;box-shadow:8px 0 32px rgba(8,14,45,.22);position:relative;z-index:5;}
+.logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:transparent;}
+.logo-main{display:flex;align-items:baseline;}
+.logo-gov{color:#fff;font-size:16px;font-weight:900;}
+.logo-bidder{color:#E42D2C;font-size:16px;font-weight:900;}
+.logo-sub{color:rgba(255,255,255,.75);font-size:8px;letter-spacing:2px;font-weight:700;margin-top:2px;}
+.logo-tag{color:rgba(255,255,255,.2);font-size:8px;font-style:italic;margin-top:1px;}
+.nav-section{padding:18px 0 6px 22px;color:rgba(255,255,255,.4);font-size:8px;letter-spacing:2.2px;font-weight:800;}
+.nav-item{display:flex;align-items:center;gap:10px;margin:1px 10px;padding:9px 12px;border-radius:var(--r-sm);color:rgba(255,255,255,.7);font-size:11.5px;font-weight:600;cursor:pointer;transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease;}
+.nav-item:hover{background:rgba(255,255,255,.09);color:#fff;transform:translateX(1px);}
+.nav-item.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(228,45,44,.38);}
+.nav-item .icon{font-size:13px;width:17px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:9px;padding:1.5px 6.5px;border-radius:8px;font-weight:700;box-shadow:0 2px 6px rgba(228,45,44,.4);}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;display:none;}
+#topbar{background:rgba(255,255,255,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:8px;flex-shrink:0;box-shadow:var(--sh-xs);position:relative;z-index:4;}
+.page-title{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;letter-spacing:-.02em;}
+.gf-select{border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 9px;font-size:10.5px;color:var(--text);background:#f8f9fc;cursor:pointer;outline:none;transition:border-color .15s ease,background .15s ease;font-family:inherit;}
+.gf-select:hover{border-color:#c7ceE0;background:#fff;}
+.crm-btn{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:6px 12px;border-radius:var(--r-sm);font-size:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(228,45,44,.28);transition:transform .15s ease,box-shadow .15s ease;}
+.crm-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(228,45,44,.36);}
+.member-badge{background:linear-gradient(135deg,#c8a84b,#a8883b);color:#fff;font-size:9px;font-weight:800;padding:4px 9px;border-radius:var(--r-sm);box-shadow:0 3px 10px rgba(200,168,75,.35);}
+.top-avatar{width:29px;height:29px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;flex-shrink:0;box-shadow:0 3px 10px rgba(228,45,44,.3);transition:transform .15s ease;}
+.top-avatar:hover{transform:scale(1.06);}
+#content{flex:1;overflow-y:auto;padding:22px 24px;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:15px 16px;position:relative;overflow:hidden;box-shadow:var(--sh-sm);transition:transform .2s ease,box-shadow .2s ease;}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
+.kpi-card::before{content:'';position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(228,45,44,.07),transparent 70%);pointer-events:none;}
+.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));}
+.kpi-label{font-size:8.5px;color:var(--muted);font-weight:700;letter-spacing:1.3px;margin-bottom:5px;}
+.kpi-value{font-size:23px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
+.kpi-delta{font-size:9.5px;margin-top:4px;font-weight:600;}
+.delta-up{color:var(--green);}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--sh-sm);}
+.card-title{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.card-title .sub{color:var(--muted);font-weight:500;font-size:10px;margin-left:auto;}
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px;}
+.grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;color:var(--muted);}
+.spinner{width:28px;height:28px;border:3px solid #f0f2f8;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:11px;}
+.opp-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--sh-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:pointer;margin-bottom:10px;}
+.opp-card:hover{border-color:rgba(228,45,44,.32);box-shadow:var(--sh-md);transform:translateY(-2px);}
+.opp-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.opp-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+.opp-meta span{font-size:10px;color:var(--muted);}
+.grant-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:15px;box-shadow:var(--sh-sm);margin-bottom:10px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
+.grant-card:hover{border-color:rgba(21,41,120,.28);box-shadow:var(--sh-md);transform:translateY(-2px);}
+.badge{display:inline-block;padding:2.5px 9px;border-radius:var(--r-sm);font-size:9.5px;font-weight:700;letter-spacing:.2px;}
+.bg{background:#dcfce7;color:#15803d;}.bb{background:#dbeafe;color:#1d4ed8;}
+.by{background:#fef3c7;color:#92400e;}.br{background:#fee2e2;color:#b91c1c;}.bm{background:#f1f5f9;color:#475569;}
+.btn-red{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--r-sm);padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.3);transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;}
+.btn-red:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(228,45,44,.4);}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r-sm);padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(21,41,120,.3);transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;}
+.btn-blue:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(21,41,120,.4);}
+.btn-outline{background:#fff;color:var(--accent);border:1px solid rgba(228,45,44,.3);border-radius:var(--r-sm);padding:7px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:background .15s ease,border-color .15s ease;font-family:inherit;}
+.btn-outline:hover{background:#fff5f5;border-color:rgba(228,45,44,.5);}
+.search-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:12px;outline:none;color:var(--text);background:#fff;font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,45,44,.1);}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.bar-label{font-size:10px;color:var(--muted);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:7px;background:#eef0f7;border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.bar-fill-blue{background:linear-gradient(90deg,var(--blue),#1e3090);}
+.bar-val{font-size:10px;font-weight:700;color:var(--text);width:56px;text-align:right;}
+.pipeline-board{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.pipe-col{background:#f8f9fc;border:1px solid var(--border);border-radius:var(--r-md);padding:12px;border-top:3px solid var(--muted);}
+.pipe-col:nth-child(1){border-top-color:#94a3b8;}
+.pipe-col:nth-child(2){border-top-color:#3b82f6;}
+.pipe-col:nth-child(3){border-top-color:#d97706;}
+.pipe-col:nth-child(4){border-top-color:#7c3aed;}
+.pipe-col:nth-child(5){border-top-color:#16a34a;}
+.pipe-col-title{font-size:8.5px;font-weight:800;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;}
+.pipe-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
+.pipe-card:hover{border-color:var(--accent);box-shadow:var(--sh-sm);transform:translateY(-1px);}
+.pipe-card-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.pipe-card-entity{font-size:9px;color:var(--muted);}
+.ai-panel{background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:var(--r-md);padding:15px;margin-bottom:16px;box-shadow:var(--sh-xs);}
+.ai-badge{background:linear-gradient(135deg,var(--accent),#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2.5px 9px;border-radius:6px;letter-spacing:.3px;}
+.ai-response{font-size:11px;color:#374151;line-height:1.7;white-space:pre-wrap;margin-top:8px;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;display:inline-block;margin:0 2px;}
+.ai-dot:nth-child(2){animation-delay:.2s;}.ai-dot:nth-child(3){animation-delay:.4s;}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.2);}}
+.error-box{background:#fff5f5;border:1px solid #fecaca;border-radius:var(--r-sm);padding:15px;color:#b91c1c;font-size:11px;line-height:1.6;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,14,35,.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:var(--r-lg);padding:24px;max-width:580px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid rgba(255,255,255,.6);}
+.modal-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px;padding-right:24px;letter-spacing:-.02em;}
+.modal-field{margin-bottom:10px;}
+.modal-field label{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:3px;}
+.modal-field p{font-size:11px;color:var(--text);line-height:1.5;}
+.modal-close{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);transition:color .15s ease;}
+.modal-close:hover{color:var(--accent);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:8.5px;color:var(--muted);font-weight:800;letter-spacing:1.1px;padding:9px 10px;border-bottom:2px solid var(--border);text-align:left;background:#fafbfd;}
+td{font-size:10.5px;padding:9px 10px;border-bottom:1px solid #f0f2f8;color:var(--muted);}
+tr:hover td{background:#f8f9fc;}
+.geo-tab{flex:1;padding:13px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
+.geo-tab:last-child{border-right:none;}
+.geo-tab:hover{background:#f8f9fc;color:var(--text);}
+.geo-tab.active{background:linear-gradient(135deg,var(--blue),#1a3090);color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
+.geo-panel{display:none;}
+.geo-panel.active{display:block;animation:fadeIn .2s ease;}
+.state-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:14px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;text-align:center;box-shadow:var(--sh-sm);}
+.state-card:hover{border-color:var(--accent);box-shadow:var(--sh-md);transform:translateY(-3px);}
+.state-card.my-state{border-color:var(--blue);border-width:2px;background:linear-gradient(135deg,#eef2ff,#fff);}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#c3cadd;border-radius:6px;}
+::-webkit-scrollbar-thumb:hover{background:#9aa5c4;}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);}
+#sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN OVERLAY
+═══════════════════════════════════════════════════════ -->
+<div id="login-overlay" style="
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#0a0c14 0%,#0f1e5c 50%,#1a0505 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Segoe UI',system-ui,sans-serif;
+">
+  <!-- STARS -->
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+    <div style="position:absolute;top:10%;left:15%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.6;"></div>
+    <div style="position:absolute;top:25%;left:70%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.4;"></div>
+    <div style="position:absolute;top:60%;left:30%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.5;"></div>
+    <div style="position:absolute;top:80%;left:80%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.3;"></div>
+    <div style="position:absolute;top:40%;left:90%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.6;"></div>
+    <div style="position:absolute;top:70%;left:10%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.4;"></div>
+    <div style="position:absolute;top:15%;left:45%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.3;"></div>
+    <div style="position:absolute;top:50%;left:55%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.5;"></div>
+  </div>
+
+  <!-- LOGIN CARD -->
+  <div style="
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;padding:40px 44px;width:100%;max-width:440px;
+    backdrop-filter:blur(20px);box-shadow:0 24px 80px rgba(0,0,0,.5);position:relative;
+  ">
+    <!-- LOGO -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="background:#fff;border-radius:16px;padding:16px 20px;display:inline-block;margin-bottom:4px;box-shadow:0 4px 20px rgba(0,0,0,.2);"><img src="/logo-square.png" alt="GovBidder Club" style="width:140px;height:auto;display:block;margin:0 auto 10px;"/></div>
+      <div style="color:rgba(255,255,255,.4);font-size:9px;letter-spacing:3px;font-weight:700;margin-top:3px;">COMMAND CENTER</div>
+      <div style="color:rgba(255,255,255,.2);font-size:10px;font-style:italic;margin-top:4px;">The Bid That Wins</div>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(228,45,44,.4),transparent);margin:20px 0 0;"></div>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:4px;margin-bottom:22px;gap:4px;">
+      <button id="tab-login-btn" onclick="switchTab('login')"
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;">
+        🔑 Ingresar
+      </button>
+      <button id="tab-register-btn" onclick="switchTab('register')"
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:transparent;color:rgba(255,255,255,.5);">
+        ✍️ Registrarse
+      </button>
+    </div>
+
+    <!-- ══ TAB: LOGIN ══ -->
+    <div id="tab-login">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:3px;">Acceso Exclusivo — GovBidder Club</div>
+        <div style="color:rgba(255,255,255,.4);font-size:11px;">Ingresa tus credenciales para continuar.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
+          <input id="login-email" type="email" placeholder="tu@email.com"
+            onkeydown="if(event.key==='Enter')doLogin()"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+            onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+          />
+        </div>
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONTRASEÑA</label>
+          <div style="position:relative;">
+            <input id="login-password" type="password" placeholder="••••••••••"
+              onkeydown="if(event.key==='Enter')doLogin()"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+              onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+            />
+            <button id="pass-toggle" onclick="togglePass()"
+              style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;">👁️</button>
+          </div>
+        </div>
+        <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11.5px;text-align:center;"></div>
+        <button id="login-btn" onclick="doLogin()"
+          style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:9px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
+          onmouseover="this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.transform='translateY(0)'">
+          <span id="login-btn-text">Ingresar al Command Center →</span>
+        </button>
+        <div style="text-align:center;margin-top:4px;">
+          <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:11px;text-decoration:none;">¿Problemas? Escríbenos</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: REGISTER ══ -->
+    <div id="tab-register" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:3px;">Solicitar Membresía</div>
+        <div style="color:rgba(255,255,255,.4);font-size:11px;">Revisaremos tu solicitud en 24–48 horas.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;">
+
+        <!-- Fila: Nombre + Empresa -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NOMBRE *</label>
+            <input id="reg-name" type="text" placeholder="Tu nombre"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+            />
+          </div>
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMPRESA *</label>
+            <input id="reg-company" type="text" placeholder="Tu empresa"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+            />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMAIL *</label>
+          <input id="reg-email" type="email" placeholder="tu@empresa.com"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+          />
+        </div>
+
+        <!-- Teléfono -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">TELÉFONO</label>
+          <input id="reg-phone" type="tel" placeholder="(555) 000-0000"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+          />
+        </div>
+
+        <!-- Fila: Estado + NAICS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">ESTADO</label>
+            <select id="reg-state"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;">
+              <option value="" style="background:#1a1f36;">Selecciona...</option>
+              <optgroup label="── NORTHEAST ──" style="background:#1a1f36;">
+                <option value="CT" style="background:#1a1f36;">Connecticut</option>
+                <option value="DC" style="background:#1a1f36;">Washington DC</option>
+                <option value="DE" style="background:#1a1f36;">Delaware</option>
+                <option value="MA" style="background:#1a1f36;">Massachusetts</option>
+                <option value="MD" style="background:#1a1f36;">Maryland</option>
+                <option value="ME" style="background:#1a1f36;">Maine</option>
+                <option value="NH" style="background:#1a1f36;">New Hampshire</option>
+                <option value="NJ" style="background:#1a1f36;">New Jersey</option>
+                <option value="NY" style="background:#1a1f36;">New York</option>
+                <option value="PA" style="background:#1a1f36;">Pennsylvania</option>
+                <option value="RI" style="background:#1a1f36;">Rhode Island</option>
+                <option value="VT" style="background:#1a1f36;">Vermont</option>
+              </optgroup>
+              <optgroup label="── SOUTH ──" style="background:#1a1f36;">
+                <option value="AL" style="background:#1a1f36;">Alabama</option>
+                <option value="AR" style="background:#1a1f36;">Arkansas</option>
+                <option value="FL" style="background:#1a1f36;">Florida</option>
+                <option value="GA" style="background:#1a1f36;">Georgia</option>
+                <option value="KY" style="background:#1a1f36;">Kentucky</option>
+                <option value="LA" style="background:#1a1f36;">Louisiana</option>
+                <option value="MS" style="background:#1a1f36;">Mississippi</option>
+                <option value="NC" style="background:#1a1f36;">North Carolina</option>
+                <option value="OK" style="background:#1a1f36;">Oklahoma</option>
+                <option value="SC" style="background:#1a1f36;">South Carolina</option>
+                <option value="TN" style="background:#1a1f36;">Tennessee</option>
+                <option value="TX" style="background:#1a1f36;">Texas</option>
+                <option value="VA" style="background:#1a1f36;">Virginia</option>
+                <option value="WV" style="background:#1a1f36;">West Virginia</option>
+              </optgroup>
+              <optgroup label="── MIDWEST ──" style="background:#1a1f36;">
+                <option value="IA" style="background:#1a1f36;">Iowa</option>
+                <option value="IL" style="background:#1a1f36;">Illinois</option>
+                <option value="IN" style="background:#1a1f36;">Indiana</option>
+                <option value="KS" style="background:#1a1f36;">Kansas</option>
+                <option value="MI" style="background:#1a1f36;">Michigan</option>
+                <option value="MN" style="background:#1a1f36;">Minnesota</option>
+                <option value="MO" style="background:#1a1f36;">Missouri</option>
+                <option value="ND" style="background:#1a1f36;">North Dakota</option>
+                <option value="NE" style="background:#1a1f36;">Nebraska</option>
+                <option value="OH" style="background:#1a1f36;">Ohio</option>
+                <option value="SD" style="background:#1a1f36;">South Dakota</option>
+                <option value="WI" style="background:#1a1f36;">Wisconsin</option>
+              </optgroup>
+              <optgroup label="── WEST ──" style="background:#1a1f36;">
+                <option value="AK" style="background:#1a1f36;">Alaska</option>
+                <option value="AZ" style="background:#1a1f36;">Arizona</option>
+                <option value="CA" style="background:#1a1f36;">California</option>
+                <option value="CO" style="background:#1a1f36;">Colorado</option>
+                <option value="HI" style="background:#1a1f36;">Hawaii</option>
+                <option value="ID" style="background:#1a1f36;">Idaho</option>
+                <option value="MT" style="background:#1a1f36;">Montana</option>
+                <option value="NM" style="background:#1a1f36;">New Mexico</option>
+                <option value="NV" style="background:#1a1f36;">Nevada</option>
+                <option value="OR" style="background:#1a1f36;">Oregon</option>
+                <option value="UT" style="background:#1a1f36;">Utah</option>
+                <option value="WA" style="background:#1a1f36;">Washington</option>
+                <option value="WY" style="background:#1a1f36;">Wyoming</option>
+              </optgroup>
+              <optgroup label="── TERRITORIES ──" style="background:#1a1f36;">
+                <option value="PR" style="background:#1a1f36;">Puerto Rico</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NAICS CODE</label>
+            <input id="reg-naics" type="text" placeholder="Ej: 561720"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+            />
+          </div>
+        </div>
+
+        <!-- Plan -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">PLAN DE INTERÉS</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <label style="cursor:pointer;">
+              <input type="radio" name="reg-plan" value="Elevate" style="display:none;" onchange="selectPlan(this)"/>
+              <div class="plan-opt" id="plan-Elevate" style="background:rgba(228,45,44,.1);border:1px solid rgba(228,45,44,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
+                <div style="color:#fca5a5;font-size:9px;font-weight:800;">ELEVATE</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Premium</div>
+              </div>
+            </label>
+            <label style="cursor:pointer;">
+              <input type="radio" name="reg-plan" value="Prime" style="display:none;" onchange="selectPlan(this)"/>
+              <div class="plan-opt" id="plan-Prime" style="background:rgba(21,41,120,.2);border:1px solid rgba(21,41,120,.3);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
+                <div style="color:#93c5fd;font-size:9px;font-weight:800;">PRIME</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Avanzado</div>
+              </div>
+            </label>
+            <label style="cursor:pointer;">
+              <input type="radio" name="reg-plan" value="Legacy" style="display:none;" onchange="selectPlan(this)"/>
+              <div class="plan-opt" id="plan-Legacy" style="background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
+                <div style="color:#fde68a;font-size:9px;font-weight:800;">LEGACY</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Básico</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Mensaje opcional -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">MENSAJE (OPCIONAL)</label>
+          <textarea id="reg-message" rows="2" placeholder="Cuéntanos sobre tu negocio..."
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;resize:none;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"></textarea>
+        </div>
+
+        <!-- Error / Success -->
+        <div id="reg-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11px;text-align:center;"></div>
+        <div id="reg-success" style="display:none;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:6px;">✅</div>
+          <div style="color:#86efac;font-size:13px;font-weight:700;margin-bottom:4px;">¡Solicitud Enviada!</div>
+          <div style="color:rgba(255,255,255,.6);font-size:11px;line-height:1.6;">Revisaremos tu información y te contactaremos en <strong style="color:#fff;">24–48 horas</strong>.</div>
+        </div>
+
+        <!-- Botón submit -->
+        <button id="reg-btn" onclick="doRegister()"
+          style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:9px;padding:13px;font-size:12px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
+          <span id="reg-btn-text">Enviar Solicitud →</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PLAN BADGES -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:20px;">
+      <span style="background:rgba(228,45,44,.15);color:#fca5a5;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(228,45,44,.2);">ELEVATE</span>
+      <span style="background:rgba(21,41,120,.2);color:#93c5fd;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(21,41,120,.3);">PRIME</span>
+      <span style="background:rgba(200,168,75,.15);color:#fde68a;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,168,75,.25);">LEGACY</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════ -->
+<div id="sidebar">
+  <div class="logo" style="padding:16px 18px 14px;background:transparent;">
+    <div style="background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 8px 20px rgba(8,14,45,.25);">
+      <img src="/logo-square.png" alt="GovBidder Club" style="width:100%;max-width:130px;height:auto;display:block;margin:0 auto;"/>
+    </div>
+    <div class="logo-sub" style="margin-top:9px;text-align:center;">COMMAND CENTER</div>
+    <div class="logo-tag" style="text-align:center;">The Bid That Wins</div>
+  </div>
+  <div class="nav-section">MAIN</div>
+  <div class="nav-item active" onclick="nav(this,'home')"><span class="icon">🏠</span>Home</div>
+  <div class="nav-item" onclick="nav(this,'market')"><span class="icon">📊</span>Market Intelligence</div>
+  <div class="nav-item" onclick="nav(this,'tools')"><span class="icon">🧰</span>Herramientas</div>
+  <div class="nav-section">FIND</div>
+  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon">🔍</span>Opportunities<span class="nav-badge" id="nb-opps">—</span></div>
+  <div class="nav-item" onclick="nav(this,'grants')"><span class="icon">💰</span>Grants Hub<span class="nav-badge" id="nb-grants">—</span></div>
+  <div class="nav-item" onclick="nav(this,'codes')"><span class="icon">🔢</span>Code Intelligence</div>
+  <div class="nav-item" onclick="nav(this,'geo')"><span class="icon">🗺️</span>Buyer Geography</div>
+  <div class="nav-section">ANALYZE</div>
+  <div class="nav-item" onclick="nav(this,'compete')"><span class="icon">🏆</span>Competitive Intel</div>
+  <div class="nav-section">OPERATE</div>
+  <!-- GovBidder Club Member title -->
+  <div style="margin:6px 10px 10px;background:linear-gradient(135deg,rgba(228,45,44,.18),rgba(21,41,120,.22));border:1px solid rgba(200,168,75,.3);border-radius:11px;padding:10px 12px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.15);">
+    <div style="font-size:8px;color:rgba(255,255,255,.45);letter-spacing:1.8px;font-weight:800;">GOVBIDDER CLUB</div>
+    <div style="font-size:10px;color:#fde68a;font-weight:800;margin-top:3px;">⭐ Member Portal</div>
+  </div>
+  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon">📋</span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon">🎯</span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon">🤝</span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon">💼</span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="page-title" id="ptitle">Home — Command Center</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+
+      <!-- Global State filter -->
+      <select class="gf-select" id="f-state" onchange="onGlobalFilter()">
+        <optgroup label="NORTHEAST"><option value="CT">CT</option><option value="DC">DC</option><option value="DE">DE</option><option value="MA">MA</option><option value="MD">MD</option><option value="ME">ME</option><option value="NH">NH</option><option value="NJ" selected>NJ</option><option value="NY">NY</option><option value="PA">PA</option><option value="RI">RI</option><option value="VT">VT</option></optgroup>
+        <optgroup label="SOUTH"><option value="AL">AL</option><option value="AR">AR</option><option value="FL">FL</option><option value="GA">GA</option><option value="KY">KY</option><option value="LA">LA</option><option value="MS">MS</option><option value="NC">NC</option><option value="OK">OK</option><option value="SC">SC</option><option value="TN">TN</option><option value="TX">TX</option><option value="VA">VA</option><option value="WV">WV</option></optgroup>
+        <optgroup label="MIDWEST"><option value="IA">IA</option><option value="IL">IL</option><option value="IN">IN</option><option value="KS">KS</option><option value="MI">MI</option><option value="MN">MN</option><option value="MO">MO</option><option value="ND">ND</option><option value="NE">NE</option><option value="OH">OH</option><option value="SD">SD</option><option value="WI">WI</option></optgroup>
+        <optgroup label="WEST"><option value="AK">AK</option><option value="AZ">AZ</option><option value="CA">CA</option><option value="CO">CO</option><option value="HI">HI</option><option value="ID">ID</option><option value="MT">MT</option><option value="NM">NM</option><option value="NV">NV</option><option value="OR">OR</option><option value="UT">UT</option><option value="WA">WA</option><option value="WY">WY</option></optgroup>
+        <optgroup label="TERRITORIES"><option value="PR">PR</option></optgroup>
+      </select>
+
+      <!-- Global NAICS filter (datalist input) -->
+      <input
+        id="f-naics"
+        class="gf-select"
+        style="width:200px;cursor:text;"
+        placeholder="NAICS code o keyword..."
+        value="561720"
+        list="naics-suggestions"
+        onchange="onGlobalFilter()"
+        oninput="onGlobalFilter()"
+      />
+      <datalist id="naics-suggestions">
+        <option value="111110">111110 - Soybean Farming</option>
+        <option value="112111">112111 - Beef Cattle Ranching</option>
+        <option value="221111">221111 - Hydroelectric Power Generation</option>
+        <option value="221114">221114 - Solar Electric Power Generation</option>
+        <option value="236115">236115 - New Single-Family Housing Construction</option>
+        <option value="236220">236220 - Commercial & Institutional Building Construction</option>
+        <option value="237310">237310 - Highway, Street & Bridge Construction</option>
+        <option value="238110">238110 - Poured Concrete Contractors</option>
+        <option value="238210">238210 - Electrical Contractors</option>
+        <option value="238220">238220 - Plumbing, Heating & AC Contractors</option>
+        <option value="484110">484110 - General Freight Trucking Local</option>
+        <option value="511210">511210 - Software Publishers</option>
+        <option value="541330">541330 - Engineering Services</option>
+        <option value="541511">541511 - Custom Computer Programming Services</option>
+        <option value="541512">541512 - Computer Systems Design Services</option>
+        <option value="541519">541519 - Other Computer Related Services</option>
+        <option value="541611">541611 - Administrative Management Consulting</option>
+        <option value="541620">541620 - Environmental Consulting</option>
+        <option value="561110">561110 - Office Administrative Services</option>
+        <option value="561210">561210 - Facilities Support Services</option>
+        <option value="561311">561311 - Employment Placement Agencies</option>
+        <option value="561320">561320 - Temporary Help Services</option>
+        <option value="561612">561612 - Security Guards & Patrol Services</option>
+        <option value="561710">561710 - Exterminating & Pest Control Services</option>
+        <option value="561720">561720 - Janitorial Services</option>
+        <option value="561730">561730 - Landscaping Services</option>
+        <option value="561790">561790 - Other Services to Buildings & Dwellings</option>
+        <option value="562111">562111 - Solid Waste Collection</option>
+        <option value="611110">611110 - Elementary & Secondary Schools</option>
+        <option value="611310">611310 - Colleges, Universities & Professional Schools</option>
+        <option value="621111">621111 - Offices of Physicians</option>
+        <option value="621610">621610 - Home Health Care Services</option>
+        <option value="722310">722310 - Food Service Contractors</option>
+        <option value="722320">722320 - Caterers</option>
+      </datalist>
+
+      <!-- Global Year filter -->
+      <select class="gf-select" id="f-year">
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024" selected>2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+      </select>
+
+      <a href="https://app.govbidder.net/" target="_blank" class="crm-btn">⚡ GovBidder App</a>
+      <div class="member-badge" id="plan-badge">⭐ LEGACY</div>
+
+      <!-- AVATAR + DROPDOWN MENU -->
+      <div style="position:relative;" id="avatar-wrapper">
+        <div class="top-avatar" id="top-avatar" onclick="toggleAvatarMenu()" style="cursor:pointer;" title="Mi cuenta">JR</div>
+        <div id="avatar-menu" style="
+          display:none;position:absolute;right:0;top:38px;
+          background:#fff;border:1px solid var(--border);border-radius:var(--r-md);
+          box-shadow:var(--sh-lg);min-width:200px;z-index:500;
+          overflow:hidden;animation:fadeIn .18s ease;
+        ">
+          <!-- Member info -->
+          <div style="padding:13px 15px;background:linear-gradient(135deg,#152978,#1a3090);color:#fff;">
+            <div style="font-size:12px;font-weight:800;" id="menu-name">—</div>
+            <div style="font-size:9.5px;opacity:.7;margin-top:1px;" id="menu-email">—</div>
+            <div style="margin-top:7px;" id="menu-plan-badge">
+              <span style="background:rgba(200,168,75,.3);color:#fde68a;font-size:8.5px;font-weight:800;padding:2px 9px;border-radius:10px;border:1px solid rgba(200,168,75,.4);">⭐ LEGACY</span>
+            </div>
+          </div>
+          <!-- Divider -->
+          <div style="height:1px;background:var(--border);"></div>
+          <!-- Actions -->
+          <div style="padding:6px;">
+            <div style="padding:8px 10px;font-size:11px;color:var(--muted);border-radius:7px;cursor:default;">
+              📊 Command Center
+            </div>
+            <div onclick="doLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:11px;font-weight:700;color:#E42D2C;border-radius:7px;cursor:pointer;transition:.15s;"
+              onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background='transparent'">
+              <span>⏻</span> Cerrar Sesión
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">LIVE OPPS</div><div class="kpi-value" id="kpi-opps">—</div><div class="kpi-delta delta-up" id="kpi-opps-d">SAM.gov</div></div>
+        <div class="kpi-card"><div class="kpi-label">GRANTS</div><div class="kpi-value" id="kpi-grants">—</div><div class="kpi-delta delta-up" id="kpi-grants-d">Grants.gov</div></div>
+        <div class="kpi-card"><div class="kpi-label">NAICS</div><div class="kpi-value" style="font-size:16px;" id="kpi-naics">561720</div><div class="kpi-delta" style="color:var(--muted)" id="kpi-naics-desc">Janitorial</div></div>
+        <div class="kpi-card"><div class="kpi-label">ESTADO</div><div class="kpi-value" style="font-size:16px;" id="kpi-state">NJ</div><div class="kpi-delta" style="color:var(--muted)" id="kpi-state-desc">New Jersey</div></div>
+        <div class="kpi-card"><div class="kpi-label">BIDS ACTIVOS</div><div class="kpi-value">3</div><div class="kpi-delta" style="color:var(--muted)">en pipeline</div></div>
+        <div class="kpi-card"><div class="kpi-label">WIN RATE</div><div class="kpi-value">36%</div><div class="kpi-delta delta-up">↑ 4 ganados</div></div>
+      </div>
+      <div class="ai-panel">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span>🤖</span><span class="ai-badge">AI DAILY BRIEF</span>
+          <button onclick="runAI('home')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Generar</button>
+        </div>
+        <div class="ai-response" id="ai-home">Haz clic en "Generar" para tu brief diario con datos live.</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📋 Oportunidades Recientes <span class="sub" id="home-opps-src">SAM.gov</span></div>
+          <div id="home-opps"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando SAM.gov...</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">💰 Grants Recientes <span class="sub" id="home-grants-src">Grants.gov</span></div>
+          <div id="home-grants"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando Grants.gov...</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPPORTUNITIES -->
+    <div class="page" id="page-opps">
+      <div class="ai-panel">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span>🤖</span><span class="ai-badge">AI ANALYST</span>
+          <button onclick="runAI('opps')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+        </div>
+        <div class="ai-response" id="ai-opps">Busca oportunidades y luego haz clic en Analizar.</div>
+      </div>
+      <div class="search-bar">
+        <input class="search-input" id="opp-kw" placeholder="Keyword (ej. janitorial, cleaning...)" value="janitorial"/>
+        <select class="gf-select" id="opp-state">
+          <option value="NJ" selected>New Jersey</option><option value="NY">New York</option>
+          <option value="FL">Florida</option><option value="TX">Texas</option><option value="">All States</option>
+        </select>
+        <select class="gf-select" id="opp-naics">
+          <option value="561720" selected>561720 Janitorial</option>
+          <option value="541519">541519 IT</option>
+          <option value="236220">236220 Construction</option>
+          <option value="">All NAICS</option>
+        </select>
+        <button class="btn-red" onclick="fetchOpps()">🔍 Buscar en SAM.gov</button>
+      </div>
+      <div id="opps-list"><div class="loading"><div class="spinner"></div><div class="loading-text">Listo para buscar...</div></div></div>
+    </div>
+
+    <!-- GRANTS -->
+    <div class="page" id="page-grants">
+      <div class="ai-panel">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span>🤖</span><span class="ai-badge">AI GRANTS ADVISOR</span>
+          <button onclick="runAI('grants')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+        </div>
+        <div class="ai-response" id="ai-grants">Busca grants y haz clic en Analizar.</div>
+      </div>
+      <div class="search-bar">
+        <input class="search-input" id="grant-kw" placeholder="Keyword (ej. small business, janitorial...)" value="small business"/>
+        <select class="gf-select" id="grant-status">
+          <option value="posted">Abiertos</option>
+          <option value="forecasted">Próximos</option>
+        </select>
+        <button class="btn-red" onclick="fetchGrants()">🔍 Buscar en Grants.gov</button>
+      </div>
+      <div id="grants-list"><div class="loading"><div class="spinner"></div><div class="loading-text">Listo para buscar...</div></div></div>
+    </div>
+
+    <!-- MARKET -->
+    <div class="page" id="page-market">
+      <div class="ai-panel">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span>🤖</span><span class="ai-badge">AI MARKET BRIEF</span>
+          <button onclick="runAI('market')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+        </div>
+        <div class="ai-response" id="ai-market">Haz clic en Cargar para ver datos live de USASpending.gov</div>
+      </div>
+      <div class="search-bar">
+        <select class="gf-select" id="mkt-naics">
+          <option value="561720" selected>561720 Janitorial</option>
+          <option value="541519">541519 IT</option>
+          <option value="236220">236220 Construction</option>
+        </select>
+        <select class="gf-select" id="mkt-year">
+          <option value="2024" selected>2024</option>
+          <option value="2023">2023</option>
+        </select>
+        <button class="btn-red" onclick="fetchMarket()">📊 Cargar Market Data</button>
+      </div>
+      <div id="market-container"><div class="loading"><div class="spinner"></div><div class="loading-text">Haz clic en "Cargar Market Data"</div></div></div>
+    </div>
+
+    <!-- GEO -->
+    <div class="page" id="page-geo">
+      <!-- TABS -->
+      <div style="display:flex;gap:0;margin-bottom:18px;background:#fff;border:1px solid #e2e6f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div class="geo-tab active" id="tab-states"   onclick="geoTab('states')">🗺️ 50 States</div>
+        <div class="geo-tab"        id="tab-schools"  onclick="geoTab('schools')">🏫 School Districts</div>
+        <div class="geo-tab"        id="tab-colleges" onclick="geoTab('colleges')">🎓 Colleges & Universities</div>
+        <div class="geo-tab"        id="tab-detail"   onclick="geoTab('detail')">📊 State Detail</div>
+        <div class="geo-tab"        id="tab-counties" onclick="geoTab('counties')">🏛️ Counties</div>
+      </div>
+
+      <!-- TAB: 50 STATES -->
+      <div id="geo-states" class="geo-panel active">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <input id="state-filter" class="search-input" placeholder="🔍 Filtrar estado..." oninput="filterStates(this.value)" style="max-width:220px;"/>
+          <select class="gf-select" id="state-region" onchange="filterByRegion(this.value)">
+            <option value="">All Regions</option>
+            <option value="Northeast">Northeast</option>
+            <option value="South">South</option>
+            <option value="Midwest">Midwest</option>
+            <option value="West">West</option>
+          </select>
+          <div style="margin-left:auto;font-size:10px;color:#6b7a99;" id="states-count">Cargando...</div>
+        </div>
+        <div id="states-grid">
+          <div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>
+        </div>
+      </div>
+
+      <!-- TAB: SCHOOL DISTRICTS -->
+      <div id="geo-schools" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <select class="gf-select" id="school-state" style="width:200px;">
+            <optgroup label="── NORTHEAST ──">
+              <option value="CT">Connecticut (CT)</option><option value="DC">Washington DC (DC)</option>
+              <option value="DE">Delaware (DE)</option><option value="MA">Massachusetts (MA)</option>
+              <option value="MD">Maryland (MD)</option><option value="ME">Maine (ME)</option>
+              <option value="NH">New Hampshire (NH)</option><option value="NJ" selected>New Jersey (NJ)</option>
+              <option value="NY">New York (NY)</option><option value="PA">Pennsylvania (PA)</option>
+              <option value="RI">Rhode Island (RI)</option><option value="VT">Vermont (VT)</option>
+            </optgroup>
+            <optgroup label="── SOUTH ──">
+              <option value="AL">Alabama (AL)</option><option value="AR">Arkansas (AR)</option>
+              <option value="FL">Florida (FL)</option><option value="GA">Georgia (GA)</option>
+              <option value="KY">Kentucky (KY)</option><option value="LA">Louisiana (LA)</option>
+              <option value="MS">Mississippi (MS)</option><option value="NC">North Carolina (NC)</option>
+              <option value="OK">Oklahoma (OK)</option><option value="SC">South Carolina (SC)</option>
+              <option value="TN">Tennessee (TN)</option><option value="TX">Texas (TX)</option>
+              <option value="VA">Virginia (VA)</option><option value="WV">West Virginia (WV)</option>
+            </optgroup>
+            <optgroup label="── MIDWEST ──">
+              <option value="IA">Iowa (IA)</option><option value="IL">Illinois (IL)</option>
+              <option value="IN">Indiana (IN)</option><option value="KS">Kansas (KS)</option>
+              <option value="MI">Michigan (MI)</option><option value="MN">Minnesota (MN)</option>
+              <option value="MO">Missouri (MO)</option><option value="ND">North Dakota (ND)</option>
+              <option value="NE">Nebraska (NE)</option><option value="OH">Ohio (OH)</option>
+              <option value="SD">South Dakota (SD)</option><option value="WI">Wisconsin (WI)</option>
+            </optgroup>
+            <optgroup label="── WEST ──">
+              <option value="AK">Alaska (AK)</option><option value="AZ">Arizona (AZ)</option>
+              <option value="CA">California (CA)</option><option value="CO">Colorado (CO)</option>
+              <option value="HI">Hawaii (HI)</option><option value="ID">Idaho (ID)</option>
+              <option value="MT">Montana (MT)</option><option value="NM">New Mexico (NM)</option>
+              <option value="NV">Nevada (NV)</option><option value="OR">Oregon (OR)</option>
+              <option value="UT">Utah (UT)</option><option value="WA">Washington (WA)</option>
+              <option value="WY">Wyoming (WY)</option>
+            </optgroup>
+            <optgroup label="── TERRITORIES ──">
+              <option value="PR">Puerto Rico (PR)</option>
+            </optgroup>
+          </select>
+          <select class="gf-select" id="school-naics" style="width:220px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+            <option value="236220">236220 - Construction</option>
+          </select>
+          <button class="btn-red" onclick="loadSchools()">🏫 Cargar Distritos</button>
+        </div>
+        <div id="schools-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Distritos"</div>
+        </div>
+      </div>
+
+      <!-- TAB: COLLEGES -->
+      <div id="geo-colleges" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <select class="gf-select" id="college-state" style="width:200px;">
+            <optgroup label="── NORTHEAST ──">
+              <option value="CT">Connecticut (CT)</option><option value="DC">Washington DC (DC)</option>
+              <option value="DE">Delaware (DE)</option><option value="MA">Massachusetts (MA)</option>
+              <option value="MD">Maryland (MD)</option><option value="ME">Maine (ME)</option>
+              <option value="NH">New Hampshire (NH)</option><option value="NJ" selected>New Jersey (NJ)</option>
+              <option value="NY">New York (NY)</option><option value="PA">Pennsylvania (PA)</option>
+              <option value="RI">Rhode Island (RI)</option><option value="VT">Vermont (VT)</option>
+            </optgroup>
+            <optgroup label="── SOUTH ──">
+              <option value="AL">Alabama (AL)</option><option value="AR">Arkansas (AR)</option>
+              <option value="FL">Florida (FL)</option><option value="GA">Georgia (GA)</option>
+              <option value="KY">Kentucky (KY)</option><option value="LA">Louisiana (LA)</option>
+              <option value="MS">Mississippi (MS)</option><option value="NC">North Carolina (NC)</option>
+              <option value="OK">Oklahoma (OK)</option><option value="SC">South Carolina (SC)</option>
+              <option value="TN">Tennessee (TN)</option><option value="TX">Texas (TX)</option>
+              <option value="VA">Virginia (VA)</option><option value="WV">West Virginia (WV)</option>
+            </optgroup>
+            <optgroup label="── MIDWEST ──">
+              <option value="IA">Iowa (IA)</option><option value="IL">Illinois (IL)</option>
+              <option value="IN">Indiana (IN)</option><option value="KS">Kansas (KS)</option>
+              <option value="MI">Michigan (MI)</option><option value="MN">Minnesota (MN)</option>
+              <option value="MO">Missouri (MO)</option><option value="ND">North Dakota (ND)</option>
+              <option value="NE">Nebraska (NE)</option><option value="OH">Ohio (OH)</option>
+              <option value="SD">South Dakota (SD)</option><option value="WI">Wisconsin (WI)</option>
+            </optgroup>
+            <optgroup label="── WEST ──">
+              <option value="AK">Alaska (AK)</option><option value="AZ">Arizona (AZ)</option>
+              <option value="CA">California (CA)</option><option value="CO">Colorado (CO)</option>
+              <option value="HI">Hawaii (HI)</option><option value="ID">Idaho (ID)</option>
+              <option value="MT">Montana (MT)</option><option value="NM">New Mexico (NM)</option>
+              <option value="NV">Nevada (NV)</option><option value="OR">Oregon (OR)</option>
+              <option value="UT">Utah (UT)</option><option value="WA">Washington (WA)</option>
+              <option value="WY">Wyoming (WY)</option>
+            </optgroup>
+            <optgroup label="── TERRITORIES ──">
+              <option value="PR">Puerto Rico (PR)</option>
+            </optgroup>
+          </select>
+          <select class="gf-select" id="college-naics" style="width:220px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+          </select>
+          <button class="btn-red" onclick="loadColleges()">🎓 Cargar Universidades</button>
+        </div>
+        <div id="colleges-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Universidades"</div>
+        </div>
+      </div>
+
+      <!-- TAB: COUNTIES -->
+      <div id="geo-counties" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <select class="gf-select" id="county-state" style="width:180px;" onchange="loadCounties()">
+            <optgroup label="NORTHEAST">
+              <option value="CT">Connecticut (CT)</option><option value="DC">Washington DC (DC)</option>
+              <option value="DE">Delaware (DE)</option><option value="MA">Massachusetts (MA)</option>
+              <option value="MD">Maryland (MD)</option><option value="ME">Maine (ME)</option>
+              <option value="NH">New Hampshire (NH)</option><option value="NJ" selected>New Jersey (NJ)</option>
+              <option value="NY">New York (NY)</option><option value="PA">Pennsylvania (PA)</option>
+              <option value="RI">Rhode Island (RI)</option><option value="VT">Vermont (VT)</option>
+            </optgroup>
+            <optgroup label="SOUTH">
+              <option value="AL">Alabama (AL)</option><option value="AR">Arkansas (AR)</option>
+              <option value="FL">Florida (FL)</option><option value="GA">Georgia (GA)</option>
+              <option value="KY">Kentucky (KY)</option><option value="LA">Louisiana (LA)</option>
+              <option value="MS">Mississippi (MS)</option><option value="NC">North Carolina (NC)</option>
+              <option value="OK">Oklahoma (OK)</option><option value="SC">South Carolina (SC)</option>
+              <option value="TN">Tennessee (TN)</option><option value="TX">Texas (TX)</option>
+              <option value="VA">Virginia (VA)</option><option value="WV">West Virginia (WV)</option>
+            </optgroup>
+            <optgroup label="MIDWEST">
+              <option value="IA">Iowa (IA)</option><option value="IL">Illinois (IL)</option>
+              <option value="IN">Indiana (IN)</option><option value="KS">Kansas (KS)</option>
+              <option value="MI">Michigan (MI)</option><option value="MN">Minnesota (MN)</option>
+              <option value="MO">Missouri (MO)</option><option value="ND">North Dakota (ND)</option>
+              <option value="NE">Nebraska (NE)</option><option value="OH">Ohio (OH)</option>
+              <option value="SD">South Dakota (SD)</option><option value="WI">Wisconsin (WI)</option>
+            </optgroup>
+            <optgroup label="WEST">
+              <option value="AK">Alaska (AK)</option><option value="AZ">Arizona (AZ)</option>
+              <option value="CA">California (CA)</option><option value="CO">Colorado (CO)</option>
+              <option value="HI">Hawaii (HI)</option><option value="ID">Idaho (ID)</option>
+              <option value="MT">Montana (MT)</option><option value="NM">New Mexico (NM)</option>
+              <option value="NV">Nevada (NV)</option><option value="OR">Oregon (OR)</option>
+              <option value="UT">Utah (UT)</option><option value="WA">Washington (WA)</option>
+              <option value="WY">Wyoming (WY)</option>
+            </optgroup>
+            <optgroup label="TERRITORIES"><option value="PR">Puerto Rico (PR)</option></optgroup>
+          </select>
+          <select class="gf-select" id="county-naics" style="width:220px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+            <option value="236220">236220 - Construction</option>
+            <option value="561612">561612 - Security</option>
+            <option value="484110">484110 - Trucking</option>
+            <option value="561710">561710 - Pest Control</option>
+            <option value="562111">562111 - Waste Collection</option>
+          </select>
+          <input id="county-search" class="search-input" placeholder="🔍 Filtrar condado..." oninput="filterCounties(this.value)" style="max-width:200px;"/>
+          <div style="margin-left:auto;font-size:10px;color:#6b7a99;" id="counties-count"></div>
+        </div>
+        <div id="counties-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">
+            <div style="font-size:32px;margin-bottom:8px;">🏛️</div>
+            <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:11.5px;">El sistema cargará todos los condados con datos de contratos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: STATE DETAIL -->
+      <div id="geo-detail" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <!-- Dropdown con 50 estados hardcoded (ya no depende de JS para llenarse) -->
+          <select class="gf-select" id="detail-state" style="width:220px;">
+            <option value="">Selecciona un estado...</option>
+            <optgroup label="── NORTHEAST ──">
+              <option value="CT">Connecticut (CT)</option><option value="DC">Washington DC (DC)</option>
+              <option value="DE">Delaware (DE)</option><option value="MA">Massachusetts (MA)</option>
+              <option value="MD">Maryland (MD)</option><option value="ME">Maine (ME)</option>
+              <option value="NH">New Hampshire (NH)</option><option value="NJ">New Jersey (NJ)</option>
+              <option value="NY">New York (NY)</option><option value="PA">Pennsylvania (PA)</option>
+              <option value="RI">Rhode Island (RI)</option><option value="VT">Vermont (VT)</option>
+            </optgroup>
+            <optgroup label="── SOUTH ──">
+              <option value="AL">Alabama (AL)</option><option value="AR">Arkansas (AR)</option>
+              <option value="FL">Florida (FL)</option><option value="GA">Georgia (GA)</option>
+              <option value="KY">Kentucky (KY)</option><option value="LA">Louisiana (LA)</option>
+              <option value="MS">Mississippi (MS)</option><option value="NC">North Carolina (NC)</option>
+              <option value="OK">Oklahoma (OK)</option><option value="SC">South Carolina (SC)</option>
+              <option value="TN">Tennessee (TN)</option><option value="TX">Texas (TX)</option>
+              <option value="VA">Virginia (VA)</option><option value="WV">West Virginia (WV)</option>
+            </optgroup>
+            <optgroup label="── MIDWEST ──">
+              <option value="IA">Iowa (IA)</option><option value="IL">Illinois (IL)</option>
+              <option value="IN">Indiana (IN)</option><option value="KS">Kansas (KS)</option>
+              <option value="MI">Michigan (MI)</option><option value="MN">Minnesota (MN)</option>
+              <option value="MO">Missouri (MO)</option><option value="ND">North Dakota (ND)</option>
+              <option value="NE">Nebraska (NE)</option><option value="OH">Ohio (OH)</option>
+              <option value="SD">South Dakota (SD)</option><option value="WI">Wisconsin (WI)</option>
+            </optgroup>
+            <optgroup label="── WEST ──">
+              <option value="AK">Alaska (AK)</option><option value="AZ">Arizona (AZ)</option>
+              <option value="CA">California (CA)</option><option value="CO">Colorado (CO)</option>
+              <option value="HI">Hawaii (HI)</option><option value="ID">Idaho (ID)</option>
+              <option value="MT">Montana (MT)</option><option value="NM">New Mexico (NM)</option>
+              <option value="NV">Nevada (NV)</option><option value="OR">Oregon (OR)</option>
+              <option value="UT">Utah (UT)</option><option value="WA">Washington (WA)</option>
+              <option value="WY">Wyoming (WY)</option>
+            </optgroup>
+            <optgroup label="── TERRITORIES ──">
+              <option value="PR">Puerto Rico (PR)</option>
+            </optgroup>
+          </select>
+          <select class="gf-select" id="detail-naics" style="width:220px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+            <option value="236220">236220 - Construction</option>
+            <option value="561612">561612 - Security</option>
+            <option value="484110">484110 - Trucking</option>
+            <option value="561710">561710 - Pest Control</option>
+            <option value="562111">562111 - Waste Collection</option>
+          </select>
+          <select class="gf-select" id="detail-year">
+            <option value="2024" selected>2024</option>
+            <option value="2023">2023</option>
+          </select>
+          <button class="btn-red" onclick="loadStateDetail()">📊 Ver Análisis</button>
+        </div>
+        <div id="detail-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">
+            <div style="font-size:32px;margin-bottom:8px;">🗺️</div>
+            <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:11.5px;">Haz clic en cualquier estado del grid o selecciónalo arriba</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPETITIVE -->
+    <div class="page" id="page-compete">
+      <div class="search-bar">
+        <select class="gf-select" id="comp-state">
+          <option value="NJ" selected>New Jersey</option><option value="NY">New York</option>
+          <option value="FL">Florida</option>
+        </select>
+        <select class="gf-select" id="comp-naics">
+          <option value="561720" selected>561720 Janitorial</option>
+          <option value="541519">541519 IT</option>
+        </select>
+        <select class="gf-select" id="comp-year">
+          <option value="2024" selected>2024</option><option value="2023">2023</option>
+        </select>
+        <button class="btn-red" onclick="fetchCompetitors()">🏆 Ver Competidores</button>
+      </div>
+      <div id="comp-container"><div style="text-align:center;padding:40px;color:var(--muted);">Selecciona filtros y haz clic en Ver Competidores</div></div>
+    </div>
+
+    <!-- CODES -->
+    <div class="page" id="page-codes">
+      <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div style="font-size:13px;font-weight:800;color:#1a1f36;margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
+        <div style="font-size:11px;color:#6b7a99;margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <input class="search-input" id="code-q" placeholder="Ej: 561720  ó  janitorial  ó  cleaning..." style="flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')searchCodes()"/>
+          <select class="gf-select" id="code-search-type" style="width:160px;">
+            <option value="search">🔍 Buscar keyword</option>
+            <option value="crosswalk">🔄 Crosswalk exacto</option>
+          </select>
+          <button class="btn-red" onclick="searchCodes()">Buscar</button>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:9.5px;color:#6b7a99;margin-right:4px;line-height:24px;">Populares:</span>
+          <span onclick="quickSearch('561720')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561720 Janitorial</span>
+          <span onclick="quickSearch('541519')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">541519 IT Services</span>
+          <span onclick="quickSearch('236220')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">236220 Construction</span>
+          <span onclick="quickSearch('722310')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">722310 Food Service</span>
+          <span onclick="quickSearch('561730')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561730 Landscaping</span>
+          <span onclick="quickSearch('561612')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561612 Security</span>
+          <span onclick="quickSearch('484110')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">484110 Trucking</span>
+          <span onclick="quickSearch('621610')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">621610 Home Health</span>
+        </div>
+      </div>
+      <div id="codes-container">
+        <div style="text-align:center;padding:40px;color:#6b7a99;">
+          <div style="font-size:40px;margin-bottom:12px;">🔢</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Busca tu código NAICS</div>
+          <div style="font-size:11.5px;">Ingresa tu NAICS code o keyword y el sistema te dirá<br>tu equivalente en SIC, PSC, UNSPSC y NIGP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="page" id="page-pipeline">
+      <div class="pipeline-board">
+        <div class="pipe-col"><div class="pipe-col-title">🔍 DETECTED</div>
+          <div class="pipe-card"><div class="pipe-card-title">Bergen Window Cleaning</div><div class="pipe-card-entity">Bergen County</div><div style="font-size:8.5px;color:var(--muted);margin-top:4px;">Apr 19</div></div>
+          <div class="pipe-card"><div class="pipe-card-title">Custodial — Essex</div><div class="pipe-card-entity">Essex County Schools</div></div>
+        </div>
+        <div class="pipe-col"><div class="pipe-col-title">🔎 ANALYZING</div>
+          <div class="pipe-card"><div class="pipe-card-title">Rutgers Facility Svcs</div><div class="pipe-card-entity">Rutgers University</div></div>
+        </div>
+        <div class="pipe-col"><div class="pipe-col-title">📝 PREPARING</div>
+          <div class="pipe-card"><div class="pipe-card-title">NJ DOE Custodial</div><div class="pipe-card-entity">NJ Dept. of Education</div></div>
+          <div class="pipe-card" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Janitorial — Middlesex</div><div class="pipe-card-entity">Middlesex Co. Schools</div><div style="font-size:8.5px;color:var(--accent);margin-top:4px;">⚠️ Apr 14</div></div>
+        </div>
+        <div class="pipe-col"><div class="pipe-col-title">📤 SUBMITTED</div>
+          <div class="pipe-card"><div class="pipe-card-title">Newark City Cleaning</div><div class="pipe-card-entity">Newark City Hall</div></div>
+        </div>
+        <div class="pipe-col"><div class="pipe-col-title">🏆 RESULTS</div>
+          <div class="pipe-card" style="border-left:3px solid var(--green)"><div class="pipe-card-title">Edison Twp Janitorial</div><div class="pipe-card-entity" style="color:var(--green);font-weight:700;">✅ WON $78K</div></div>
+          <div class="pipe-card" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Trenton City Maint.</div><div class="pipe-card-entity" style="color:var(--accent);">❌ Lost</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPPORT -->
+    <div class="page" id="page-support">
+      <div class="grid-2b">
+        <div class="card">
+          <div class="card-title">🎯 Nueva Solicitud</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <select class="gf-select" style="width:100%;padding:9px;"><option>Tipo de soporte...</option><option>Análisis de Oportunidad</option><option>Revisión de Documentos</option><option>Consulta de Códigos</option><option>Buyer Research</option></select>
+            <input class="search-input" placeholder="Link de la oportunidad..." style="width:100%;"/>
+            <textarea style="border:1px solid var(--border);border-radius:7px;padding:9px;font-size:11px;font-family:inherit;resize:none;outline:none;color:var(--text);background:#fff;" rows="4" placeholder="Describe en qué necesitas ayuda..."></textarea>
+            <button onclick="alert('✅ Ticket enviado!')" class="btn-red" style="padding:10px;">Enviar</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📬 Tickets</div>
+          <table><thead><tr><th>#</th><th>TIPO</th><th>ESTADO</th></tr></thead>
+          <tbody>
+            <tr><td>#1042</td><td>Doc Review</td><td><span class="badge by">En Revisión</span></td></tr>
+            <tr><td>#1038</td><td>NAICS Consult</td><td><span class="badge bg">Resuelto</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALLIANCE -->
+    <div class="page" id="page-alliance">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#0a0c14,#152978);border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
+        <div style="font-size:36px;">🤝</div>
+        <div>
+          <div style="color:#fff;font-size:15px;font-weight:800;">GovBidder Alliance — Programa de Fondos</div>
+          <div style="color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;line-height:1.6;">Financiamiento de Purchase Orders para miembros activos.<br>GovBidder aporta hasta el 90% del costo de mercancía.</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="background:rgba(200,168,75,.2);border:1px solid rgba(200,168,75,.3);border-radius:8px;padding:6px 14px;">
+            <div style="color:#fde68a;font-size:9px;font-weight:700;letter-spacing:1px;">FEE PROGRAMA</div>
+            <div style="color:#fff;font-size:18px;font-weight:900;">20%</div>
+            <div style="color:rgba(255,255,255,.5);font-size:9px;">de ganancia neta</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top row: Estado + Calculadora -->
+      <div class="grid-2b" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title">📊 Mi Estado Alliance</div>
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;">
+            <div class="kpi-card"><div class="kpi-label">PLAN</div><div class="kpi-value" style="font-size:16px;color:var(--gold)">Legacy</div></div>
+            <div class="kpi-card"><div class="kpi-label">DÍAS</div><div class="kpi-value">142</div></div>
+            <div class="kpi-card"><div class="kpi-label">MÁX</div><div class="kpi-value">90%</div></div>
+          </div>
+          <div class="bar-row"><div class="bar-label">Elegibilidad</div><div class="bar-track"><div class="bar-fill" style="width:85%;background:linear-gradient(90deg,var(--green),#15803d)"></div></div><div class="bar-val" style="color:var(--green)">85%</div></div>
+          <div style="margin-top:10px;font-size:10.5px;color:var(--muted);line-height:1.8;">✅ Miembro activo · ✅ +60 días · ✅ Plan Legacy · ⚡ Fee: 20% ganancia neta</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧮 Calculadora Alliance</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <input class="search-input" id="c-po" placeholder="Valor de la PO (ej. 10000)..." style="width:100%;"/>
+            <input class="search-input" id="c-cost" placeholder="Costo de mercancía (ej. 8000)..." style="width:100%;"/>
+            <input class="search-input" id="c-margin" placeholder="Tu margen % (ej. 20)..." style="width:100%;"/>
+            <button onclick="calcAlliance()" class="btn-red" style="padding:9px;">Calcular</button>
+            <div id="c-result" style="display:none;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.8;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Application Form -->
+      <div class="card">
+        <div class="card-title" style="font-size:13px;">
+          📋 Solicitar Apoyo Alliance
+          <span class="sub">Completa el formulario — te contactaremos en 24-48 hrs</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+          <!-- Left column -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">NOMBRE COMPLETO *</label>
+              <input id="alliance-name" class="search-input" placeholder="Tu nombre completo..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">EMPRESA *</label>
+              <input id="alliance-company" class="search-input" placeholder="Nombre de tu empresa..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA PO *</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
+                <input id="alliance-po" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">COSTO DE PRODUCTOS/SERVICIOS *</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
+                <input id="alliance-cost" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ESTADO DEL CONTRATO *</label>
+              <select id="alliance-status" class="search-input" style="width:100%;cursor:pointer;">
+                <option value="">Selecciona...</option>
+                <option value="Ganado — listo para ejecutar">✅ Ganado — listo para ejecutar</option>
+                <option value="Activo — en ejecución">🔄 Activo — en ejecución</option>
+                <option value="Pendiente — esperando award">⏳ Pendiente — esperando award</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Right column -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <div style="flex:1;">
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DESCRIPCIÓN DEL CONTRATO *</label>
+              <textarea id="alliance-desc" rows="5"
+                style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;color:var(--text);background:#fff;transition:.2s;"
+                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+                placeholder="Describe el contrato: qué servicios/productos, con qué agencia, plazo de ejecución..."></textarea>
+            </div>
+
+            <!-- Preview calc -->
+            <div id="alliance-preview" style="display:none;background:linear-gradient(135deg,#eef2ff,#fff);border:1px solid #c7d2fe;border-radius:8px;padding:12px;">
+              <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;">RESUMEN ESTIMADO</div>
+              <div id="alliance-preview-content" style="font-size:11px;color:var(--text);line-height:2;"></div>
+            </div>
+
+            <!-- Error / Success -->
+            <div id="alliance-error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;color:#b91c1c;font-size:11px;"></div>
+            <div id="alliance-success" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px;text-align:center;">
+              <div style="font-size:28px;margin-bottom:6px;">✅</div>
+              <div style="font-size:13px;font-weight:800;color:#15803d;margin-bottom:4px;">¡Solicitud Enviada!</div>
+              <div style="font-size:11px;color:#6b7a99;line-height:1.6;">El equipo de GovBidder revisará tu solicitud<br>y te contactará en <strong>24–48 horas</strong>.</div>
+            </div>
+
+            <button id="alliance-submit-btn" onclick="submitAllianceApp()"
+              style="background:linear-gradient(135deg,var(--accent),#a01e1d);color:#fff;border:none;border-radius:8px;padding:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.25);transition:.2s;"
+              onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+              <span id="alliance-submit-txt">🤝 Enviar Solicitud Alliance →</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Info pills -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <span style="background:#dcfce7;color:#15803d;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">✅ Sin historial crediticio requerido</span>
+          <span style="background:#dbeafe;color:#1d4ed8;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">📋 Solo necesitas la PO</span>
+          <span style="background:#fef3c7;color:#92400e;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">⚡ Respuesta en 24-48 hrs</span>
+          <span style="background:#f3e8ff;color:#7e22ce;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">🤝 Fee: 20% de ganancia neta</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TOOLS -->
+    <div class="page" id="page-tools">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#0a0c14,#152978);border-radius:14px;padding:28px 32px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;opacity:.07;background:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px;"></div>
+        <div style="position:relative;">
+          <div style="font-size:36px;margin-bottom:10px;">🧰</div>
+          <div style="color:#fff;font-size:20px;font-weight:900;margin-bottom:6px;">Herramientas <span style="color:#E42D2C;">GovBidder</span></div>
+          <div style="color:rgba(255,255,255,.5);font-size:12px;max-width:500px;margin:0 auto;line-height:1.7;">
+            El ecosistema completo para operar, analizar y escalar tus contratos con el gobierno de EE. UU.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools grid -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;">
+
+        <!-- GovBidder App -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(228,45,44,.12)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#E42D2C,#a01e1d);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">⚡</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder App</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">CRM & Operations Hub</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              Centraliza tu operación de contratos: contactos, oportunidades, pipelines, tareas y seguimiento en un solo lugar. Tu CRM para government contracting.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Pipeline de oportunidades</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Gestión de contactos y clientes</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Seguimiento de tareas y deadlines</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Reportes de performance</div>
+            </div>
+            <a href="https://app.govbidder.net/" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(228,45,44,.25);">
+              Abrir GovBidder App →
+            </a>
+          </div>
+        </div>
+
+        <!-- GovBidder AI -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(21,41,120,.12)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">🤖</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder AI</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Inteligencia Artificial para Licitaciones</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              IA especializada en contratos gubernamentales. Analiza, verifica cumplimiento y acelera la preparación de licitaciones con criterio profesional.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Análisis de RFPs y solicitudes</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Verificación de cumplimiento</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Redacción de propuestas</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Estrategia de pricing</div>
+            </div>
+            <a href="https://govbidder.ai" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#152978,#1a3090);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(21,41,120,.25);">
+              Explorar GovBidder AI →
+            </a>
+          </div>
+        </div>
+
+        <!-- GovBidder Connect -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(22,163,74,.12)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#15803d,#16a34a);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">🔗</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Connect</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Licitaciones en Tiempo Real</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              Plataforma que muestra licitaciones del gobierno de EE. UU. en tiempo real. Encuentra oportunidades que encajan exactamente con tu empresa y capacidad.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Feed de licitaciones en vivo</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Filtros por industria y estado</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Alertas de nuevas oportunidades</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Match con tu perfil de empresa</div>
+            </div>
+            <a href="https://govbidderconnect.com" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(22,163,74,.25);">
+              Ver GovBidder Connect →
+            </a>
+          </div>
+        </div>
+
+        <!-- GovBidder Academy -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(200,168,75,.15)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#92400e,#c8a84b);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">🎓</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Academy</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Formación & Entrenamiento</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              Formación especializada en contratos gubernamentales. Desde tu primer contrato hasta escalar y ejecutar como profesional con estructura y metodología probada.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Tu Primer Contrato USA</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder Bootcamp presencial</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder VIP 365</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Soporte continuo y mentoring</div>
+            </div>
+            <a href="https://govbidderacademy.com/login" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,#c8a84b);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(200,168,75,.3);">
+              Ir a GovBidder Academy →
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer banner -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div style="font-size:28px;">🦅</div>
+        <div>
+          <div style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;">¿Necesitas más información sobre alguna herramienta?</div>
+          <div style="font-size:11px;color:var(--muted);">Visita <a href="https://govbidder.net/soluciones" target="_blank" style="color:var(--accent);font-weight:700;">govbidder.net/soluciones</a> o escríbenos a <a href="mailto:club@govbidder.net" style="color:var(--accent);font-weight:700;">club@govbidder.net</a></div>
+        </div>
+        <a href="https://govbidder.net/soluciones" target="_blank"
+          style="margin-left:auto;white-space:nowrap;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;">
+          Ver todas las soluciones →
+        </a>
+      </div>
+
+    </div>
+
+    <!-- TASK WORK -->
+    <div class="page" id="page-taskwork">
+
+      <!-- Header banner -->
+      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+        <div style="font-size:36px;">💼</div>
+        <div>
+          <div style="color:#fff;font-size:15px;font-weight:800;">Task Work — Bolsa de Trabajos</div>
+          <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Trabajos asignados por GovBidder Club · Solo visible para ti</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;">MIEMBRO</div>
+          <div style="color:#fff;font-size:13px;font-weight:800;" id="tw-member-name">—</div>
+          <div id="tw-plan-badge" style="margin-top:4px;display:inline-block;background:rgba(200,168,75,.25);color:#fde68a;font-size:8.5px;font-weight:800;padding:2px 10px;border-radius:10px;border:1px solid rgba(200,168,75,.3);">⭐ LEGACY</div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;" id="tw-kpis">
+        <div class="kpi-card"><div class="kpi-label">TOTAL TRABAJOS</div><div class="kpi-value" id="tw-total">—</div><div class="kpi-delta" style="color:var(--muted)">asignados</div></div>
+        <div class="kpi-card"><div class="kpi-label">ACTIVOS</div><div class="kpi-value" style="color:var(--green)" id="tw-active">—</div><div class="kpi-delta delta-up">en progreso</div></div>
+        <div class="kpi-card"><div class="kpi-label">COMPLETADOS</div><div class="kpi-value" id="tw-done">—</div><div class="kpi-delta" style="color:var(--muted)">finalizados</div></div>
+        <div class="kpi-card"><div class="kpi-label">VALOR TOTAL</div><div class="kpi-value" style="font-size:18px;" id="tw-value">—</div><div class="kpi-delta delta-up">en contratos</div></div>
+      </div>
+
+      <!-- Job cards -->
+      <div id="tw-jobs-container">
+        <div class="loading"><div class="spinner"></div><div class="loading-text">Cargando trabajos...</div></div>
+      </div>
+
+    </div>
+
+  </div><!-- /#content -->
+</div><!-- /#main -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <div class="modal-title" id="modal-title">—</div>
+    <div id="modal-body"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn-red" onclick="alert('✅ Agregado al Pipeline!')">+ Pipeline</button>
+      <button class="btn-blue" onclick="alert('Ticket creado')">🎯 Soporte</button>
+      <button id="modal-link" class="btn-outline">🔗 Ver en SAM.gov</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT — Una sola sección, todas las funciones
+═══════════════════════════════════════════════════════ -->
+<script>
+const API = '/api';
+let liveOpps = [], liveGrants = [], currentMember = null, allStates = [];
+
+// ── NAVIGATION ────────────────────────────────────────────
+const TITLES = {
+  home:'Home — Command Center', tools:'Herramientas GovBidder', market:'Market Intelligence',
+  opps:'Contract Opportunities', grants:'Grant Intelligence',
+  codes:'Code Intelligence', geo:'Buyer Geography',
+  compete:'Competitive Intel', pipeline:'Bid Pipeline',
+  support:'Support Desk', alliance:'Funding Access', taskwork:'Task Work — Mis Trabajos'
+};
+
+function nav(el, page) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  document.getElementById('ptitle').textContent = TITLES[page] || page;
+
+  // Check role access
+  if (!checkPageAccess(page)) {
+    showMemberLock(page);
+    return;
+  }
+
+  if (page === 'market')   fetchMarket();
+  if (page === 'geo')      { geoTab('states'); }
+  if (page === 'compete')  fetchCompetitors();
+  if (page === 'taskwork') loadTaskWork();
+}
+
+// ── AUTH ──────────────────────────────────────────────────
+async function checkSession() {
+  const token = localStorage.getItem('gb_token');
+  if (!token) { showLogin(); return; }
+  try {
+    const res  = await fetch('/api/auth?action=verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+    if (data.success) {
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+      hideLogin();
+      fetchOpps();
+      fetchGrants();
+    } else {
+      localStorage.removeItem('gb_token');
+      showLogin();
+    }
+  } catch(e) {
+    localStorage.removeItem('gb_token');
+    showLogin();
+  }
+}
+
+async function doLogin() {
+  const email   = (document.getElementById('login-email')?.value    || '').trim();
+  const password = (document.getElementById('login-password')?.value || '').trim();
+  const btn     = document.getElementById('login-btn');
+  const btnText = document.getElementById('login-btn-text');
+  const errorEl = document.getElementById('login-error');
+
+  if (errorEl) errorEl.style.display = 'none';
+
+  if (!email || !password) {
+    if (errorEl) { errorEl.textContent = 'Ingresa tu email y contraseña.'; errorEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn)     btn.disabled = true;
+  if (btnText) btnText.innerHTML = 'Verificando...';
+
+  try {
+    const res  = await fetch('/api/auth?action=login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem('gb_token', data.token);
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+      if (btnText) btnText.innerHTML = '✅ ¡Bienvenido!';
+      if (btn) btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+      setTimeout(() => { hideLogin(); fetchOpps(); fetchGrants(); }, 700);
+    } else {
+      if (errorEl) { errorEl.textContent = data.error || 'Credenciales incorrectas.'; errorEl.style.display = 'block'; }
+      resetLoginBtn();
+    }
+  } catch(e) {
+    if (errorEl) { errorEl.textContent = 'Error de conexión: ' + e.message; errorEl.style.display = 'block'; }
+    resetLoginBtn();
+  }
+}
+
+function doLogout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem('gb_token');
+  currentMember = null;
+  const emailEl = document.getElementById('login-email');
+  const passEl  = document.getElementById('login-password');
+  if (emailEl) emailEl.value = '';
+  if (passEl)  passEl.value  = '';
+  resetLoginBtn();
+  showLogin();
+}
+
+function resetLoginBtn() {
+  const btn     = document.getElementById('login-btn');
+  const btnText = document.getElementById('login-btn-text');
+  if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)'; }
+  if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
+}
+
+function applyMemberProfile(member) {
+  if (!member) return;
+
+  // Avatar initials
+  const initials = member.avatar || member.name.substring(0,2).toUpperCase();
+  const avatarEl = document.getElementById('top-avatar');
+  if (avatarEl) avatarEl.textContent = initials;
+
+  // Plan colors
+  const planColors = {
+    Legacy:  'linear-gradient(135deg,#c8a84b,#a8883b)',
+    Prime:   'linear-gradient(135deg,#152978,#1a3090)',
+    Elevate: 'linear-gradient(135deg,#E42D2C,#a01e1d)'
+  };
+  const planBadgeColors = {
+    Legacy:  'background:rgba(200,168,75,.3);color:#fde68a;border:1px solid rgba(200,168,75,.4);',
+    Prime:   'background:rgba(147,197,253,.2);color:#93c5fd;border:1px solid rgba(147,197,253,.3);',
+    Elevate: 'background:rgba(228,45,44,.2);color:#fca5a5;border:1px solid rgba(228,45,44,.3);'
+  };
+
+  // Topbar badge
+  const badge = document.getElementById('plan-badge');
+  if (badge) {
+    badge.textContent      = '⭐ ' + (member.plan || '').toUpperCase();
+    badge.style.background = planColors[member.plan] || planColors.Elevate;
+  }
+
+  // Dropdown menu fields
+  const menuName  = document.getElementById('menu-name');
+  const menuEmail = document.getElementById('menu-email');
+  const menuPlan  = document.getElementById('menu-plan-badge');
+  if (menuName)  menuName.textContent  = member.name  || initials;
+  if (menuEmail) menuEmail.textContent = member.email || '—';
+  if (menuPlan)  menuPlan.innerHTML    = `<span style="${planBadgeColors[member.plan]||planBadgeColors.Elevate}font-size:8.5px;font-weight:800;padding:2px 9px;border-radius:10px;">⭐ ${(member.plan||'').toUpperCase()}</span>`;
+
+  // NAICS filter
+  const naicsEl = document.getElementById('f-naics');
+  if (naicsEl && member.naics) naicsEl.value = member.naics;
+
+  // Apply role-based access
+  applyRoleAccess();
+}
+
+// ── AVATAR DROPDOWN ───────────────────────────────────────
+function toggleAvatarMenu() {
+  const menu = document.getElementById('avatar-menu');
+  if (!menu) return;
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+  const wrapper = document.getElementById('avatar-wrapper');
+  const menu    = document.getElementById('avatar-menu');
+  if (wrapper && menu && !wrapper.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
+
+function showLogin() {
+  const overlay = document.getElementById('login-overlay');
+  const main    = document.getElementById('main');
+  const sidebar = document.getElementById('sidebar');
+  if (overlay) overlay.style.display = 'flex';
+  if (main)    main.style.display    = 'none';
+  if (sidebar) sidebar.style.display = 'none';
+}
+
+function hideLogin() {
+  const overlay = document.getElementById('login-overlay');
+  const main    = document.getElementById('main');
+  const sidebar = document.getElementById('sidebar');
+  if (overlay) overlay.style.display = 'none';
+  if (main)    main.style.display    = 'flex';
+  if (sidebar) sidebar.style.display = 'flex';
+}
+
+function togglePass() {
+  const inp = document.getElementById('login-password');
+  const btn = document.getElementById('pass-toggle');
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text';     if (btn) btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; if (btn) btn.textContent = '👁️'; }
+}
+
+// ── ROLE SYSTEM ──────────────────────────────────────────
+const MEMBER_PAGES = ['pipeline','support','alliance','taskwork'];
+
+function isMember() {
+  return !!currentMember && (currentMember.role === 'member' || currentMember.role === 'admin');
+}
+
+function applyRoleAccess() {
+  const member = isMember();
+
+  // Show/hide lock icons on sidebar
+  document.querySelectorAll('.member-lock').forEach(el => {
+    el.style.display = member ? 'none' : 'inline';
+  });
+
+  // Style member-only nav items for non-members
+  document.querySelectorAll('.nav-item.member-only').forEach(el => {
+    el.style.opacity = member ? '1' : '0.5';
+  });
+}
+
+// Called by nav() to check access before showing page
+function checkPageAccess(page) {
+  if (!MEMBER_PAGES.includes(page)) return true; // free page
+  if (isMember()) return true;                   // has access
+  return false;                                  // blocked
+}
+
+function showMemberLock(page) {
+  const el = document.getElementById('page-' + page);
+  if (!el) return;
+  el.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px;">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#f1f5f9,#e2e6f0);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);">🔒</div>
+      <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:8px;">Acceso Exclusivo</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:400px;margin-bottom:24px;">
+        Este módulo es exclusivo para <strong>Miembros de GovBidder Club</strong>.<br>
+        Únete al club para acceder a trabajos asignados, pipeline de bids,<br>soporte dedicado y el programa Alliance.
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <a href="https://www.govbidderclub.com" target="_blank"
+          style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:12px 24px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(228,45,44,.3);">
+          🦅 Unirme a GovBidder Club →
+        </a>
+        <a href="mailto:club@govbidder.net"
+          style="background:#fff;color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">
+          ✉️ Contactar al Club
+        </a>
+      </div>
+      <div style="margin-top:20px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 20px;max-width:380px;">
+        <div style="font-size:9px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:8px;">BENEFICIOS DE MEMBRESÍA</div>
+        <div style="font-size:11px;color:#374151;line-height:2;text-align:left;">
+          💼 Trabajos asignados por GovBidder Club<br>
+          📋 Bid Pipeline para seguimiento de licitaciones<br>
+          🎯 Soporte dedicado con expertos<br>
+          🤝 Programa Alliance — financiamiento de POs
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── LOGIN TABS ────────────────────────────────────────────
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tab-login').style.display     = isLogin ? 'block' : 'none';
+  document.getElementById('tab-register').style.display  = isLogin ? 'none'  : 'block';
+  const btnLogin = document.getElementById('tab-login-btn');
+  const btnReg   = document.getElementById('tab-register-btn');
+  if (isLogin) {
+    btnLogin.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    btnLogin.style.color      = '#fff';
+    btnReg.style.background   = 'transparent';
+    btnReg.style.color        = 'rgba(255,255,255,.5)';
+  } else {
+    btnReg.style.background   = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    btnReg.style.color        = '#fff';
+    btnLogin.style.background = 'transparent';
+    btnLogin.style.color      = 'rgba(255,255,255,.5)';
+  }
+}
+
+function selectPlan(radio) {
+  ['Elevate','Prime','Legacy'].forEach(p => {
+    const el = document.getElementById('plan-' + p);
+    if (!el) return;
+    el.style.transform   = 'scale(1)';
+    el.style.borderWidth = '1px';
+    el.style.opacity     = '.7';
+  });
+  const sel = document.getElementById('plan-' + radio.value);
+  if (sel) {
+    sel.style.transform   = 'scale(1.05)';
+    sel.style.borderWidth = '2px';
+    sel.style.opacity     = '1';
+  }
+}
+
+async function doRegister() {
+  const name    = (document.getElementById('reg-name')?.value    || '').trim();
+  const company = (document.getElementById('reg-company')?.value || '').trim();
+  const email   = (document.getElementById('reg-email')?.value   || '').trim();
+  const phone   = (document.getElementById('reg-phone')?.value   || '').trim();
+  const state   = (document.getElementById('reg-state')?.value   || '').trim();
+  const naics   = (document.getElementById('reg-naics')?.value   || '').trim();
+  const message = (document.getElementById('reg-message')?.value || '').trim();
+  const planEl  = document.querySelector('input[name="reg-plan"]:checked');
+  const plan    = planEl ? planEl.value : '';
+
+  const errEl  = document.getElementById('reg-error');
+  const succEl = document.getElementById('reg-success');
+  const btn    = document.getElementById('reg-btn');
+  const btnTxt = document.getElementById('reg-btn-text');
+
+  if (errEl)  errEl.style.display  = 'none';
+  if (succEl) succEl.style.display = 'none';
+
+  if (!name || !company || !email) {
+    if (errEl) { errEl.textContent = 'Nombre, empresa y email son requeridos.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    if (errEl) { errEl.textContent = 'Ingresa un email válido.'; errEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn)    btn.disabled    = true;
+  if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
+
+  try {
+    const res  = await fetch('/api/auth?action=register', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, company, email, phone, state, naics, plan, message })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (succEl) succEl.style.display = 'block';
+      if (btn)    btn.style.display    = 'none';
+      // Limpiar form
+      ['reg-name','reg-company','reg-email','reg-phone','reg-naics','reg-message'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      if (planEl) planEl.checked = false;
+    } else {
+      if (errEl) { errEl.textContent = data.error || 'Error enviando solicitud.'; errEl.style.display = 'block'; }
+      if (btn)    btn.disabled    = false;
+      if (btnTxt) btnTxt.innerHTML = 'Enviar Solicitud →';
+    }
+  } catch(e) {
+    if (errEl) { errEl.textContent = 'Error de conexión. Intenta de nuevo.'; errEl.style.display = 'block'; }
+    if (btn)    btn.disabled    = false;
+    if (btnTxt) btnTxt.innerHTML = 'Enviar Solicitud →';
+  }
+}
+
+function onGlobalFilter() {
+  const naicsVal = (document.getElementById('f-naics')?.value || '').trim();
+  const stateVal = document.getElementById('f-state')?.value || 'NJ';
+
+  // ── Update NAICS KPI card ──
+  const naicsKpi  = document.getElementById('kpi-naics');
+  const naicsDesc = document.getElementById('kpi-naics-desc');
+  if (naicsKpi) naicsKpi.textContent = naicsVal || '—';
+  if (naicsDesc) {
+    // Try to find a label from the datalist
+    const opt = document.querySelector(`#naics-suggestions option[value="${naicsVal}"]`);
+    if (opt) {
+      const label = opt.value + ' — ' + opt.textContent.replace(naicsVal + ' - ', '').substring(0, 18);
+      naicsDesc.textContent = opt.textContent.replace(naicsVal + ' - ', '').substring(0, 20);
+    } else {
+      naicsDesc.textContent = naicsVal ? 'Código personalizado' : 'Sin selección';
+    }
+  }
+
+  // ── Update STATE KPI card ──
+  const stateKpi  = document.getElementById('kpi-state');
+  const stateDesc = document.getElementById('kpi-state-desc');
+  const STATE_NAMES = {
+    AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
+    CO:'Colorado',CT:'Connecticut',DC:'Washington DC',DE:'Delaware',FL:'Florida',
+    GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',
+    KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',
+    MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',
+    MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',
+    NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',
+    OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',
+    SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',
+    VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico'
+  };
+  if (stateKpi)  stateKpi.textContent  = stateVal || '—';
+  if (stateDesc) stateDesc.textContent = STATE_NAMES[stateVal] || stateVal;
+}
+
+// ── SAM.GOV ──────────────────────────────────────────────
+async function fetchOpps() {
+  const kw = document.getElementById('opp-kw')?.value    || 'janitorial';
+  const st = document.getElementById('opp-state')?.value || 'NJ';
+  const nc = document.getElementById('opp-naics')?.value || '561720';
+  setLoading('opps-list', 'Buscando en SAM.gov...');
+  try {
+    const res  = await fetch(`${API}/opportunities?keyword=${encodeURIComponent(kw)}&state=${st}&naics=${nc}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    liveOpps = data.opportunities || [];
+    document.getElementById('kpi-opps').textContent    = data.total || liveOpps.length;
+    document.getElementById('kpi-opps-d').textContent  = `${liveOpps.length} resultados live`;
+    document.getElementById('nb-opps').textContent     = liveOpps.length;
+    document.getElementById('home-opps-src').textContent = `${liveOpps.length} live • SAM.gov`;
+    document.getElementById('opps-list').innerHTML = liveOpps.length
+      ? liveOpps.map(o => oppCard(o)).join('')
+      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${kw}" en ${st}.</div>`;
+    document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
+  } catch(e) {
+    const err = `<div class="error-box">❌ SAM.gov: ${e.message}</div>`;
+    document.getElementById('opps-list').innerHTML  = err;
+    document.getElementById('home-opps').innerHTML  = err;
+  }
+}
+
+function oppCard(o) {
+  const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'N/A';
+  const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||'—',deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#'});
+  return `<div class="opp-card" onclick='openModal(${d})'>
+    <div class="opp-title">${o.title||'Sin título'}</div>
+    <div class="opp-meta">
+      <span>🏛️ <strong>${(o.organization||'—').substring(0,45)}</strong></span>
+      <span>📍 ${o.state||'—'}</span>
+      <span>📅 <strong style="color:${urgent?'var(--accent)':'var(--text)'}">${dl}${urgent?' ⚠️':''}</strong></span>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      <span class="badge bb">${o.type||'N/A'}</span>
+      ${o.naicsCode?`<span class="badge bm">NAICS ${o.naicsCode}</span>`:''}
+      ${o.setAside?`<span class="badge bg">${o.setAside}</span>`:''}
+      <span style="margin-left:auto;font-size:10px;color:var(--accent);font-weight:700;">Ver detalle →</span>
+    </div>
+  </div>`;
+}
+
+function oppRow(o) {
+  const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
+  const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
+  return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f4f6fb;align-items:center;">
+    <span style="font-size:11px;font-weight:600;color:var(--text);flex:1;margin-right:8px;">${(o.title||'').substring(0,50)}${(o.title||'').length>50?'...':''}</span>
+    <span style="font-size:9.5px;white-space:nowrap;color:${urgent?'var(--accent)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}${urgent?' ⚠️':''}</span>
+  </div>`;
+}
+
+function openModal(o) {
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-title').textContent = o.title || 'Oportunidad';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-field"><label>ENTIDAD</label><p>${o.org}</p></div>
+    <div class="modal-field"><label>TIPO</label><p>${o.type}</p></div>
+    <div class="modal-field"><label>DEADLINE</label><p>${o.deadline}</p></div>
+    <div class="modal-field"><label>NAICS</label><p>${o.naics}</p></div>
+    <div class="modal-field"><label>UBICACIÓN</label><p>${o.city}, ${o.state}</p></div>
+    ${o.setAside?`<div class="modal-field"><label>SET-ASIDE</label><p>${o.setAside}</p></div>`:''}
+    <div class="modal-field"><label>DESCRIPCIÓN</label><p>${o.desc||'No disponible'}</p></div>`;
+  document.getElementById('modal-link').onclick = () => window.open(o.link, '_blank');
+}
+
+// ── GRANTS.GOV ───────────────────────────────────────────
+async function fetchGrants() {
+  const kw = document.getElementById('grant-kw')?.value    || 'small business';
+  const st = document.getElementById('grant-status')?.value || 'posted';
+  setLoading('grants-list', 'Conectando a Grants.gov...');
+  try {
+    const res  = await fetch(`${API}/grants?keyword=${encodeURIComponent(kw)}&status=${st}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    liveGrants = data.grants || [];
+    document.getElementById('kpi-grants').textContent     = data.total || liveGrants.length;
+    document.getElementById('kpi-grants-d').textContent   = `${liveGrants.length} activos`;
+    document.getElementById('nb-grants').textContent      = liveGrants.length;
+    document.getElementById('home-grants-src').textContent = `${liveGrants.length} live • Grants.gov`;
+    document.getElementById('grants-list').innerHTML = liveGrants.length
+      ? liveGrants.map(g => grantCard(g)).join('')
+      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${kw}".</div>`;
+    document.getElementById('home-grants').innerHTML = liveGrants.slice(0,4).map(g => `
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f4f6fb;">
+        <span style="font-size:11px;font-weight:600;color:var(--text);flex:1;margin-right:8px;">${(g.title||'').substring(0,45)}...</span>
+        <span style="font-size:9.5px;color:var(--green);white-space:nowrap;font-weight:700;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver'}</span>
+      </div>`).join('');
+  } catch(e) {
+    const err = `<div class="error-box">❌ Grants.gov: ${e.message}</div>`;
+    document.getElementById('grants-list').innerHTML  = err;
+    document.getElementById('home-grants').innerHTML  = err;
+  }
+}
+
+function grantCard(g) {
+  const dl = g.closeDate ? new Date(g.closeDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'N/A';
+  const urgent = g.closeDate && (new Date(g.closeDate) - Date.now()) < 30*864e5;
+  return `<div class="grant-card">
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <div style="font-size:12.5px;font-weight:700;color:var(--text);flex:1;margin-right:12px;">${g.title||'Sin título'}</div>
+      <div style="font-size:12px;font-weight:800;color:var(--green);white-space:nowrap;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver conv.'}</div>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">${g.agency||'—'} · <strong style="color:${urgent?'var(--accent)':'var(--text)'}">${dl}${urgent?' ⚠️':''}</strong></div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
+      <span class="badge bb">${g.oppNumber||'—'}</span>
+      ${g.category?`<span class="badge bm">${g.category}</span>`:''}
+    </div>
+    <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">${(g.synopsis||'').substring(0,180)}...</div>
+    <a href="${g.link}" target="_blank" style="font-size:10px;color:var(--accent);font-weight:700;text-decoration:none;">🔗 Ver en Grants.gov →</a>
+  </div>`;
+}
+
+// ── MARKET (USASpending) ──────────────────────────────────
+async function fetchMarket() {
+  const naics = document.getElementById('mkt-naics').value;
+  const year  = document.getElementById('mkt-year').value;
+  setLoading('market-container', 'Cargando USASpending.gov...');
+  try {
+    const res  = await fetch(`${API}/spending?type=market&naics=${naics}&year=${year}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const maxS = data.byState?.[0]?.amount || 1;
+    const maxV = data.topVendors?.[0]?.total || 1;
+    document.getElementById('market-container').innerHTML = `
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">📊 Market Intelligence — NAICS ${naics} · ${year}
+          <span class="sub">USASpending.gov live · $${(data.totalSpend/1e6).toFixed(1)}M · ${data.contractCount} contratos</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div style="font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:10px;">GASTO POR ESTADO</div>
+            ${(data.byState||[]).map(s=>`<div class="bar-row">
+              <div class="bar-label" style="${s.code==='NJ'?'color:var(--accent);font-weight:700;':''}">${s.state||s.code}${s.code==='NJ'?' ⭐':''}</div>
+              <div class="bar-track"><div class="bar-fill ${s.code==='NJ'?'':'bar-fill-blue'}" style="width:${Math.round(s.amount/maxS*100)}%"></div></div>
+              <div class="bar-val">$${(s.amount/1e6).toFixed(1)}M</div>
+            </div>`).join('')}
+          </div>
+          <div>
+            <div style="font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:10px;">TOP VENDORS</div>
+            ${(data.topVendors||[]).slice(0,8).map(v=>`<div class="bar-row">
+              <div class="bar-label">${(v.name||'').substring(0,16)}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
+              <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Contratos Recientes <span class="sub">live • USASpending.gov</span></div>
+        <table><thead><tr><th>RECIPIENT</th><th>AGENCIA</th><th>ESTADO</th><th>MONTO</th><th>FECHA</th></tr></thead>
+        <tbody>${(data.recentContracts||[]).map(c=>`<tr>
+          <td style="color:var(--text);font-weight:600;">${(c.recipient||'—').substring(0,28)}</td>
+          <td>${(c.agency||'—').substring(0,26)}</td>
+          <td>${c.state||'—'}</td>
+          <td style="font-weight:700;color:var(--text);">$${Number(c.amount||0).toLocaleString()}</td>
+          <td>${c.date||'—'}</td>
+        </tr>`).join('')}</tbody></table>
+      </div>`;
+  } catch(e) { document.getElementById('market-container').innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
+}
+
+// ── COMPETITORS ──────────────────────────────────────────
+async function fetchCompetitors() {
+  const state = document.getElementById('comp-state').value;
+  const naics = document.getElementById('comp-naics').value;
+  const year  = document.getElementById('comp-year').value;
+  setLoading('comp-container', 'Cargando vendors...');
+  try {
+    const res  = await fetch(`${API}/spending?type=competitors&state=${state}&naics=${naics}&year=${year}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const vendors = data.vendors || [];
+    const maxT    = vendors[0]?.total || 1;
+    document.getElementById('comp-container').innerHTML = vendors.length ? `
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">🏆 Top Vendors — ${state} · NAICS ${naics} · ${year} <span class="sub">USASpending.gov live</span></div>
+        <table><thead><tr><th>#</th><th>VENDOR</th><th>CONTRATOS</th><th>TOTAL</th><th>TOP COMPRADOR</th></tr></thead>
+        <tbody>${vendors.map((v,i)=>`<tr>
+          <td><strong style="color:var(--text)">${i+1}</strong></td>
+          <td style="color:var(--text);font-weight:600;">${(v.name||'').substring(0,28)}</td>
+          <td><span class="badge bb">${v.count}</span></td>
+          <td style="font-weight:700;color:var(--text);">$${v.total.toLocaleString()}</td>
+          <td style="font-size:9.5px;">${(v.topAgency||'').substring(0,26)}</td>
+        </tr>`).join('')}</tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Market Share</div>
+        ${vendors.slice(0,8).map(v=>`<div class="bar-row">
+          <div class="bar-label">${(v.name||'').substring(0,16)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxT*100)}%"></div></div>
+          <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
+        </div>`).join('')}
+      </div>` : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin vendors encontrados.</div>`;
+  } catch(e) { document.getElementById('comp-container').innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
+}
+
+// ── CODES ────────────────────────────────────────────────
+function quickSearch(code) {
+  document.getElementById('code-q').value = code;
+  document.getElementById('code-search-type').value = 'crosswalk';
+  searchCodes();
+}
+
+async function searchCodes() {
+  const q    = document.getElementById('code-q').value.trim();
+  const type = document.getElementById('code-search-type').value;
+  const el   = document.getElementById('codes-container');
+  if (!q) return;
+  el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Buscando en base de datos NAICS 2022...</div></div>`;
+  try {
+    const res  = await fetch(`${API}/codes?query=${encodeURIComponent(q)}&type=${type}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    if (type === 'crosswalk' && data.codes) {
+      el.innerHTML = `
+        <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:20px 24px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="background:#E42D2C;color:#fff;padding:6px 14px;border-radius:8px;font-size:18px;font-weight:900;font-family:monospace;">${data.naics}</div>
+              <div>
+                <div style="color:#fff;font-size:14px;font-weight:800;">${data.title}</div>
+                <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Sector: ${data.sector}</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:10px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#152978;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">NAICS</div>
+                  <div style="font-size:9px;color:#6b7a99;">North American Industry Classification</div>
+                </div>
+                <div style="font-size:26px;font-weight:900;color:#152978;font-family:monospace;">${data.codes.naics.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.naics.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
+                </div>
+              </div>
+              <div style="background:linear-gradient(135deg,#fff7ed,#fff);border:2px solid #fed7aa;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#c2410c;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">SIC</div>
+                  <div style="font-size:9px;color:#6b7a99;">Standard Industrial Classification</div>
+                </div>
+                <div style="font-size:26px;font-weight:900;color:#c2410c;font-family:monospace;">${data.codes.sic.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.sic.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" style="background:#ffedd5;color:#c2410c;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                </div>
+              </div>
+              <div style="background:linear-gradient(135deg,#f0fdf4,#fff);border:2px solid #86efac;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#15803d;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">PSC</div>
+                  <div style="font-size:9px;color:#6b7a99;">Product Service Code — Federal</div>
+                </div>
+                <div style="font-size:26px;font-weight:900;color:#15803d;font-family:monospace;">${data.codes.psc.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.psc.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" style="background:#dcfce7;color:#15803d;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                </div>
+              </div>
+              <div style="background:linear-gradient(135deg,#fdf4ff,#fff);border:2px solid #e9d5ff;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#7e22ce;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">UNSPSC</div>
+                  <div style="font-size:9px;color:#6b7a99;">UN Standard Products & Services Code</div>
+                </div>
+                <div style="font-size:22px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.unspsc.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" style="background:#f3e8ff;color:#7e22ce;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:12px;background:linear-gradient(135deg,#fffbeb,#fff);border:2px solid #fde68a;border-radius:10px;padding:16px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <div style="background:#92400e;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">NIGP</div>
+                <div style="font-size:9px;color:#6b7a99;">National Institute of Governmental Purchasing</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;">
+                <div style="font-size:26px;font-weight:900;color:#92400e;font-family:monospace;">${data.codes.nigp.code}</div>
+                <div>
+                  <div style="font-size:11px;color:#1a1f36;font-weight:600;">${data.codes.nigp.title}</div>
+                  <div style="font-size:10px;color:#6b7a99;margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <span>🤖</span>
+                <span style="background:linear-gradient(135deg,#E42D2C,#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
+                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:#E42D2C;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+              </div>
+              <div id="code-ai-tip" style="font-size:11px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código.</div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades</button>
+              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
+            </div>
+          </div>
+        </div>`;
+    } else if (data.results) {
+      if (!data.results.length) {
+        el.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7a99;"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Sin resultados para "${q}"</div></div>`;
+        return;
+      }
+      el.innerHTML = `
+        <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
+        ${data.results.map(r => `
+          <div onclick="quickCrosswalk('${r.naics}')" style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.04);"
+               onmouseover="this.style.borderColor='#E42D2C';this.style.boxShadow='0 4px 12px rgba(228,45,44,.1)'"
+               onmouseout="this.style.borderColor='#e2e6f0';this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <span style="background:#E42D2C;color:#fff;padding:3px 10px;border-radius:6px;font-size:13px;font-weight:900;font-family:monospace;">${r.naics}</span>
+              <span style="font-size:12.5px;font-weight:700;color:#1a1f36;">${r.title}</span>
+              <span style="margin-left:auto;font-size:9.5px;color:#6b7a99;background:#f1f5f9;padding:2px 8px;border-radius:5px;">${r.sector}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">SIC: ${r.sic}</span>
+              <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">PSC: ${r.psc}</span>
+              <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">UNSPSC: ${r.unspsc}</span>
+              ${r.nigp?`<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">NIGP: ${r.nigp}</span>`:''}
+              <span style="margin-left:auto;font-size:10px;color:#E42D2C;font-weight:700;">Ver crosswalk completo →</span>
+            </div>
+          </div>`).join('')}`;
+    }
+  } catch(e) {
+    el.innerHTML = `<div class="error-box">❌ Error: ${e.message}</div>`;
+  }
+}
+
+function quickCrosswalk(code) {
+  document.getElementById('code-q').value = code;
+  document.getElementById('code-search-type').value = 'crosswalk';
+  searchCodes();
+}
+
+function showCopied(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '✅ Copiado';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+
+function searchWithCode(naics) {
+  document.getElementById('opp-naics').value = naics;
+  document.querySelector('[onclick*="\'opps\'"]').click();
+}
+
+function searchMarketWithCode(naics) {
+  document.getElementById('mkt-naics').value = naics;
+  document.querySelector('[onclick*="\'market\'"]').click();
+  setTimeout(() => fetchMarket(), 300);
+}
+
+async function getCodeAI(naics, title) {
+  const el = document.getElementById('code-ai-tip');
+  el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
+  try {
+    const res  = await fetch(`${API}/ai`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: `Para el código NAICS ${naics} (${title}): ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos. Español, máximo 120 palabras.`, context: 'GovBidder Club member, small business' })
+    });
+    const data = await res.json();
+    el.textContent = data.success ? data.response : 'AI no disponible.';
+  } catch(e) { el.textContent = 'AI no disponible.'; }
+}
+
+// ── AI ───────────────────────────────────────────────────
+async function runAI(page) {
+  const el = document.getElementById(`ai-${page}`);
+  el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
+  const prompts = {
+    home:    `Soy negocio cleaning/janitorial NJ plan Legacy GovBidder. ${liveOpps.length} opps en SAM.gov, ${liveGrants.length} grants activos. Dame brief estratégico de hoy.`,
+    opps:    `Tengo ${liveOpps.length} oportunidades live SAM.gov cleaning NJ. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
+    grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy cleaning/janitorial NJ bajo 10 empleados plan Legacy. ¿Cuáles aplican?`,
+    market:  `Analiza mercado contratos gubernamentales cleaning/janitorial NAICS 561720 NJ 2024. Tendencias, top buyers y oportunidades.`
+  };
+  try {
+    const res  = await fetch(`${API}/ai`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompts[page], context: 'Plan Legacy, Cleaning/Janitorial, New Jersey' })
+    });
+    const data = await res.json();
+    el.textContent = data.success ? data.response : 'IA no disponible.';
+  } catch(e) { el.textContent = 'IA no disponible: ' + e.message; }
+}
+
+// ── GEO ──────────────────────────────────────────────────
+function geoTab(tab) {
+  document.querySelectorAll('.geo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.geo-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('geo-' + tab).classList.add('active');
+  if (tab === 'states' && allStates.length === 0) loadAllStates();
+}
+
+async function loadAllStates() {
+  const grid = document.getElementById('states-grid');
+  grid.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>`;
+  try {
+    const res  = await fetch(`${API}/geography?type=states`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    allStates = data.states;
+    document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`;
+    renderStates(allStates);
+  } catch(e) {
+    grid.innerHTML = `<div style="color:#b91c1c;font-size:11px;padding:20px;">❌ ${e.message}</div>`;
+  }
+}
+
+function renderStates(states) {
+  const myState = 'NJ';
+  const grid    = document.getElementById('states-grid');
+  const REGION_COLORS = { Northeast:'#dbeafe', South:'#dcfce7', Midwest:'#fef3c7', West:'#f3e8ff', Territory:'#f1f5f9' };
+  grid.style.display = 'grid';
+  grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(130px,1fr))';
+  grid.style.gap = '10px';
+  grid.innerHTML = states.length
+    ? states.map(s => `
+        <div class="state-card ${s.code === myState ? 'my-state' : ''}" onclick="selectState('${s.code}')">
+          ${s.code === myState ? '<div style="font-size:8.5px;color:#E42D2C;font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
+          <div style="font-size:20px;font-weight:900;color:#152978;font-family:monospace;">${s.code}</div>
+          <div style="font-size:10px;color:#1a1f36;font-weight:600;margin-top:3px;">${s.name}</div>
+          <div style="font-size:9px;color:#6b7a99;margin-top:1px;">📍 ${s.capital}</div>
+          <div style="margin-top:6px;">
+            <span style="background:${REGION_COLORS[s.region]||'#f1f5f9'};color:#374151;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;">${s.region}</span>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
+            <button onclick="event.stopPropagation();selectState('${s.code}')" style="background:#152978;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;">📊 Análisis</button>
+            <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()" style="background:#E42D2C;color:#fff;border-radius:5px;padding:3px 8px;font-size:9px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+          </div>
+        </div>`).join('')
+    : '<div style="text-align:center;padding:30px;color:#6b7a99;grid-column:1/-1;">Sin resultados.</div>';
+}
+
+function filterStates(q) {
+  if (!q) { renderStates(allStates); document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`; return; }
+  const f = allStates.filter(s =>
+    s.name.toLowerCase().includes(q.toLowerCase()) ||
+    s.code.toLowerCase().includes(q.toLowerCase()) ||
+    s.capital.toLowerCase().includes(q.toLowerCase())
+  );
+  document.getElementById('states-count').textContent = `${f.length} resultados`;
+  renderStates(f);
+}
+
+function filterByRegion(region) {
+  if (!region) { renderStates(allStates); document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`; return; }
+  const f = allStates.filter(s => s.region === region);
+  document.getElementById('states-count').textContent = `${f.length} estados`;
+  renderStates(f);
+}
+
+function selectState(code) {
+  const sel = document.getElementById('detail-state');
+  if (sel) sel.value = code;
+  geoTab('detail');
+  loadStateDetail();
+}
+
+async function loadStateDetail() {
+  const state = document.getElementById('detail-state').value;
+  const naics = document.getElementById('detail-naics').value;
+  const year  = document.getElementById('detail-year').value;
+  const el    = document.getElementById('detail-container');
+  if (!state) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7a99;"><div style="font-size:32px;margin-bottom:8px;">🗺️</div><div style="font-size:13px;font-weight:700;color:#1a1f36;">Selecciona un estado primero</div></div>`;
+    return;
+  }
+  setLoading('detail-container', `Cargando análisis de ${state}...`);
+  try {
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=${year}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const s       = data.state;
+    const spend   = data.spending;
+    const maxV    = spend.topVendors?.[0]?.total || 1;
+    const schools = data.schoolDistricts || [];
+    const univs   = data.universities    || [];
+    el.innerHTML = `
+      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:20px 24px;margin-bottom:14px;color:#fff;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="font-size:52px;font-weight:900;font-family:monospace;opacity:.85;line-height:1;">${s.code}</div>
+          <div>
+            <div style="font-size:18px;font-weight:800;">${s.name}</div>
+            <div style="font-size:11px;opacity:.7;margin-top:3px;">Capital: ${s.capital} · Región: ${s.region}</div>
+            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:#E42D2C;color:#fff;padding:5px 14px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement</a>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:28px;font-weight:900;">$${(spend.total/1e6).toFixed(1)}M</div>
+            <div style="font-size:10px;opacity:.7;">NAICS ${naics} · ${year}</div>
+            <div style="margin-top:6px;background:rgba(255,255,255,.15);padding:4px 12px;border-radius:6px;font-size:11px;">${spend.contractCount} contratos</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+        <div class="kpi-card"><div class="kpi-label">TOTAL SPEND</div><div class="kpi-value" style="font-size:18px;">$${(spend.total/1e6).toFixed(1)}M</div><div class="kpi-delta" style="color:#6b7a99;">NAICS ${naics}</div></div>
+        <div class="kpi-card"><div class="kpi-label">CONTRATOS</div><div class="kpi-value" style="font-size:18px;">${spend.contractCount}</div><div class="kpi-delta delta-up">Año ${year}</div></div>
+        <div class="kpi-card"><div class="kpi-label">SCHOOL DISTRICTS</div><div class="kpi-value" style="font-size:18px;">${schools.length}</div><div class="kpi-delta" style="color:#6b7a99;">En base de datos</div></div>
+        <div class="kpi-card"><div class="kpi-label">UNIVERSIDADES</div><div class="kpi-value" style="font-size:18px;">${univs.length}</div><div class="kpi-delta" style="color:#6b7a99;">En base de datos</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div class="card">
+          <div class="card-title">🏆 Top Vendors — ${s.code} <span class="sub">USASpending live</span></div>
+          ${spend.topVendors.length ? spend.topVendors.map(v=>`<div class="bar-row">
+            <div class="bar-label">${(v.name||'').substring(0,18)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
+            <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
+          </div>`).join('') : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin vendors para este filtro.</div>'}
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Contratos Recientes <span class="sub">live • USASpending</span></div>
+          ${spend.recentContracts.length ? `<table><thead><tr><th>RECIPIENT</th><th>CIUDAD</th><th>MONTO</th></tr></thead>
+            <tbody>${spend.recentContracts.slice(0,8).map(c=>`<tr>
+              <td style="color:#1a1f36;font-weight:600;">${(c.recipient||'—').substring(0,22)}</td>
+              <td>${c.city||'—'}</td>
+              <td style="font-weight:700;color:#1a1f36;">$${Number(c.amount||0).toLocaleString()}</td>
+            </tr>`).join('')}</tbody></table>`
+          : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin contratos para estos filtros.</div>'}
+        </div>
+      </div>
+      ${schools.length ? `<div class="card" style="margin-bottom:14px;">
+        <div class="card-title">🏫 School Districts — ${s.name} <span class="sub">${schools.length} principales</span></div>
+        <table><thead><tr><th>DISTRITO</th><th>CIUDAD</th><th>ESTUDIANTES</th><th>PORTAL</th></tr></thead>
+        <tbody>${schools.map(d=>`<tr>
+          <td style="color:#1a1f36;font-weight:600;">${d.name}</td><td>${d.city}</td>
+          <td><span class="badge bb">${Number(d.students).toLocaleString()}</span></td>
+          <td><a href="${d.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
+        </tr>`).join('')}</tbody></table>
+      </div>` : ''}
+      ${univs.length ? `<div class="card" style="margin-bottom:14px;">
+        <div class="card-title">🎓 Colleges & Universities — ${s.name} <span class="sub">${univs.length} instituciones</span></div>
+        <table><thead><tr><th>INSTITUCIÓN</th><th>CIUDAD</th><th>TIPO</th><th>PORTAL</th></tr></thead>
+        <tbody>${univs.map(u=>`<tr>
+          <td style="color:#1a1f36;font-weight:600;">${u.name}</td><td>${u.city}</td>
+          <td><span class="badge ${u.type==='Public'?'bb':'by'}">${u.type==='Public'?'🏛️ Pública':'🏫 Privada'}</span></td>
+          <td><a href="${u.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
+        </tr>`).join('')}</tbody></table>
+      </div>` : ''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Opps en ${s.code}</button>
+        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🏆 Competidores en ${s.code}</button>
+        <a href="${s.procurement}" target="_blank" style="background:#f1f5f9;color:#1a1f36;border:1px solid #e2e6f0;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;text-decoration:none;">🔗 Portal Oficial ${s.code}</a>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`;
+  }
+}
+
+async function loadSchools() {
+  const state = document.getElementById('school-state').value;
+  const naics = document.getElementById('school-naics').value;
+  const el    = document.getElementById('schools-container');
+  setLoading('schools-container', `Cargando school districts de ${state}...`);
+  try {
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const schools = data.schoolDistricts || [];
+    if (!schools.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de school districts para ${state}.</div>`; return; }
+    el.innerHTML = `
+      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+        ${schools.map(d=>`
+          <div style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;"
+               onmouseover="this.style.borderColor='#152978'" onmouseout="this.style.borderColor='#e2e6f0'">
+            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🏫 ${d.name}</div>
+            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${d.city} · ${state}</div>
+            <div style="margin-bottom:10px;"><span class="badge bb">👥 ${Number(d.students).toLocaleString()} estudiantes</span></div>
+            <div style="display:flex;gap:6px;">
+              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) { el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
+}
+
+async function loadColleges() {
+  const state = document.getElementById('college-state').value;
+  const naics = document.getElementById('college-naics').value;
+  const el    = document.getElementById('colleges-container');
+  setLoading('colleges-container', `Cargando universidades de ${state}...`);
+  try {
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const univs = data.universities || [];
+    if (!univs.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de universidades para ${state}.</div>`; return; }
+    el.innerHTML = `
+      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+        ${univs.map(u=>`
+          <div style="background:#fff;border:1px solid #e2e6f0;border-top:3px solid ${u.type==='Public'?'#152978':'#E42D2C'};border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🎓 ${u.name}</div>
+            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${u.city} · ${state}</div>
+            <div style="margin-bottom:10px;"><span class="badge ${u.type==='Public'?'bb':'by'}">${u.type==='Public'?'🏛️ Pública':'🏫 Privada'}</span></div>
+            <div style="display:flex;gap:6px;">
+              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) { el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
+}
+
+function searchOppsInState(state, naics) {
+  document.getElementById('opp-state').value = state;
+  document.getElementById('opp-naics').value = naics;
+  document.querySelector('[onclick*="\'opps\'"]').click();
+  setTimeout(() => fetchOpps(), 300);
+}
+
+function searchCompetitorsInState(state, naics) {
+  document.getElementById('comp-state').value = state;
+  document.getElementById('comp-naics').value = naics;
+  document.querySelector('[onclick*="\'compete\'"]').click();
+  setTimeout(() => fetchCompetitors(), 300);
+}
+
+// ── ALLIANCE APPLICATION ─────────────────────────────────
+// Live preview when PO or cost changes
+['alliance-po','alliance-cost'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateAlliancePreview);
+});
+
+function updateAlliancePreview() {
+  const po   = parseFloat(document.getElementById('alliance-po')?.value)   || 0;
+  const cost = parseFloat(document.getElementById('alliance-cost')?.value) || 0;
+  const prev = document.getElementById('alliance-preview');
+  const cont = document.getElementById('alliance-preview-content');
+  if (!po || !cost || !prev || !cont) { if (prev) prev.style.display = 'none'; return; }
+
+  const apoyo   = cost * 0.9;
+  const tuParte = cost * 0.1;
+  const ganancia = po - cost;
+  const fee     = ganancia * 0.2;
+  const neta    = ganancia - fee;
+
+  prev.style.display = 'block';
+  cont.innerHTML = `
+    💰 Valor PO: <strong>$${po.toLocaleString()}</strong><br>
+    🏦 GovBidder aporta (90%): <strong style="color:var(--blue)">$${apoyo.toLocaleString()}</strong><br>
+    👤 Tu aporte (10%): <strong>$${tuParte.toLocaleString()}</strong><br>
+    📈 Ganancia bruta: <strong>$${ganancia.toLocaleString()}</strong><br>
+    🤝 Fee Alliance (20%): $${fee.toLocaleString()}<br>
+    <strong style="color:var(--green)">✅ Tu utilidad neta: $${neta.toLocaleString()}</strong>`;
+}
+
+async function submitAllianceApp() {
+  const name    = (document.getElementById('alliance-name')?.value    || '').trim();
+  const company = (document.getElementById('alliance-company')?.value || '').trim();
+  const po      = (document.getElementById('alliance-po')?.value      || '').trim();
+  const cost    = (document.getElementById('alliance-cost')?.value    || '').trim();
+  const status  = (document.getElementById('alliance-status')?.value  || '').trim();
+  const desc    = (document.getElementById('alliance-desc')?.value    || '').trim();
+
+  const errEl  = document.getElementById('alliance-error');
+  const succEl = document.getElementById('alliance-success');
+  const btn    = document.getElementById('alliance-submit-btn');
+  const btnTxt = document.getElementById('alliance-submit-txt');
+
+  if (errEl)  errEl.style.display  = 'none';
+  if (succEl) succEl.style.display = 'none';
+
+  if (!name || !company || !po || !cost || !status || !desc) {
+    if (errEl) { errEl.textContent = 'Por favor completa todos los campos requeridos.'; errEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn)    btn.disabled    = true;
+  if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
+
+  const poNum   = parseFloat(po)   || 0;
+  const costNum = parseFloat(cost) || 0;
+  const apoyo   = (costNum * 0.9).toLocaleString();
+  const neta    = ((poNum - costNum) * 0.8).toLocaleString();
+  const memberEmail = currentMember?.email || 'No disponible';
+  const memberPlan  = currentMember?.plan  || 'No disponible';
+
+  try {
+    const res  = await fetch('/api/auth?action=alliance', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, company, po, cost, status, desc, memberEmail, memberPlan, apoyo, neta })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (succEl) succEl.style.display = 'block';
+      if (btn)    btn.style.display    = 'none';
+      // Clear form
+      ['alliance-name','alliance-company','alliance-po','alliance-cost','alliance-desc'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const st = document.getElementById('alliance-status');
+      if (st) st.value = '';
+      const prev = document.getElementById('alliance-preview');
+      if (prev) prev.style.display = 'none';
+    } else {
+      if (errEl) { errEl.textContent = data.error || 'Error enviando solicitud.'; errEl.style.display = 'block'; }
+      if (btn)    btn.disabled    = false;
+      if (btnTxt) btnTxt.innerHTML = '🤝 Enviar Solicitud Alliance →';
+    }
+  } catch(e) {
+    if (errEl) { errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block'; }
+    if (btn)    btn.disabled    = false;
+    if (btnTxt) btnTxt.innerHTML = '🤝 Enviar Solicitud Alliance →';
+  }
+}
+
+// ── MISC ─────────────────────────────────────────────────
+function setLoading(id, txt='Cargando...') {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">${txt}</div></div>`;
+}
+
+function calcAlliance() {
+  const po     = parseFloat(document.getElementById('c-po').value)     || 0;
+  const cost   = parseFloat(document.getElementById('c-cost').value)   || 0;
+  const margin = parseFloat(document.getElementById('c-margin').value) || 0;
+  if (!po || !cost) { alert('Ingresa PO y costo'); return; }
+  const apoyo = cost * .9, gan = po * (margin/100), fee = gan * .2, neta = gan - fee;
+  const r = document.getElementById('c-result');
+  r.style.display = 'block';
+  r.innerHTML = `<strong>Alliance — Plan Legacy</strong><br>
+    ✅ GovBidder presta (90%): <strong>$${apoyo.toLocaleString()}</strong><br>
+    📈 Tu ganancia (${margin}%): $${gan.toLocaleString()}<br>
+    🤝 Fee (20%): $${fee.toLocaleString()}<br>
+    <strong style="color:var(--green)">💰 Utilidad neta: $${neta.toLocaleString()}</strong>`;
+}
+
+// ── TASK WORK DATA ───────────────────────────────────────
+// Cada entrada está asociada a un member id
+// Para agregar trabajos: copia el bloque y cambia el memberId
+const TASK_WORK_DB = [
+  {
+    id: "tw-001",
+    memberId: "001",  // Santo González
+    title: "Limpieza Diaria — Edificio Federal Newark",
+    client: "GSA — General Services Administration",
+    status: "Activo",
+    value: 48000,
+    startDate: "2025-01-15",
+    endDate: "2025-12-31",
+    description: "Servicios de limpieza y mantenimiento diario para edificio federal de 4 pisos en Newark, NJ. Incluye áreas comunes, baños y oficinas.",
+    documents: [
+      { name: "Contrato Firmado", url: "https://drive.google.com/file/d/example1" },
+      { name: "Scope of Work", url: "https://drive.google.com/file/d/example2" },
+      { name: "Certificado de Seguro", url: "https://drive.google.com/file/d/example3" }
+    ]
+  },
+  {
+    id: "tw-002",
+    memberId: "001",  // Santo González
+    title: "Custodial Services — Trenton State Office",
+    client: "NJ Dept. of Treasury",
+    status: "Pendiente",
+    value: 22500,
+    startDate: "2025-04-01",
+    endDate: "2025-09-30",
+    description: "Servicios de limpieza para oficinas estatales en Trenton. Inicio pendiente de aprobación final de documentos.",
+    documents: [
+      { name: "Propuesta Técnica", url: "https://drive.google.com/file/d/example4" }
+    ]
+  },
+  {
+    id: "tw-003",
+    memberId: "001",  // Santo González
+    title: "Janitorial — Edison Municipal Building",
+    client: "Township of Edison",
+    status: "Completado",
+    value: 18750,
+    startDate: "2024-07-01",
+    endDate: "2024-12-31",
+    description: "Servicio de limpieza completado exitosamente. Contrato renovado para 2025.",
+    documents: [
+      { name: "Contrato Final", url: "https://drive.google.com/file/d/example5" },
+      { name: "Factura Final", url: "https://drive.google.com/file/d/example6" }
+    ]
+  },
+  // Demo Member (id: 002)
+  {
+    id: "tw-004",
+    memberId: "002",
+    title: "IT Support Services — NYC Agency",
+    client: "NYC Department of Education",
+    status: "Activo",
+    value: 95000,
+    startDate: "2025-02-01",
+    endDate: "2025-12-31",
+    description: "Soporte técnico y mantenimiento de infraestructura IT para agencia municipal de NYC.",
+    documents: [
+      { name: "Contrato Principal", url: "https://drive.google.com/file/d/example7" }
+    ]
+  },
+  // Test Elevate (id: 003)
+  {
+    id: "tw-005",
+    memberId: "003",
+    title: "Renovation — Broward County Facility",
+    client: "Broward County Government",
+    status: "Activo",
+    value: 175000,
+    startDate: "2025-03-01",
+    endDate: "2025-08-31",
+    description: "Renovación de instalaciones del condado incluyendo remodelación de áreas administrativas.",
+    documents: [
+      { name: "Planos Aprobados", url: "https://drive.google.com/file/d/example8" },
+      { name: "Permiso de Construcción", url: "https://drive.google.com/file/d/example9" }
+    ]
+  }
+];
+
+function loadTaskWork() {
+  if (!currentMember) return;
+
+  // Filter jobs for this member
+  const jobs = TASK_WORK_DB.filter(j => j.memberId === currentMember.id);
+
+  // Update member info in header
+  const twName = document.getElementById('tw-member-name');
+  const twPlan = document.getElementById('tw-plan-badge');
+  if (twName) twName.textContent = currentMember.name || '—';
+  if (twPlan) {
+    const planColors = { Legacy:'rgba(200,168,75,.25);color:#fde68a;border:1px solid rgba(200,168,75,.3)', Prime:'rgba(21,41,120,.3);color:#93c5fd;border:1px solid rgba(93,130,253,.3)', Elevate:'rgba(228,45,44,.2);color:#fca5a5;border:1px solid rgba(228,45,44,.3)' };
+    twPlan.style.cssText = `display:inline-block;background:${planColors[currentMember.plan]||planColors.Elevate};font-size:8.5px;font-weight:800;padding:2px 10px;border-radius:10px;`;
+    twPlan.textContent = '⭐ ' + (currentMember.plan||'').toUpperCase();
+  }
+
+  // KPIs
+  const active    = jobs.filter(j => j.status === 'Activo').length;
+  const done      = jobs.filter(j => j.status === 'Completado').length;
+  const totalVal  = jobs.reduce((s,j) => s + (j.value||0), 0);
+  const twTotal   = document.getElementById('tw-total');
+  const twActive  = document.getElementById('tw-active');
+  const twDone    = document.getElementById('tw-done');
+  const twValue   = document.getElementById('tw-value');
+  if (twTotal)  twTotal.textContent  = jobs.length;
+  if (twActive) twActive.textContent = active;
+  if (twDone)   twDone.textContent   = done;
+  if (twValue)  twValue.textContent  = '$' + totalVal.toLocaleString();
+
+  const el = document.getElementById('tw-jobs-container');
+  if (!el) return;
+
+  if (!jobs.length) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:var(--muted);">
+        <div style="font-size:48px;margin-bottom:12px;">💼</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">No tienes trabajos asignados aún</div>
+        <div style="font-size:11.5px;">GovBidder Club te asignará trabajos cuando estén disponibles.<br>Contacta a <a href="mailto:club@govbidder.net" style="color:var(--accent);">club@govbidder.net</a> para más información.</div>
+      </div>`;
+    return;
+  }
+
+  const STATUS_STYLE = {
+    'Activo':     { bg:'#dcfce7', color:'#15803d', dot:'#16a34a' },
+    'Pendiente':  { bg:'#fef3c7', color:'#92400e', dot:'#d97706' },
+    'Completado': { bg:'#f1f5f9', color:'#475569', dot:'#94a3b8' }
+  };
+
+  el.innerHTML = jobs.map(j => {
+    const st  = STATUS_STYLE[j.status] || STATUS_STYLE['Pendiente'];
+    const sd  = new Date(j.startDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const ed  = new Date(j.endDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const now = Date.now();
+    const end = new Date(j.endDate).getTime();
+    const daysLeft = Math.ceil((end - now) / 864e5);
+    const isUrgent = j.status === 'Activo' && daysLeft <= 30 && daysLeft > 0;
+
+    const docs = (j.documents||[]).map(d => `
+      <a href="${d.url}" target="_blank"
+        style="display:inline-flex;align-items:center;gap:5px;background:#f8f9fc;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;color:var(--text);text-decoration:none;transition:.15s;"
+        onmouseover="this.style.borderColor='#E42D2C';this.style.color='#E42D2C'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+        📄 ${d.name}
+      </a>`).join('');
+
+    return `
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;transition:.2s;"
+           onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,.05)'">
+
+        <!-- Card header -->
+        <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f4f6fb;">
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#152978,#1a3090);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💼</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;">${j.title}</div>
+            <div style="font-size:11px;color:var(--muted);">🏛️ ${j.client}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:18px;font-weight:900;color:var(--text);">$${j.value.toLocaleString()}</div>
+            <div style="font-size:9.5px;color:var(--muted);margin-top:1px;">valor del contrato</div>
+          </div>
+        </div>
+
+        <!-- Card body -->
+        <div style="padding:16px 20px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+            <!-- Status badge -->
+            <span style="display:inline-flex;align-items:center;gap:5px;background:${st.bg};color:${st.color};font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:${st.dot};display:inline-block;"></span>
+              ${j.status}
+            </span>
+            <!-- Dates -->
+            <span style="font-size:10px;color:var(--muted);">📅 ${sd} → ${ed}</span>
+            <!-- Days left -->
+            ${j.status === 'Activo' ? `<span style="font-size:10px;font-weight:700;color:${isUrgent?'var(--accent)':'var(--muted)'};">${isUrgent?'⚠️':''} ${daysLeft > 0 ? daysLeft+' días restantes' : 'Vencido'}</span>` : ''}
+          </div>
+
+          <!-- Description -->
+          <div style="font-size:11px;color:#6b7a99;line-height:1.7;margin-bottom:14px;background:#f8f9fc;border-radius:8px;padding:10px 14px;">
+            ${j.description}
+          </div>
+
+          <!-- Documents -->
+          ${docs ? `
+          <div>
+            <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">📎 DOCUMENTOS</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">${docs}</div>
+          </div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── INIT ─────────────────────────────────────────────────
+window.onload = () => {
+  checkSession();
+  setTimeout(() => loadAllStates(), 1000);
+};
+</script>
+</body>
+</html>
