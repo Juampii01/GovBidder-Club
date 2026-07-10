@@ -36,15 +36,18 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothi
 .logo-bidder{color:#E42D2C;font-size:16px;font-weight:900;}
 .logo-sub{color:rgba(255,255,255,.75);font-size:8px;letter-spacing:2px;font-weight:700;margin-top:2px;}
 .logo-tag{color:rgba(255,255,255,.2);font-size:8px;font-style:italic;margin-top:1px;}
-.nav-section{padding:18px 0 6px 22px;color:rgba(255,255,255,.4);font-size:8px;letter-spacing:2.2px;font-weight:800;}
-.nav-item{display:flex;align-items:center;gap:10px;margin:1px 10px;padding:9px 12px;border-radius:var(--r-sm);color:rgba(255,255,255,.7);font-size:11.5px;font-weight:600;cursor:pointer;transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease;}
-.nav-item:hover{background:rgba(255,255,255,.09);color:#fff;transform:translateX(1px);}
-.nav-item.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(228,45,44,.38);}
-.nav-item .icon{font-size:13px;width:17px;text-align:center;flex-shrink:0;}
+.nav-section{padding:20px 0 8px 22px;color:rgba(255,255,255,.35);font-size:8px;letter-spacing:2.4px;font-weight:800;}
+.nav-item{display:flex;align-items:center;gap:11px;margin:2px 10px;padding:9px 12px;border-radius:10px;color:rgba(255,255,255,.62);font-size:12px;font-weight:600;cursor:pointer;transition:background .18s ease,color .18s ease;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,.95);color:var(--accent);font-weight:700;}
+.nav-item .icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nav-item .icon svg{width:16px;height:16px;stroke:currentColor;}
 .nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:9px;padding:1.5px 6.5px;border-radius:8px;font-weight:700;box-shadow:0 2px 6px rgba(228,45,44,.4);}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;display:none;}
-#topbar{background:rgba(255,255,255,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:8px;flex-shrink:0;box-shadow:var(--sh-xs);position:relative;z-index:4;}
-.page-title{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;letter-spacing:-.02em;}
+#topbar{background:#fff;border-bottom:1px solid var(--border);padding:20px 26px;display:flex;align-items:center;gap:16px;flex-shrink:0;flex-wrap:wrap;position:relative;z-index:4;}
+.page-title-wrap{margin-right:auto;min-width:0;}
+.page-title{font-size:22px;font-weight:800;color:var(--text);white-space:nowrap;letter-spacing:-.03em;line-height:1.25;}
+.page-subtitle{font-size:12.5px;color:var(--muted);margin-top:2px;}
 .gf-select{border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 9px;font-size:10.5px;color:var(--text);background:#f8f9fc;cursor:pointer;outline:none;transition:border-color .15s ease,background .15s ease;font-family:inherit;}
 .gf-select:hover{border-color:#c7ceE0;background:#fff;}
 .crm-btn{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:6px 12px;border-radius:var(--r-sm);font-size:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(228,45,44,.28);transition:transform .15s ease,box-shadow .15s ease;}
@@ -56,14 +59,20 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothi
 .page{display:none;}
 .page.active{display:block;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;}
-.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:15px 16px;position:relative;overflow:hidden;box-shadow:var(--sh-sm);transition:transform .2s ease,box-shadow .2s ease;}
-.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
-.kpi-card::before{content:'';position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(228,45,44,.07),transparent 70%);pointer-events:none;}
-.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));}
-.kpi-label{font-size:8.5px;color:var(--muted);font-weight:700;letter-spacing:1.3px;margin-bottom:5px;}
-.kpi-value{font-size:23px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
-.kpi-delta{font-size:9.5px;margin-top:4px;font-weight:600;}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px;}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:17px 18px;position:relative;overflow:hidden;box-shadow:var(--sh-xs);transition:transform .2s ease,box-shadow .2s ease;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--sh-sm);}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px;}
+.kpi-label{font-size:8.5px;color:var(--muted);font-weight:700;letter-spacing:1.3px;}
+.kpi-icon{width:28px;height:28px;border-radius:9px;background:#f4f6fb;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kpi-icon svg{width:15px;height:15px;stroke:currentColor;}
+.kpi-value{font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
+.kpi-delta{font-size:9.5px;margin-top:5px;font-weight:600;color:var(--muted);}
+.kpi-card.kpi-accent{background:linear-gradient(155deg,var(--blue),var(--blue2));border-color:transparent;}
+.kpi-card.kpi-accent .kpi-label{color:rgba(255,255,255,.55);}
+.kpi-card.kpi-accent .kpi-value{color:#fff;}
+.kpi-card.kpi-accent .kpi-icon{background:rgba(255,255,255,.14);color:#fff;}
+.kpi-card.kpi-accent .kpi-delta{color:rgba(255,255,255,.7);}
 .delta-up{color:var(--green);}
 .card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--sh-sm);}
 .card-title{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
@@ -111,8 +120,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothi
 .pipe-card:hover{border-color:var(--accent);box-shadow:var(--sh-sm);transform:translateY(-1px);}
 .pipe-card-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px;}
 .pipe-card-entity{font-size:9px;color:var(--muted);}
-.ai-panel{background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:var(--r-md);padding:15px;margin-bottom:16px;box-shadow:var(--sh-xs);}
-.ai-badge{background:linear-gradient(135deg,var(--accent),#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2.5px 9px;border-radius:6px;letter-spacing:.3px;}
+.ai-panel{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:18px;box-shadow:var(--sh-xs);}
+.ai-badge{color:var(--text);font-size:12px;font-weight:800;letter-spacing:-.01em;}
+.icon-chip{width:26px;height:26px;border-radius:8px;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.icon-chip svg{width:14px;height:14px;stroke:currentColor;}
 .ai-response{font-size:11px;color:#374151;line-height:1.7;white-space:pre-wrap;margin-top:8px;}
 .ai-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;display:inline-block;margin:0 2px;}
 .ai-dot:nth-child(2){animation-delay:.2s;}.ai-dot:nth-child(3){animation-delay:.4s;}
@@ -436,26 +447,26 @@ tr:hover td{background:#f8f9fc;}
     <div class="logo-tag" style="text-align:center;">The Bid That Wins</div>
   </div>
   <div class="nav-section">MAIN</div>
-  <div class="nav-item active" onclick="nav(this,'home')"><span class="icon">🏠</span>Home</div>
-  <div class="nav-item" onclick="nav(this,'market')"><span class="icon">📊</span>Market Intelligence</div>
-  <div class="nav-item" onclick="nav(this,'tools')"><span class="icon">🧰</span>Herramientas</div>
+  <div class="nav-item active" onclick="nav(this,'home')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</div>
+  <div class="nav-item" onclick="nav(this,'market')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg></span>Market Intelligence</div>
+  <div class="nav-item" onclick="nav(this,'tools')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M4 12h16"/><path d="M4 18h10"/><circle cx="17" cy="6" r="2"/><circle cx="9" cy="18" r="2"/></svg></span>Herramientas</div>
   <div class="nav-section">FIND</div>
-  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon">🔍</span>Opportunities<span class="nav-badge" id="nb-opps">—</span></div>
-  <div class="nav-item" onclick="nav(this,'grants')"><span class="icon">💰</span>Grants Hub<span class="nav-badge" id="nb-grants">—</span></div>
-  <div class="nav-item" onclick="nav(this,'codes')"><span class="icon">🔢</span>Code Intelligence</div>
-  <div class="nav-item" onclick="nav(this,'geo')"><span class="icon">🗺️</span>Buyer Geography</div>
+  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-5-5"/></svg></span>Opportunities<span class="nav-badge" id="nb-opps">—</span></div>
+  <div class="nav-item" onclick="nav(this,'grants')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.7c0-1.1 1.1-2 2.5-2s2.5.8 2.5 1.8-1.1 1.6-2.5 1.9-2.5 1-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-1.9"/></svg></span>Grants Hub<span class="nav-badge" id="nb-grants">—</span></div>
+  <div class="nav-item" onclick="nav(this,'codes')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3 7 21"/><path d="M17 3l-2.5 18"/><path d="M4 9h16"/><path d="M3 15h16"/></svg></span>Code Intelligence</div>
+  <div class="nav-item" onclick="nav(this,'geo')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5l6-2 6 2 6-2v16l-6 2-6-2-6 2z"/><path d="M10 3v16"/><path d="M16 5v16"/></svg></span>Buyer Geography</div>
   <div class="nav-section">ANALYZE</div>
-  <div class="nav-item" onclick="nav(this,'compete')"><span class="icon">🏆</span>Competitive Intel</div>
+  <div class="nav-item" onclick="nav(this,'compete')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 7.5"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 7.5"/><path d="M12 12v4"/><path d="M8.5 20h7"/><path d="M9.5 20c0-1.8 1-2.8 2.5-2.8s2.5 1 2.5 2.8"/></svg></span>Competitive Intel</div>
   <div class="nav-section">OPERATE</div>
   <!-- GovBidder Club Member title -->
   <div style="margin:6px 10px 10px;background:linear-gradient(135deg,rgba(228,45,44,.18),rgba(21,41,120,.22));border:1px solid rgba(200,168,75,.3);border-radius:11px;padding:10px 12px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.15);">
     <div style="font-size:8px;color:rgba(255,255,255,.45);letter-spacing:1.8px;font-weight:800;">GOVBIDDER CLUB</div>
     <div style="font-size:10px;color:#fde68a;font-weight:800;margin-top:3px;">⭐ Member Portal</div>
   </div>
-  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon">📋</span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon">🎯</span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon">🤝</span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon">💼</span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M8 11h8M8 15h5"/></svg></span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6"/><path d="M5 10v9M10 10v9M14 10v9M19 10v9"/><path d="M3 19h18"/></svg></span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -465,7 +476,10 @@ tr:hover td{background:#f8f9fc;}
 
   <!-- TOPBAR -->
   <div id="topbar">
-    <div class="page-title" id="ptitle">Home — Command Center</div>
+    <div class="page-title-wrap">
+      <div class="page-title" id="ptitle">Command Center</div>
+      <div class="page-subtitle" id="psubtitle">Panorama de tu actividad de contratación pública</div>
+    </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
 
       <!-- Global State filter -->
@@ -579,17 +593,35 @@ tr:hover td{background:#f8f9fc;}
     <!-- HOME -->
     <div class="page active" id="page-home">
       <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-label">LIVE OPPS</div><div class="kpi-value" id="kpi-opps">—</div><div class="kpi-delta delta-up" id="kpi-opps-d">SAM.gov</div></div>
-        <div class="kpi-card"><div class="kpi-label">GRANTS</div><div class="kpi-value" id="kpi-grants">—</div><div class="kpi-delta delta-up" id="kpi-grants-d">Grants.gov</div></div>
-        <div class="kpi-card"><div class="kpi-label">NAICS</div><div class="kpi-value" style="font-size:16px;" id="kpi-naics">561720</div><div class="kpi-delta" style="color:var(--muted)" id="kpi-naics-desc">Janitorial</div></div>
-        <div class="kpi-card"><div class="kpi-label">ESTADO</div><div class="kpi-value" style="font-size:16px;" id="kpi-state">NJ</div><div class="kpi-delta" style="color:var(--muted)" id="kpi-state-desc">New Jersey</div></div>
-        <div class="kpi-card"><div class="kpi-label">BIDS ACTIVOS</div><div class="kpi-value">3</div><div class="kpi-delta" style="color:var(--muted)">en pipeline</div></div>
-        <div class="kpi-card"><div class="kpi-label">WIN RATE</div><div class="kpi-value">36%</div><div class="kpi-delta delta-up">↑ 4 ganados</div></div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-label">LIVE OPPS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span></div>
+          <div class="kpi-value" id="kpi-opps">—</div><div class="kpi-delta delta-up" id="kpi-opps-d">SAM.gov</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-label">GRANTS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.7c0-1.1 1.1-2 2.5-2s2.5.8 2.5 1.8-1.1 1.6-2.5 1.9-2.5 1-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-1.9"/></svg></span></div>
+          <div class="kpi-value" id="kpi-grants">—</div><div class="kpi-delta delta-up" id="kpi-grants-d">Grants.gov</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-label">NAICS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3 7 21"/><path d="M17 3l-2.5 18"/><path d="M4 9h16"/><path d="M3 15h16"/></svg></span></div>
+          <div class="kpi-value" style="font-size:16px;" id="kpi-naics">561720</div><div class="kpi-delta" id="kpi-naics-desc">Janitorial</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-label">ESTADO</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span></div>
+          <div class="kpi-value" style="font-size:16px;" id="kpi-state">NJ</div><div class="kpi-delta" id="kpi-state-desc">New Jersey</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-label">BIDS ACTIVOS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span></div>
+          <div class="kpi-value">3</div><div class="kpi-delta">en pipeline</div>
+        </div>
+        <div class="kpi-card kpi-accent">
+          <div class="kpi-top"><div class="kpi-label">WIN RATE</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 7.5"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 7.5"/><path d="M12 12v4"/><path d="M8.5 20h7"/><path d="M9.5 20c0-1.8 1-2.8 2.5-2.8s2.5 1 2.5 2.8"/></svg></span></div>
+          <div class="kpi-value">36%</div><div class="kpi-delta">↑ 4 ganados</div>
+        </div>
       </div>
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span>🤖</span><span class="ai-badge">AI DAILY BRIEF</span>
-          <button onclick="runAI('home')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Generar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI DAILY BRIEF</span>
+          <button onclick="runAI('home')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Generar</button>
         </div>
         <div class="ai-response" id="ai-home">Haz clic en "Generar" para tu brief diario con datos live.</div>
       </div>
@@ -609,8 +641,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-opps">
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span>🤖</span><span class="ai-badge">AI ANALYST</span>
-          <button onclick="runAI('opps')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI ANALYST</span>
+          <button onclick="runAI('opps')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Analizar</button>
         </div>
         <div class="ai-response" id="ai-opps">Busca oportunidades y luego haz clic en Analizar.</div>
       </div>
@@ -635,8 +667,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-grants">
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span>🤖</span><span class="ai-badge">AI GRANTS ADVISOR</span>
-          <button onclick="runAI('grants')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI GRANTS ADVISOR</span>
+          <button onclick="runAI('grants')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Analizar</button>
         </div>
         <div class="ai-response" id="ai-grants">Busca grants y haz clic en Analizar.</div>
       </div>
@@ -655,8 +687,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-market">
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span>🤖</span><span class="ai-badge">AI MARKET BRIEF</span>
-          <button onclick="runAI('market')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI MARKET BRIEF</span>
+          <button onclick="runAI('market')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Analizar</button>
         </div>
         <div class="ai-response" id="ai-market">Haz clic en Cargar para ver datos live de USASpending.gov</div>
       </div>
@@ -1384,11 +1416,19 @@ let liveOpps = [], liveGrants = [], currentMember = null, allStates = [];
 
 // ── NAVIGATION ────────────────────────────────────────────
 const TITLES = {
-  home:'Home — Command Center', tools:'Herramientas GovBidder', market:'Market Intelligence',
+  home:'Command Center', tools:'Herramientas GovBidder', market:'Market Intelligence',
   opps:'Contract Opportunities', grants:'Grant Intelligence',
   codes:'Code Intelligence', geo:'Buyer Geography',
   compete:'Competitive Intel', pipeline:'Bid Pipeline',
   support:'Support Desk', alliance:'Funding Access', taskwork:'Task Work — Mis Trabajos'
+};
+const SUBTITLES = {
+  home:'Panorama de tu actividad de contratación pública', tools:'Accesos rápidos y utilidades GovBidder',
+  market:'Datos históricos de contratación por NAICS y estado', opps:'Licitaciones activas en SAM.gov',
+  grants:'Subvenciones federales activas en Grants.gov', codes:'NAICS, PSC y NIGP explicados y cruzados',
+  geo:'Compradores por estado, distrito escolar y condado', compete:'Quién está ganando en tu mercado',
+  pipeline:'Seguimiento de tus licitaciones en curso', support:'Soporte dedicado para miembros',
+  alliance:'Financiamiento de Purchase Orders para miembros', taskwork:'Trabajos asignados por GovBidder Club'
 };
 
 function nav(el, page) {
@@ -1398,6 +1438,8 @@ function nav(el, page) {
   const pageEl = document.getElementById('page-' + page);
   if (pageEl) pageEl.classList.add('active');
   document.getElementById('ptitle').textContent = TITLES[page] || page;
+  const subEl = document.getElementById('psubtitle');
+  if (subEl) subEl.textContent = SUBTITLES[page] || '';
 
   // Check role access
   if (!checkPageAccess(page)) {
@@ -2073,7 +2115,7 @@ async function searchCodes() {
             </div>
             <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <span>🤖</span>
+                <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span>
                 <span style="background:linear-gradient(135deg,#E42D2C,#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
                 <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:#E42D2C;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
               </div>
