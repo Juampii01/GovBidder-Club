@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>GovBidder Command Center</title>
 <link rel="icon" type="image/png" href="/logo-square.png"/>
+<script>(function(){try{var t=localStorage.getItem('gb_theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -15,7 +16,8 @@
   --ink:#0C1425;--muted:#69707D;--faint:#9AA1AD;
   --line:#E9EBEF;--line-soft:#F1F2F5;
   --navy:#14264F;--red:#C42A3D;--gold:#9C7A2E;--green:#177B52;
-  --red-soft:rgba(196,42,61,.07);--gold-soft:rgba(156,122,46,.10);
+  --red-soft:rgba(196,42,61,.07);--gold-soft:rgba(156,122,46,.10);--green-soft:rgba(23,123,82,.08);
+  --navy-2:#14264F;
   /* legacy aliases used across secondary pages — mapped to the new palette */
   --sidebar:#FFFFFF;--sidebar2:#FFFFFF;
   --accent:var(--red);--accent2:#9e2231;--blue:var(--navy);--blue2:#0d1c3d;
@@ -27,6 +29,31 @@
   --sh-md:0 10px 24px rgba(12,20,37,.06),0 2px 6px rgba(12,20,37,.03);
   --sh-lg:0 24px 56px rgba(12,20,37,.12),0 6px 14px rgba(12,20,37,.05);
 }
+:root[data-theme="dark"]{
+  --bg:#0B1428;--card:#101B33;
+  --ink:#EEF1F6;--muted:#97A2B8;--faint:#626D85;
+  --line:rgba(255,255,255,.09);--line-soft:rgba(255,255,255,.045);
+  --navy:#14264F;--navy-2:#25396C;--red:#E24C5E;--gold:#D6AD52;--green:#22A876;
+  --red-soft:rgba(226,76,94,.16);--gold-soft:rgba(214,173,82,.14);--green-soft:rgba(34,168,118,.14);
+  --accent2:#a8384a;--blue2:#1c2e57;--yellow:#d6ad52;
+  --sh-card:0 1px 0 rgba(255,255,255,.04),0 1px 3px rgba(0,0,0,.4);
+  --sh-xs:0 1px 0 rgba(255,255,255,.03),0 1px 2px rgba(0,0,0,.35);
+  --sh-sm:0 1px 0 rgba(255,255,255,.04),0 2px 8px rgba(0,0,0,.45);
+  --sh-md:0 1px 0 rgba(255,255,255,.05),0 10px 24px rgba(0,0,0,.5);
+  --sh-lg:0 1px 0 rgba(255,255,255,.06),0 24px 56px rgba(0,0,0,.55);
+}
+[data-theme="dark"] #sidebar{background:var(--navy);border-right-color:rgba(255,255,255,.08);}
+[data-theme="dark"] .logo-gov{color:var(--ink);}
+[data-theme="dark"] #topbar{background:rgba(11,20,40,.82);}
+[data-theme="dark"] .bg{background:rgba(34,168,118,.16);color:#6fdba0;}
+[data-theme="dark"] .bb{background:rgba(59,130,246,.18);color:#8ec0f8;}
+[data-theme="dark"] .by{background:rgba(214,173,82,.18);color:#e6c47c;}
+[data-theme="dark"] .br{background:rgba(226,76,94,.18);color:#f19aa5;}
+[data-theme="dark"] .bm{background:rgba(255,255,255,.07);color:var(--muted);}
+#sidebar::-webkit-scrollbar-thumb{background:#c3cadd;}
+#sidebar::-webkit-scrollbar-thumb:hover{background:#9aa5c4;}
+[data-theme="dark"] #sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);}
+[data-theme="dark"] #sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3);}
 html{scroll-behavior:smooth;}
 body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
   background:var(--bg);
@@ -74,6 +101,9 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .member-badge svg{width:13px;height:13px;stroke:currentColor;fill:var(--gold-soft);}
 .top-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;flex-shrink:0;transition:transform .15s ease;}
 .top-avatar:hover{transform:scale(1.06);}
+.theme-toggle-btn{width:34px;height:34px;border-radius:10px;background:var(--line-soft);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s ease,color .15s ease;}
+.theme-toggle-btn:hover{background:var(--red-soft);color:var(--red);}
+.theme-toggle-btn svg{width:16px;height:16px;stroke:currentColor;}
 #content{flex:1;overflow-y:auto;padding:26px 28px;}
 #content>.page{max-width:1500px;margin:0 auto;}
 .page{display:none;}
@@ -96,7 +126,7 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .kpi-card.kpi-accent .kpi-icon{color:rgba(255,255,255,.7);}
 .kpi-card.kpi-accent .kpi-delta{color:#5fd39c;}
 .delta-up{color:var(--green);}
-.card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--sh-sm);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--sh-sm);}
 .card-title{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .card-title .sub{color:var(--muted);font-weight:500;font-size:10px;margin-left:auto;}
 .grid-2{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:18px;}
@@ -105,12 +135,12 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .spinner{width:28px;height:28px;border:3px solid #f0f2f8;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-text{font-size:11px;}
-.opp-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--sh-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:pointer;margin-bottom:10px;}
+.opp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--sh-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:pointer;margin-bottom:10px;}
 .opp-card:hover{border-color:rgba(228,45,44,.32);box-shadow:var(--sh-md);transform:translateY(-2px);}
 .opp-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
 .opp-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
 .opp-meta span{font-size:10px;color:var(--muted);}
-.grant-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:15px;box-shadow:var(--sh-sm);margin-bottom:10px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
+.grant-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:15px;box-shadow:var(--sh-sm);margin-bottom:10px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
 .grant-card:hover{border-color:rgba(21,41,120,.28);box-shadow:var(--sh-md);transform:translateY(-2px);}
 .grant-row{display:flex;align-items:flex-start;gap:10px;padding:13px 8px;border-radius:10px;transition:background .15s ease;}
 .grant-row:hover{background:var(--line-soft);}
@@ -136,7 +166,7 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .btn-dark svg{width:14px;height:14px;stroke:currentColor;transition:transform .5s ease;}
 .btn-dark.spinning svg{animation:spin .9s linear infinite;}
 .search-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
-.search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:12px;outline:none;color:var(--text);background:#fff;font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
+.search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:12px;outline:none;color:var(--text);background:var(--card);font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
 .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,45,44,.1);}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
 .bar-label{font-size:10px;color:var(--muted);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -145,14 +175,14 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .bar-fill-blue{background:linear-gradient(90deg,var(--blue),#1e3090);}
 .bar-val{font-size:10px;font-weight:700;color:var(--text);width:56px;text-align:right;}
 .pipeline-board{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
-.pipe-col{background:#f8f9fc;border:1px solid var(--border);border-radius:var(--r-md);padding:12px;border-top:3px solid var(--muted);}
+.pipe-col{background:var(--line-soft);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;border-top:3px solid var(--muted);}
 .pipe-col:nth-child(1){border-top-color:#94a3b8;}
 .pipe-col:nth-child(2){border-top-color:#3b82f6;}
 .pipe-col:nth-child(3){border-top-color:#d97706;}
 .pipe-col:nth-child(4){border-top-color:#7c3aed;}
 .pipe-col:nth-child(5){border-top-color:#16a34a;}
 .pipe-col-title{font-size:8.5px;font-weight:800;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;}
-.pipe-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
+.pipe-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
 .pipe-card:hover{border-color:var(--accent);box-shadow:var(--sh-sm);transform:translateY(-1px);}
 .pipe-card-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px;}
 .pipe-card-entity{font-size:9px;color:var(--muted);}
@@ -175,7 +205,7 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .chip-mono{font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--line-soft);color:var(--ink);padding:1px 6px;border-radius:5px;font-size:11px;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,14,35,.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
-.modal{background:#fff;border-radius:var(--r-lg);padding:24px;max-width:580px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid rgba(255,255,255,.6);}
+.modal{background:var(--card);border-radius:var(--r-lg);padding:24px;max-width:580px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid rgba(255,255,255,.6);}
 .modal-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px;padding-right:24px;letter-spacing:-.02em;}
 .modal-field{margin-bottom:10px;}
 .modal-field label{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:3px;}
@@ -183,24 +213,22 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .modal-close{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);transition:color .15s ease;}
 .modal-close:hover{color:var(--accent);}
 table{width:100%;border-collapse:collapse;}
-th{font-size:8.5px;color:var(--muted);font-weight:800;letter-spacing:1.1px;padding:9px 10px;border-bottom:2px solid var(--border);text-align:left;background:#fafbfd;}
-td{font-size:10.5px;padding:9px 10px;border-bottom:1px solid #f0f2f8;color:var(--muted);}
-tr:hover td{background:#f8f9fc;}
+th{font-size:8.5px;color:var(--muted);font-weight:800;letter-spacing:1.1px;padding:9px 10px;border-bottom:2px solid var(--border);text-align:left;background:var(--line-soft);}
+td{font-size:10.5px;padding:9px 10px;border-bottom:1px solid var(--line-soft);color:var(--muted);}
+tr:hover td{background:var(--line-soft);}
 .geo-tab{flex:1;padding:13px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
 .geo-tab:last-child{border-right:none;}
-.geo-tab:hover{background:#f8f9fc;color:var(--text);}
-.geo-tab.active{background:linear-gradient(135deg,var(--blue),#1a3090);color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
+.geo-tab:hover{background:var(--line-soft);color:var(--text);}
+.geo-tab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
 .geo-panel{display:none;}
 .geo-panel.active{display:block;animation:fadeIn .2s ease;}
-.state-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:14px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;text-align:center;box-shadow:var(--sh-sm);}
+.state-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;text-align:center;box-shadow:var(--sh-sm);}
 .state-card:hover{border-color:var(--accent);box-shadow:var(--sh-md);transform:translateY(-3px);}
-.state-card.my-state{border-color:var(--blue);border-width:2px;background:linear-gradient(135deg,#eef2ff,#fff);}
+.state-card.my-state{border-color:var(--navy);border-width:2px;background:var(--red-soft);}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#c3cadd;border-radius:6px;}
 ::-webkit-scrollbar-thumb:hover{background:#9aa5c4;}
-#sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);}
-#sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3);}
 </style>
 </head>
 <body>
@@ -243,7 +271,7 @@ tr:hover td{background:#f8f9fc;}
     <!-- TABS -->
     <div style="display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:4px;margin-bottom:22px;gap:4px;">
       <button id="tab-login-btn" onclick="switchTab('login')"
-        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;">
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;">
         🔑 Ingresar
       </button>
       <button id="tab-register-btn" onclick="switchTab('register')"
@@ -283,7 +311,7 @@ tr:hover td{background:#f8f9fc;}
         </div>
         <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11.5px;text-align:center;"></div>
         <button id="login-btn" onclick="doLogin()"
-          style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:9px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
+          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:9px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
           onmouseover="this.style.transform='translateY(-1px)'"
           onmouseout="this.style.transform='translateY(0)'">
           <span id="login-btn-text">Ingresar al Command Center →</span>
@@ -464,7 +492,7 @@ tr:hover td{background:#f8f9fc;}
 
         <!-- Botón submit -->
         <button id="reg-btn" onclick="doRegister()"
-          style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:9px;padding:13px;font-size:12px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
+          style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:9px;padding:13px;font-size:12px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
           <span id="reg-btn-text">Enviar Solicitud →</span>
         </button>
       </div>
@@ -505,7 +533,7 @@ tr:hover td{background:#f8f9fc;}
   <div class="nav-item" onclick="nav(this,'compete')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span>Competitive Intel</div>
   <div class="nav-section">OPERATE</div>
   <!-- GovBidder Club Member title -->
-  <div style="margin:6px 10px 10px;background:var(--navy);border-radius:11px;padding:11px 13px;text-align:center;box-shadow:0 6px 18px rgba(20,38,79,.22);">
+  <div style="margin:6px 10px 10px;background:var(--navy-2);border-radius:11px;padding:11px 13px;text-align:center;box-shadow:0 6px 18px rgba(20,38,79,.22);">
     <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.16em;font-weight:600;">GOVBIDDER CLUB</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#fff;font-weight:700;margin-top:4px;">
       <svg viewBox="0 0 24 24" width="12" height="12" fill="#E3B341" stroke="#E3B341" stroke-width="1.5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
@@ -613,17 +641,22 @@ tr:hover td{background:#f8f9fc;}
       <a href="https://app.govbidder.net/" target="_blank" class="crm-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>GovBidder App</a>
       <div class="member-badge" id="plan-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>LEGACY</div>
 
+      <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" class="theme-toggle-btn">
+        <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </button>
+
       <!-- AVATAR + DROPDOWN MENU -->
       <div style="position:relative;" id="avatar-wrapper">
         <div class="top-avatar" id="top-avatar" onclick="toggleAvatarMenu()" style="cursor:pointer;" title="Mi cuenta">JR</div>
         <div id="avatar-menu" style="
           display:none;position:absolute;right:0;top:38px;
-          background:#fff;border:1px solid var(--border);border-radius:var(--r-md);
+          background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
           box-shadow:var(--sh-lg);min-width:200px;z-index:500;
           overflow:hidden;animation:fadeIn .18s ease;
         ">
           <!-- Member info -->
-          <div style="padding:13px 15px;background:linear-gradient(135deg,#152978,#1a3090);color:#fff;">
+          <div style="padding:13px 15px;background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;">
             <div style="font-size:12px;font-weight:800;" id="menu-name">—</div>
             <div style="font-size:9.5px;opacity:.7;margin-top:1px;" id="menu-email">—</div>
             <div style="margin-top:7px;" id="menu-plan-badge">
@@ -637,7 +670,7 @@ tr:hover td{background:#f8f9fc;}
             <div style="padding:8px 10px;font-size:11px;color:var(--muted);border-radius:7px;cursor:default;">
               📊 Command Center
             </div>
-            <div onclick="doLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:11px;font-weight:700;color:#E42D2C;border-radius:7px;cursor:pointer;transition:.15s;"
+            <div onclick="doLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:11px;font-weight:700;color:var(--red);border-radius:7px;cursor:pointer;transition:.15s;"
               onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background='transparent'">
               <span>⏻</span> Cerrar Sesión
             </div>
@@ -775,7 +808,7 @@ tr:hover td{background:#f8f9fc;}
     <!-- GEO -->
     <div class="page" id="page-geo">
       <!-- TABS -->
-      <div style="display:flex;gap:0;margin-bottom:18px;background:#fff;border:1px solid #e2e6f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
         <div class="geo-tab active" id="tab-states"   onclick="geoTab('states')">🗺️ 50 States</div>
         <div class="geo-tab"        id="tab-schools"  onclick="geoTab('schools')">🏫 School Districts</div>
         <div class="geo-tab"        id="tab-colleges" onclick="geoTab('colleges')">🎓 Colleges & Universities</div>
@@ -794,7 +827,7 @@ tr:hover td{background:#f8f9fc;}
             <option value="Midwest">Midwest</option>
             <option value="West">West</option>
           </select>
-          <div style="margin-left:auto;font-size:10px;color:#6b7a99;" id="states-count">Cargando...</div>
+          <div style="margin-left:auto;font-size:10px;color:var(--muted);" id="states-count">Cargando...</div>
         </div>
         <div id="states-grid">
           <div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>
@@ -853,7 +886,7 @@ tr:hover td{background:#f8f9fc;}
           <button class="btn-red" onclick="loadSchools()">🏫 Cargar Distritos</button>
         </div>
         <div id="schools-container">
-          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Distritos"</div>
+          <div style="text-align:center;padding:40px;color:var(--muted);">Selecciona un estado y haz clic en "Cargar Distritos"</div>
         </div>
       </div>
 
@@ -908,7 +941,7 @@ tr:hover td{background:#f8f9fc;}
           <button class="btn-red" onclick="loadColleges()">🎓 Cargar Universidades</button>
         </div>
         <div id="colleges-container">
-          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Universidades"</div>
+          <div style="text-align:center;padding:40px;color:var(--muted);">Selecciona un estado y haz clic en "Cargar Universidades"</div>
         </div>
       </div>
 
@@ -964,12 +997,12 @@ tr:hover td{background:#f8f9fc;}
             <option value="562111">562111 - Waste Collection</option>
           </select>
           <input id="county-search" class="search-input" placeholder="🔍 Filtrar condado..." oninput="filterCounties(this.value)" style="max-width:200px;"/>
-          <div style="margin-left:auto;font-size:10px;color:#6b7a99;" id="counties-count"></div>
+          <div style="margin-left:auto;font-size:10px;color:var(--muted);" id="counties-count"></div>
         </div>
         <div id="counties-container">
-          <div style="text-align:center;padding:40px;color:#6b7a99;">
+          <div style="text-align:center;padding:40px;color:var(--muted);">
             <div style="font-size:32px;margin-bottom:8px;">🏛️</div>
-            <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Selecciona un estado</div>
             <div style="font-size:11.5px;">El sistema cargará todos los condados con datos de contratos</div>
           </div>
         </div>
@@ -1037,9 +1070,9 @@ tr:hover td{background:#f8f9fc;}
           <button class="btn-red" onclick="loadStateDetail()">📊 Ver Análisis</button>
         </div>
         <div id="detail-container">
-          <div style="text-align:center;padding:40px;color:#6b7a99;">
+          <div style="text-align:center;padding:40px;color:var(--muted);">
             <div style="font-size:32px;margin-bottom:8px;">🗺️</div>
-            <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Selecciona un estado</div>
             <div style="font-size:11.5px;">Haz clic en cualquier estado del grid o selecciónalo arriba</div>
           </div>
         </div>
@@ -1067,9 +1100,9 @@ tr:hover td{background:#f8f9fc;}
 
     <!-- CODES -->
     <div class="page" id="page-codes">
-      <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
-        <div style="font-size:13px;font-weight:800;color:#1a1f36;margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
-        <div style="font-size:11px;color:#6b7a99;margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div style="font-size:13px;font-weight:800;color:var(--ink);margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
           <input class="search-input" id="code-q" placeholder="Ej: 561720  ó  janitorial  ó  cleaning..." style="flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')searchCodes()"/>
           <select class="gf-select" id="code-search-type" style="width:160px;">
@@ -1079,7 +1112,7 @@ tr:hover td{background:#f8f9fc;}
           <button class="btn-red" onclick="searchCodes()">Buscar</button>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span style="font-size:9.5px;color:#6b7a99;margin-right:4px;line-height:24px;">Populares:</span>
+          <span style="font-size:9.5px;color:var(--muted);margin-right:4px;line-height:24px;">Populares:</span>
           <span onclick="quickSearch('561720')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561720 Janitorial</span>
           <span onclick="quickSearch('541519')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">541519 IT Services</span>
           <span onclick="quickSearch('236220')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">236220 Construction</span>
@@ -1091,9 +1124,9 @@ tr:hover td{background:#f8f9fc;}
         </div>
       </div>
       <div id="codes-container">
-        <div style="text-align:center;padding:40px;color:#6b7a99;">
+        <div style="text-align:center;padding:40px;color:var(--muted);">
           <div style="font-size:40px;margin-bottom:12px;">🔢</div>
-          <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Busca tu código NAICS</div>
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Busca tu código NAICS</div>
           <div style="font-size:11.5px;">Ingresa tu NAICS code o keyword y el sistema te dirá<br>tu equivalente en SIC, PSC, UNSPSC y NIGP</div>
         </div>
       </div>
@@ -1131,7 +1164,7 @@ tr:hover td{background:#f8f9fc;}
           <div style="display:flex;flex-direction:column;gap:8px;">
             <select class="gf-select" style="width:100%;padding:9px;"><option>Tipo de soporte...</option><option>Análisis de Oportunidad</option><option>Revisión de Documentos</option><option>Consulta de Códigos</option><option>Buyer Research</option></select>
             <input class="search-input" placeholder="Link de la oportunidad..." style="width:100%;"/>
-            <textarea style="border:1px solid var(--border);border-radius:7px;padding:9px;font-size:11px;font-family:inherit;resize:none;outline:none;color:var(--text);background:#fff;" rows="4" placeholder="Describe en qué necesitas ayuda..."></textarea>
+            <textarea style="border:1px solid var(--border);border-radius:7px;padding:9px;font-size:11px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);" rows="4" placeholder="Describe en qué necesitas ayuda..."></textarea>
             <button onclick="alert('✅ Ticket enviado!')" class="btn-red" style="padding:10px;">Enviar</button>
           </div>
         </div>
@@ -1150,7 +1183,7 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-alliance">
 
       <!-- Header -->
-      <div style="background:linear-gradient(135deg,#0a0c14,#152978);border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
+      <div style="background:linear-gradient(135deg,#0a0c14,var(--navy));border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
         <div style="font-size:36px;">🤝</div>
         <div>
           <div style="color:#fff;font-size:15px;font-weight:800;">GovBidder Alliance — Programa de Fondos</div>
@@ -1184,7 +1217,7 @@ tr:hover td{background:#f8f9fc;}
             <input class="search-input" id="c-cost" placeholder="Costo de mercancía (ej. 8000)..." style="width:100%;"/>
             <input class="search-input" id="c-margin" placeholder="Tu margen % (ej. 20)..." style="width:100%;"/>
             <button onclick="calcAlliance()" class="btn-red" style="padding:9px;">Calcular</button>
-            <div id="c-result" style="display:none;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.8;"></div>
+            <div id="c-result" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.8;"></div>
           </div>
         </div>
       </div>
@@ -1245,27 +1278,27 @@ tr:hover td{background:#f8f9fc;}
             <div style="flex:1;">
               <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DESCRIPCIÓN DEL CONTRATO *</label>
               <textarea id="alliance-desc" rows="5"
-                style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;color:var(--text);background:#fff;transition:.2s;"
+                style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);transition:.2s;"
                 onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
                 placeholder="Describe el contrato: qué servicios/productos, con qué agencia, plazo de ejecución..."></textarea>
             </div>
 
             <!-- Preview calc -->
-            <div id="alliance-preview" style="display:none;background:linear-gradient(135deg,#eef2ff,#fff);border:1px solid #c7d2fe;border-radius:8px;padding:12px;">
+            <div id="alliance-preview" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;">
               <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;">RESUMEN ESTIMADO</div>
-              <div id="alliance-preview-content" style="font-size:11px;color:var(--text);line-height:2;"></div>
+              <div id="alliance-preview-content" style="font-size:11px;color:var(--ink);line-height:2;"></div>
             </div>
 
             <!-- Error / Success -->
-            <div id="alliance-error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;color:#b91c1c;font-size:11px;"></div>
-            <div id="alliance-success" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px;text-align:center;">
+            <div id="alliance-error" style="display:none;background:var(--red-soft);border:1px solid var(--red-soft);border-radius:8px;padding:10px 14px;color:var(--red);font-size:11px;"></div>
+            <div id="alliance-success" style="display:none;background:var(--green-soft);border:1px solid var(--green-soft);border-radius:10px;padding:16px;text-align:center;">
               <div style="font-size:28px;margin-bottom:6px;">✅</div>
-              <div style="font-size:13px;font-weight:800;color:#15803d;margin-bottom:4px;">¡Solicitud Enviada!</div>
-              <div style="font-size:11px;color:#6b7a99;line-height:1.6;">El equipo de GovBidder revisará tu solicitud<br>y te contactará en <strong>24–48 horas</strong>.</div>
+              <div style="font-size:13px;font-weight:800;color:var(--green);margin-bottom:4px;">¡Solicitud Enviada!</div>
+              <div style="font-size:11px;color:var(--muted);line-height:1.6;">El equipo de GovBidder revisará tu solicitud<br>y te contactará en <strong>24–48 horas</strong>.</div>
             </div>
 
             <button id="alliance-submit-btn" onclick="submitAllianceApp()"
-              style="background:linear-gradient(135deg,var(--accent),#a01e1d);color:#fff;border:none;border-radius:8px;padding:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.25);transition:.2s;"
+              style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;padding:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.25);transition:.2s;"
               onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
               <span id="alliance-submit-txt">🤝 Enviar Solicitud Alliance →</span>
             </button>
@@ -1288,11 +1321,11 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-tools">
 
       <!-- Header -->
-      <div style="background:linear-gradient(135deg,#0a0c14,#152978);border-radius:14px;padding:28px 32px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#0a0c14,var(--navy));border-radius:14px;padding:28px 32px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;">
         <div style="position:absolute;inset:0;opacity:.07;background:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px;"></div>
         <div style="position:relative;">
           <div style="font-size:36px;margin-bottom:10px;">🧰</div>
-          <div style="color:#fff;font-size:20px;font-weight:900;margin-bottom:6px;">Herramientas <span style="color:#E42D2C;">GovBidder</span></div>
+          <div style="color:#fff;font-size:20px;font-weight:900;margin-bottom:6px;">Herramientas <span style="color:var(--red);">GovBidder</span></div>
           <div style="color:rgba(255,255,255,.5);font-size:12px;max-width:500px;margin:0 auto;line-height:1.7;">
             El ecosistema completo para operar, analizar y escalar tus contratos con el gobierno de EE. UU.
           </div>
@@ -1303,10 +1336,10 @@ tr:hover td{background:#f8f9fc;}
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;">
 
         <!-- GovBidder App -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(228,45,44,.12)'"
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
-          <div style="background:linear-gradient(135deg,#E42D2C,#a01e1d);padding:24px;text-align:center;">
+          <div style="background:linear-gradient(135deg,var(--red),var(--accent2));padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">⚡</div>
             <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder App</div>
             <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">CRM & Operations Hub</div>
@@ -1322,17 +1355,17 @@ tr:hover td{background:#f8f9fc;}
               <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Reportes de performance</div>
             </div>
             <a href="https://app.govbidder.net/" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(228,45,44,.25);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(228,45,44,.25);">
               Abrir GovBidder App →
             </a>
           </div>
         </div>
 
         <!-- GovBidder AI -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(21,41,120,.12)'"
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
-          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:24px;text-align:center;">
+          <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">🤖</div>
             <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder AI</div>
             <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Inteligencia Artificial para Licitaciones</div>
@@ -1348,14 +1381,14 @@ tr:hover td{background:#f8f9fc;}
               <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Estrategia de pricing</div>
             </div>
             <a href="https://govbidder.ai" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,#152978,#1a3090);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(21,41,120,.25);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(21,41,120,.25);">
               Explorar GovBidder AI →
             </a>
           </div>
         </div>
 
         <!-- GovBidder Connect -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(22,163,74,.12)'"
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
           <div style="background:linear-gradient(135deg,#15803d,#16a34a);padding:24px;text-align:center;">
@@ -1381,10 +1414,10 @@ tr:hover td{background:#f8f9fc;}
         </div>
 
         <!-- GovBidder Academy -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(200,168,75,.15)'"
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
-          <div style="background:linear-gradient(135deg,#92400e,#c8a84b);padding:24px;text-align:center;">
+          <div style="background:linear-gradient(135deg,#92400e,var(--gold));padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">🎓</div>
             <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Academy</div>
             <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Formación & Entrenamiento</div>
@@ -1400,7 +1433,7 @@ tr:hover td{background:#f8f9fc;}
               <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Soporte continuo y mentoring</div>
             </div>
             <a href="https://govbidderacademy.com/login" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,#c8a84b);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(200,168,75,.3);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,var(--gold));color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(200,168,75,.3);">
               Ir a GovBidder Academy →
             </a>
           </div>
@@ -1409,7 +1442,7 @@ tr:hover td{background:#f8f9fc;}
       </div>
 
       <!-- Footer banner -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
         <div style="font-size:28px;">🦅</div>
         <div>
           <div style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;">¿Necesitas más información sobre alguna herramienta?</div>
@@ -1427,7 +1460,7 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-taskwork">
 
       <!-- Header banner -->
-      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+      <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));border-radius:12px;padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
         <div style="font-size:36px;">💼</div>
         <div>
           <div style="color:#fff;font-size:15px;font-weight:800;">Task Work — Bolsa de Trabajos</div>
@@ -1602,7 +1635,7 @@ function doLogout() {
 function resetLoginBtn() {
   const btn     = document.getElementById('login-btn');
   const btnText = document.getElementById('login-btn-text');
-  if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)'; }
+  if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,var(--red),var(--accent2))'; }
   if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
 }
 
@@ -1616,9 +1649,9 @@ function applyMemberProfile(member) {
 
   // Plan colors
   const planColors = {
-    Legacy:  'linear-gradient(135deg,#c8a84b,#a8883b)',
-    Prime:   'linear-gradient(135deg,#152978,#1a3090)',
-    Elevate: 'linear-gradient(135deg,#E42D2C,#a01e1d)'
+    Legacy:  'linear-gradient(135deg,var(--gold),#a8883b)',
+    Prime:   'linear-gradient(135deg,var(--navy),var(--blue2))',
+    Elevate: 'linear-gradient(135deg,var(--red),var(--accent2))'
   };
   const planBadgeColors = {
     Legacy:  'background:rgba(200,168,75,.3);color:#fde68a;border:1px solid rgba(200,168,75,.4);',
@@ -1724,7 +1757,7 @@ function showMemberLock(page) {
   if (!el) return;
   el.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px;">
-      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#f1f5f9,#e2e6f0);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);">🔒</div>
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#f1f5f9,var(--line));display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);">🔒</div>
       <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:8px;">Acceso Exclusivo</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:400px;margin-bottom:24px;">
         Este módulo es exclusivo para <strong>Miembros de GovBidder Club</strong>.<br>
@@ -1732,17 +1765,17 @@ function showMemberLock(page) {
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
         <a href="https://www.govbidderclub.com" target="_blank"
-          style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:12px 24px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(228,45,44,.3);">
+          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;padding:12px 24px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(228,45,44,.3);">
           🦅 Unirme a GovBidder Club →
         </a>
         <a href="mailto:club@govbidder.net"
-          style="background:#fff;color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">
+          style="background:var(--card);color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">
           ✉️ Contactar al Club
         </a>
       </div>
-      <div style="margin-top:20px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 20px;max-width:380px;">
-        <div style="font-size:9px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:8px;">BENEFICIOS DE MEMBRESÍA</div>
-        <div style="font-size:11px;color:#374151;line-height:2;text-align:left;">
+      <div style="margin-top:20px;background:var(--line-soft);border:1px solid var(--line);border-radius:10px;padding:14px 20px;max-width:380px;">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">BENEFICIOS DE MEMBRESÍA</div>
+        <div style="font-size:11px;color:var(--ink);line-height:2;text-align:left;">
           💼 Trabajos asignados por GovBidder Club<br>
           📋 Bid Pipeline para seguimiento de licitaciones<br>
           🎯 Soporte dedicado con expertos<br>
@@ -1760,12 +1793,12 @@ function switchTab(tab) {
   const btnLogin = document.getElementById('tab-login-btn');
   const btnReg   = document.getElementById('tab-register-btn');
   if (isLogin) {
-    btnLogin.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    btnLogin.style.background = 'linear-gradient(135deg,var(--red),var(--accent2))';
     btnLogin.style.color      = '#fff';
     btnReg.style.background   = 'transparent';
     btnReg.style.color        = 'rgba(255,255,255,.5)';
   } else {
-    btnReg.style.background   = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    btnReg.style.background   = 'linear-gradient(135deg,var(--red),var(--accent2))';
     btnReg.style.color        = '#fff';
     btnLogin.style.background = 'transparent';
     btnLogin.style.color      = 'rgba(255,255,255,.5)';
@@ -2129,10 +2162,10 @@ async function searchCodes() {
 
     if (type === 'crosswalk' && data.codes) {
       el.innerHTML = `
-        <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
-          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:20px 24px;">
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+          <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));padding:20px 24px;">
             <div style="display:flex;align-items:center;gap:12px;">
-              <div style="background:#E42D2C;color:#fff;padding:6px 14px;border-radius:8px;font-size:18px;font-weight:900;font-family:monospace;">${data.naics}</div>
+              <div style="background:var(--red);color:#fff;padding:6px 14px;border-radius:8px;font-size:18px;font-weight:900;font-family:monospace;">${data.naics}</div>
               <div>
                 <div style="color:#fff;font-size:14px;font-weight:800;">${data.title}</div>
                 <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Sector: ${data.sector}</div>
@@ -2140,18 +2173,18 @@ async function searchCodes() {
             </div>
           </div>
           <div style="padding:20px;">
-            <div style="font-size:10px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#152978;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">NAICS</div>
+                  <div style="background:var(--navy);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">NAICS</div>
                   <div style="font-size:9px;color:#6b7a99;">North American Industry Classification</div>
                 </div>
-                <div style="font-size:26px;font-weight:900;color:#152978;font-family:monospace;">${data.codes.naics.code}</div>
+                <div style="font-size:26px;font-weight:900;color:var(--navy);font-family:monospace;">${data.codes.naics.code}</div>
                 <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.naics.title}</div>
                 <div style="margin-top:10px;">
                   <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
-                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
+                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022" target="_blank" style="margin-left:6px;font-size:10px;color:var(--red);font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
                 </div>
               </div>
               <div style="background:linear-gradient(135deg,#fff7ed,#fff);border:2px solid #fed7aa;border-radius:10px;padding:16px;">
@@ -2204,39 +2237,39 @@ async function searchCodes() {
             <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                 <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span>
-                <span style="background:linear-gradient(135deg,#E42D2C,#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
-                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:#E42D2C;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+                <span style="background:linear-gradient(135deg,var(--red),#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
+                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:var(--red);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
               </div>
               <div id="code-ai-tip" style="font-size:11px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código.</div>
             </div>
             <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades</button>
-              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
+              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades</button>
+              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
             </div>
           </div>
         </div>`;
     } else if (data.results) {
       if (!data.results.length) {
-        el.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7a99;"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Sin resultados para "${q}"</div></div>`;
+        el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Sin resultados para "${q}"</div></div>`;
         return;
       }
       el.innerHTML = `
-        <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
         ${data.results.map(r => `
-          <div onclick="quickCrosswalk('${r.naics}')" style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.04);"
-               onmouseover="this.style.borderColor='#E42D2C';this.style.boxShadow='0 4px 12px rgba(228,45,44,.1)'"
-               onmouseout="this.style.borderColor='#e2e6f0';this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
+          <div onclick="quickCrosswalk('${r.naics}')" style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.04);"
+               onmouseover="this.style.borderColor='var(--red)';this.style.boxShadow='0 4px 12px rgba(228,45,44,.1)'"
+               onmouseout="this.style.borderColor='var(--line)';this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-              <span style="background:#E42D2C;color:#fff;padding:3px 10px;border-radius:6px;font-size:13px;font-weight:900;font-family:monospace;">${r.naics}</span>
-              <span style="font-size:12.5px;font-weight:700;color:#1a1f36;">${r.title}</span>
-              <span style="margin-left:auto;font-size:9.5px;color:#6b7a99;background:#f1f5f9;padding:2px 8px;border-radius:5px;">${r.sector}</span>
+              <span style="background:var(--red);color:#fff;padding:3px 10px;border-radius:6px;font-size:13px;font-weight:900;font-family:monospace;">${r.naics}</span>
+              <span style="font-size:12.5px;font-weight:700;color:var(--ink);">${r.title}</span>
+              <span style="margin-left:auto;font-size:9.5px;color:var(--muted);background:var(--line-soft);padding:2px 8px;border-radius:5px;">${r.sector}</span>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">SIC: ${r.sic}</span>
               <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">PSC: ${r.psc}</span>
               <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">UNSPSC: ${r.unspsc}</span>
               ${r.nigp?`<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">NIGP: ${r.nigp}</span>`:''}
-              <span style="margin-left:auto;font-size:10px;color:#E42D2C;font-weight:700;">Ver crosswalk completo →</span>
+              <span style="margin-left:auto;font-size:10px;color:var(--red);font-weight:700;">Ver crosswalk completo →</span>
             </div>
           </div>`).join('')}`;
     }
@@ -2343,19 +2376,19 @@ function renderStates(states) {
   grid.innerHTML = states.length
     ? states.map(s => `
         <div class="state-card ${s.code === myState ? 'my-state' : ''}" onclick="selectState('${s.code}')">
-          ${s.code === myState ? '<div style="font-size:8.5px;color:#E42D2C;font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
-          <div style="font-size:20px;font-weight:900;color:#152978;font-family:monospace;">${s.code}</div>
-          <div style="font-size:10px;color:#1a1f36;font-weight:600;margin-top:3px;">${s.name}</div>
-          <div style="font-size:9px;color:#6b7a99;margin-top:1px;">📍 ${s.capital}</div>
+          ${s.code === myState ? '<div style="font-size:8.5px;color:var(--red);font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
+          <div style="font-size:20px;font-weight:900;color:var(--navy);font-family:monospace;">${s.code}</div>
+          <div style="font-size:10px;color:var(--ink);font-weight:600;margin-top:3px;">${s.name}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:1px;">📍 ${s.capital}</div>
           <div style="margin-top:6px;">
             <span style="background:${REGION_COLORS[s.region]||'#f1f5f9'};color:#374151;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;">${s.region}</span>
           </div>
           <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
-            <button onclick="event.stopPropagation();selectState('${s.code}')" style="background:#152978;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;">📊 Análisis</button>
-            <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()" style="background:#E42D2C;color:#fff;border-radius:5px;padding:3px 8px;font-size:9px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+            <button onclick="event.stopPropagation();selectState('${s.code}')" style="background:var(--navy);color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;">📊 Análisis</button>
+            <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()" style="background:var(--red);color:#fff;border-radius:5px;padding:3px 8px;font-size:9px;font-weight:700;text-decoration:none;">🔗 Portal</a>
           </div>
         </div>`).join('')
-    : '<div style="text-align:center;padding:30px;color:#6b7a99;grid-column:1/-1;">Sin resultados.</div>';
+    : '<div style="text-align:center;padding:30px;color:var(--muted);grid-column:1/-1;">Sin resultados.</div>';
 }
 
 function filterStates(q) {
@@ -2389,7 +2422,7 @@ async function loadStateDetail() {
   const year  = document.getElementById('detail-year').value;
   const el    = document.getElementById('detail-container');
   if (!state) {
-    el.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7a99;"><div style="font-size:32px;margin-bottom:8px;">🗺️</div><div style="font-size:13px;font-weight:700;color:#1a1f36;">Selecciona un estado primero</div></div>`;
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🗺️</div><div style="font-size:13px;font-weight:700;color:var(--ink);">Selecciona un estado primero</div></div>`;
     return;
   }
   setLoading('detail-container', `Cargando análisis de ${state}...`);
@@ -2403,13 +2436,13 @@ async function loadStateDetail() {
     const schools = data.schoolDistricts || [];
     const univs   = data.universities    || [];
     el.innerHTML = `
-      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:20px 24px;margin-bottom:14px;color:#fff;">
+      <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));border-radius:12px;padding:20px 24px;margin-bottom:14px;color:#fff;">
         <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
           <div style="font-size:52px;font-weight:900;font-family:monospace;opacity:.85;line-height:1;">${s.code}</div>
           <div>
             <div style="font-size:18px;font-weight:800;">${s.name}</div>
             <div style="font-size:11px;opacity:.7;margin-top:3px;">Capital: ${s.capital} · Región: ${s.region}</div>
-            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:#E42D2C;color:#fff;padding:5px 14px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement</a>
+            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:var(--red);color:#fff;padding:5px 14px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement</a>
           </div>
           <div style="margin-left:auto;text-align:right;">
             <div style="font-size:28px;font-weight:900;">$${(spend.total/1e6).toFixed(1)}M</div>
@@ -2419,10 +2452,10 @@ async function loadStateDetail() {
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
-        <div class="kpi-card"><div class="kpi-label">TOTAL SPEND</div><div class="kpi-value" style="font-size:18px;">$${(spend.total/1e6).toFixed(1)}M</div><div class="kpi-delta" style="color:#6b7a99;">NAICS ${naics}</div></div>
+        <div class="kpi-card"><div class="kpi-label">TOTAL SPEND</div><div class="kpi-value" style="font-size:18px;">$${(spend.total/1e6).toFixed(1)}M</div><div class="kpi-delta" style="color:var(--muted);">NAICS ${naics}</div></div>
         <div class="kpi-card"><div class="kpi-label">CONTRATOS</div><div class="kpi-value" style="font-size:18px;">${spend.contractCount}</div><div class="kpi-delta delta-up">Año ${year}</div></div>
-        <div class="kpi-card"><div class="kpi-label">SCHOOL DISTRICTS</div><div class="kpi-value" style="font-size:18px;">${schools.length}</div><div class="kpi-delta" style="color:#6b7a99;">En base de datos</div></div>
-        <div class="kpi-card"><div class="kpi-label">UNIVERSIDADES</div><div class="kpi-value" style="font-size:18px;">${univs.length}</div><div class="kpi-delta" style="color:#6b7a99;">En base de datos</div></div>
+        <div class="kpi-card"><div class="kpi-label">SCHOOL DISTRICTS</div><div class="kpi-value" style="font-size:18px;">${schools.length}</div><div class="kpi-delta" style="color:var(--muted);">En base de datos</div></div>
+        <div class="kpi-card"><div class="kpi-label">UNIVERSIDADES</div><div class="kpi-value" style="font-size:18px;">${univs.length}</div><div class="kpi-delta" style="color:var(--muted);">En base de datos</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
         <div class="card">
@@ -2431,41 +2464,41 @@ async function loadStateDetail() {
             <div class="bar-label">${(v.name||'').substring(0,18)}</div>
             <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
             <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
-          </div>`).join('') : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin vendors para este filtro.</div>'}
+          </div>`).join('') : '<div style="font-size:11px;color:var(--muted);padding:10px 0;">Sin vendors para este filtro.</div>'}
         </div>
         <div class="card">
           <div class="card-title">📋 Contratos Recientes <span class="sub">live • USASpending</span></div>
           ${spend.recentContracts.length ? `<table><thead><tr><th>RECIPIENT</th><th>CIUDAD</th><th>MONTO</th></tr></thead>
             <tbody>${spend.recentContracts.slice(0,8).map(c=>`<tr>
-              <td style="color:#1a1f36;font-weight:600;">${(c.recipient||'—').substring(0,22)}</td>
+              <td style="color:var(--ink);font-weight:600;">${(c.recipient||'—').substring(0,22)}</td>
               <td>${c.city||'—'}</td>
-              <td style="font-weight:700;color:#1a1f36;">$${Number(c.amount||0).toLocaleString()}</td>
+              <td style="font-weight:700;color:var(--ink);">$${Number(c.amount||0).toLocaleString()}</td>
             </tr>`).join('')}</tbody></table>`
-          : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin contratos para estos filtros.</div>'}
+          : '<div style="font-size:11px;color:var(--muted);padding:10px 0;">Sin contratos para estos filtros.</div>'}
         </div>
       </div>
       ${schools.length ? `<div class="card" style="margin-bottom:14px;">
         <div class="card-title">🏫 School Districts — ${s.name} <span class="sub">${schools.length} principales</span></div>
         <table><thead><tr><th>DISTRITO</th><th>CIUDAD</th><th>ESTUDIANTES</th><th>PORTAL</th></tr></thead>
         <tbody>${schools.map(d=>`<tr>
-          <td style="color:#1a1f36;font-weight:600;">${d.name}</td><td>${d.city}</td>
+          <td style="color:var(--ink);font-weight:600;">${d.name}</td><td>${d.city}</td>
           <td><span class="badge bb">${Number(d.students).toLocaleString()}</span></td>
-          <td><a href="${d.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
+          <td><a href="${d.portal}" target="_blank" style="color:var(--red);font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
         </tr>`).join('')}</tbody></table>
       </div>` : ''}
       ${univs.length ? `<div class="card" style="margin-bottom:14px;">
         <div class="card-title">🎓 Colleges & Universities — ${s.name} <span class="sub">${univs.length} instituciones</span></div>
         <table><thead><tr><th>INSTITUCIÓN</th><th>CIUDAD</th><th>TIPO</th><th>PORTAL</th></tr></thead>
         <tbody>${univs.map(u=>`<tr>
-          <td style="color:#1a1f36;font-weight:600;">${u.name}</td><td>${u.city}</td>
+          <td style="color:var(--ink);font-weight:600;">${u.name}</td><td>${u.city}</td>
           <td><span class="badge ${u.type==='Public'?'bb':'by'}">${u.type==='Public'?'🏛️ Pública':'🏫 Privada'}</span></td>
-          <td><a href="${u.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
+          <td><a href="${u.portal}" target="_blank" style="color:var(--red);font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
         </tr>`).join('')}</tbody></table>
       </div>` : ''}
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Opps en ${s.code}</button>
-        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🏆 Competidores en ${s.code}</button>
-        <a href="${s.procurement}" target="_blank" style="background:#f1f5f9;color:#1a1f36;border:1px solid #e2e6f0;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;text-decoration:none;">🔗 Portal Oficial ${s.code}</a>
+        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Opps en ${s.code}</button>
+        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🏆 Competidores en ${s.code}</button>
+        <a href="${s.procurement}" target="_blank" style="background:var(--line-soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;text-decoration:none;">🔗 Portal Oficial ${s.code}</a>
       </div>`;
   } catch(e) {
     el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`;
@@ -2482,19 +2515,19 @@ async function loadSchools() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const schools = data.schoolDistricts || [];
-    if (!schools.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de school districts para ${state}.</div>`; return; }
+    if (!schools.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">No hay datos de school districts para ${state}.</div>`; return; }
     el.innerHTML = `
-      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
         ${schools.map(d=>`
-          <div style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;"
-               onmouseover="this.style.borderColor='#152978'" onmouseout="this.style.borderColor='#e2e6f0'">
-            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🏫 ${d.name}</div>
-            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${d.city} · ${state}</div>
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;"
+               onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--line)'">
+            <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;">🏫 ${d.name}</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">📍 ${d.city} · ${state}</div>
             <div style="margin-bottom:10px;"><span class="badge bb">👥 ${Number(d.students).toLocaleString()} estudiantes</span></div>
             <div style="display:flex;gap:6px;">
-              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
-              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
+              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:var(--red);color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
             </div>
           </div>`).join('')}
       </div>`;
@@ -2511,18 +2544,18 @@ async function loadColleges() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const univs = data.universities || [];
-    if (!univs.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de universidades para ${state}.</div>`; return; }
+    if (!univs.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">No hay datos de universidades para ${state}.</div>`; return; }
     el.innerHTML = `
-      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
         ${univs.map(u=>`
-          <div style="background:#fff;border:1px solid #e2e6f0;border-top:3px solid ${u.type==='Public'?'#152978':'#E42D2C'};border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
-            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🎓 ${u.name}</div>
-            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${u.city} · ${state}</div>
+          <div style="background:var(--card);border:1px solid var(--line);border-top:3px solid ${u.type==='Public'?'var(--navy)':'var(--red)'};border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+            <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;">🎓 ${u.name}</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">📍 ${u.city} · ${state}</div>
             <div style="margin-bottom:10px;"><span class="badge ${u.type==='Public'?'bb':'by'}">${u.type==='Public'?'🏛️ Pública':'🏫 Privada'}</span></div>
             <div style="display:flex;gap:6px;">
-              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
-              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
+              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:var(--red);color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
             </div>
           </div>`).join('')}
       </div>`;
@@ -2798,19 +2831,19 @@ function loadTaskWork() {
 
     const docs = (j.documents||[]).map(d => `
       <a href="${d.url}" target="_blank"
-        style="display:inline-flex;align-items:center;gap:5px;background:#f8f9fc;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;color:var(--text);text-decoration:none;transition:.15s;"
-        onmouseover="this.style.borderColor='#E42D2C';this.style.color='#E42D2C'"
+        style="display:inline-flex;align-items:center;gap:5px;background:var(--line-soft);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;color:var(--text);text-decoration:none;transition:.15s;"
+        onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
         onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
         📄 ${d.name}
       </a>`).join('');
 
     return `
-      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;transition:.2s;"
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;transition:.2s;"
            onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,.05)'">
 
         <!-- Card header -->
         <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f4f6fb;">
-          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#152978,#1a3090);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💼</div>
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💼</div>
           <div style="flex:1;">
             <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;">${j.title}</div>
             <div style="font-size:11px;color:var(--muted);">🏛️ ${j.client}</div>
@@ -2836,7 +2869,7 @@ function loadTaskWork() {
           </div>
 
           <!-- Description -->
-          <div style="font-size:11px;color:#6b7a99;line-height:1.7;margin-bottom:14px;background:#f8f9fc;border-radius:8px;padding:10px 14px;">
+          <div style="font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:14px;background:var(--line-soft);border-radius:8px;padding:10px 14px;">
             ${j.description}
           </div>
 
@@ -2851,9 +2884,26 @@ function loadTaskWork() {
   }).join('');
 }
 
+// ── THEME ────────────────────────────────────────────────
+function syncThemeIcon() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const sun  = document.getElementById('theme-icon-sun');
+  const moon = document.getElementById('theme-icon-moon');
+  if (sun)  sun.style.display  = dark ? 'none'  : 'block';
+  if (moon) moon.style.display = dark ? 'block' : 'none';
+}
+
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('gb_theme', next); } catch(e) {}
+  syncThemeIcon();
+}
+
 // ── INIT ─────────────────────────────────────────────────
 window.onload = () => {
   checkSession();
+  syncThemeIcon();
   setTimeout(() => loadAllStates(), 1000);
 };
 </script>
