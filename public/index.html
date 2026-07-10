@@ -7,77 +7,99 @@
 <link rel="icon" type="image/png" href="/logo-square.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#f4f6fb;--sidebar:#1e3fad;--sidebar2:#152990;
-  --accent:#E42D2C;--accent2:#a01e1d;--blue:#152978;--blue2:#0f1e6a;
-  --text:#1a1f36;--muted:#6b7a99;--border:#e2e6f0;
-  --card:#fff;--green:#16a34a;--yellow:#d97706;--gold:#c8a84b;
-  --r-sm:9px;--r-md:13px;--r-lg:18px;
-  --sh-xs:0 1px 2px rgba(16,24,40,.05);
-  --sh-sm:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
-  --sh-md:0 10px 24px rgba(16,24,40,.08),0 2px 6px rgba(16,24,40,.04);
-  --sh-lg:0 24px 56px rgba(16,24,40,.16),0 6px 14px rgba(16,24,40,.06);
+  --bg:#F5F6F8;--card:#FFFFFF;
+  --ink:#0C1425;--muted:#69707D;--faint:#9AA1AD;
+  --line:#E9EBEF;--line-soft:#F1F2F5;
+  --navy:#14264F;--red:#C42A3D;--gold:#9C7A2E;--green:#177B52;
+  --red-soft:rgba(196,42,61,.07);--gold-soft:rgba(156,122,46,.10);
+  /* legacy aliases used across secondary pages — mapped to the new palette */
+  --sidebar:#FFFFFF;--sidebar2:#FFFFFF;
+  --accent:var(--red);--accent2:#9e2231;--blue:var(--navy);--blue2:#0d1c3d;
+  --text:var(--ink);--border:var(--line);--yellow:#b45309;
+  --r-sm:11px;--r-md:16px;--r-lg:18px;
+  --sh-card:0 1px 2px rgba(12,20,37,.03);
+  --sh-xs:0 1px 2px rgba(12,20,37,.03);
+  --sh-sm:0 1px 3px rgba(12,20,37,.05),0 1px 2px rgba(12,20,37,.03);
+  --sh-md:0 10px 24px rgba(12,20,37,.06),0 2px 6px rgba(12,20,37,.03);
+  --sh-lg:0 24px 56px rgba(12,20,37,.12),0 6px 14px rgba(12,20,37,.05);
 }
 html{scroll-behavior:smooth;}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
-  background:
-    radial-gradient(1100px 560px at 105% -12%,rgba(21,41,120,.06),transparent 60%),
-    radial-gradient(900px 500px at -8% 108%,rgba(228,45,44,.05),transparent 60%),
-    var(--bg);
-  color:var(--text);display:flex;height:100vh;overflow:hidden;}
-::selection{background:rgba(228,45,44,.22);color:var(--text);}
-#sidebar{width:234px;min-width:234px;background:linear-gradient(190deg,var(--sidebar) 0%,var(--sidebar2) 100%);display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden;display:none;box-shadow:8px 0 32px rgba(8,14,45,.22);position:relative;z-index:5;}
-.logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:transparent;}
+body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
+  background:var(--bg);
+  color:var(--ink);display:flex;height:100vh;overflow:hidden;font-variant-numeric:tabular-nums;}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
+::selection{background:rgba(196,42,61,.18);color:var(--ink);}
+#sidebar{width:272px;min-width:272px;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden;display:none;position:sticky;top:0;z-index:5;}
+.logo{padding:22px 20px 18px;border-bottom:1px solid var(--line);background:transparent;}
+.logo-lockup{display:flex;align-items:center;gap:11px;}
+.logo-mark{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);object-fit:cover;flex-shrink:0;}
+.logo-word{font-size:15px;font-weight:800;letter-spacing:-.02em;line-height:1.15;}
 .logo-main{display:flex;align-items:baseline;}
-.logo-gov{color:#fff;font-size:16px;font-weight:900;}
-.logo-bidder{color:#E42D2C;font-size:16px;font-weight:900;}
-.logo-sub{color:rgba(255,255,255,.75);font-size:8px;letter-spacing:2px;font-weight:700;margin-top:2px;}
-.logo-tag{color:rgba(255,255,255,.2);font-size:8px;font-style:italic;margin-top:1px;}
-.nav-section{padding:20px 0 8px 22px;color:rgba(255,255,255,.35);font-size:8px;letter-spacing:2.4px;font-weight:800;}
-.nav-item{display:flex;align-items:center;gap:11px;margin:2px 10px;padding:9px 12px;border-radius:10px;color:rgba(255,255,255,.62);font-size:12px;font-weight:600;cursor:pointer;transition:background .18s ease,color .18s ease;}
-.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
-.nav-item.active{background:rgba(255,255,255,.95);color:var(--accent);font-weight:700;}
-.nav-item .icon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.nav-item .icon svg{width:16px;height:16px;stroke:currentColor;}
-.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:9px;padding:1.5px 6.5px;border-radius:8px;font-weight:700;box-shadow:0 2px 6px rgba(228,45,44,.4);}
+.logo-gov{color:var(--navy);}
+.logo-bidder{color:var(--red);}
+.logo-sub{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--faint);font-size:9px;letter-spacing:.16em;font-weight:600;margin-top:2px;}
+.logo-tag{display:none;}
+.nav-section{padding:20px 0 8px 22px;color:var(--faint);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.16em;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:11px;margin:1px 10px;padding:9px 13px;border-radius:10px;color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;position:relative;transition:background .15s ease,color .15s ease;}
+.nav-item:hover{background:var(--line-soft);}
+.nav-item.active{background:var(--red-soft);color:var(--red);font-weight:700;}
+.nav-item.active::before{content:'';position:absolute;left:-10px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--red);}
+.nav-item .icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.nav-item.active .icon,.nav-item:hover .icon{color:currentColor;}
+.nav-item .icon svg{width:18px;height:18px;stroke:currentColor;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;padding:1.5px 7px;border-radius:9px;font-weight:600;}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;display:none;}
-#topbar{background:#fff;border-bottom:1px solid var(--border);padding:20px 26px;display:flex;align-items:center;gap:16px;flex-shrink:0;flex-wrap:wrap;position:relative;z-index:4;}
+#topbar{background:rgba(245,246,248,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:18px 28px;display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:wrap;position:sticky;top:0;z-index:4;}
 .page-title-wrap{margin-right:auto;min-width:0;}
-.page-title{font-size:22px;font-weight:800;color:var(--text);white-space:nowrap;letter-spacing:-.03em;line-height:1.25;}
+.page-title{font-size:19px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-.02em;line-height:1.25;}
 .page-subtitle{font-size:12.5px;color:var(--muted);margin-top:2px;}
-.gf-select{border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 9px;font-size:10.5px;color:var(--text);background:#f8f9fc;cursor:pointer;outline:none;transition:border-color .15s ease,background .15s ease;font-family:inherit;}
-.gf-select:hover{border-color:#c7ceE0;background:#fff;}
-.crm-btn{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:6px 12px;border-radius:var(--r-sm);font-size:10px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 12px rgba(228,45,44,.28);transition:transform .15s ease,box-shadow .15s ease;}
-.crm-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(228,45,44,.36);}
-.member-badge{background:linear-gradient(135deg,#c8a84b,#a8883b);color:#fff;font-size:9px;font-weight:800;padding:4px 9px;border-radius:var(--r-sm);box-shadow:0 3px 10px rgba(200,168,75,.35);}
-.top-avatar{width:29px;height:29px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;flex-shrink:0;box-shadow:0 3px 10px rgba(228,45,44,.3);transition:transform .15s ease;}
+.gf-select{border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:12px;color:var(--ink);background:var(--card);cursor:pointer;outline:none;transition:border-color .15s ease,background .15s ease;font-family:inherit;}
+.gf-select:hover{border-color:#d3d7de;}
+.gf-select:focus{border-color:var(--navy);}
+.gf-chip{position:relative;display:flex;align-items:center;}
+.gf-chip svg.gf-chip-icon{position:absolute;left:9px;width:13px;height:13px;stroke:var(--faint);pointer-events:none;}
+.gf-chip svg.gf-chip-chevron{position:absolute;right:8px;width:13px;height:13px;stroke:var(--faint);pointer-events:none;}
+.gf-chip select.gf-select{appearance:none;-webkit-appearance:none;padding-left:26px;padding-right:24px;}
+.gf-chip input.gf-select{padding-left:9px;padding-right:9px;}
+.gf-chip input.gf-select.mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
+.topbar-sep{width:1px;height:22px;background:var(--line);flex-shrink:0;}
+.crm-btn{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(196,42,61,.25);transition:transform .15s ease,box-shadow .15s ease;}
+.crm-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(196,42,61,.32);}
+.crm-btn svg{width:14px;height:14px;stroke:currentColor;}
+.member-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold-soft);color:var(--gold);font-size:12px;font-weight:700;padding:7px 13px;border-radius:10px;}
+.member-badge svg{width:13px;height:13px;stroke:currentColor;fill:var(--gold-soft);}
+.top-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;flex-shrink:0;transition:transform .15s ease;}
 .top-avatar:hover{transform:scale(1.06);}
-#content{flex:1;overflow-y:auto;padding:22px 24px;}
+#content{flex:1;overflow-y:auto;padding:26px 28px;}
+#content>.page{max-width:1500px;margin:0 auto;}
 .page{display:none;}
 .page.active{display:block;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px;}
-.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:17px 18px;position:relative;overflow:hidden;box-shadow:var(--sh-xs);transition:transform .2s ease,box-shadow .2s ease;}
+.kpi-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 19px;position:relative;overflow:hidden;box-shadow:var(--sh-card);transition:transform .2s ease,box-shadow .2s ease;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--sh-sm);}
-.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px;}
-.kpi-label{font-size:8.5px;color:var(--muted);font-weight:700;letter-spacing:1.3px;}
-.kpi-icon{width:28px;height:28px;border-radius:9px;background:#f4f6fb;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.kpi-icon svg{width:15px;height:15px;stroke:currentColor;}
-.kpi-value{font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
-.kpi-delta{font-size:9.5px;margin-top:5px;font-weight:600;color:var(--muted);}
-.kpi-card.kpi-accent{background:linear-gradient(155deg,var(--blue),var(--blue2));border-color:transparent;}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:16px;}
+.kpi-label{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.kpi-icon{width:26px;height:26px;border-radius:8px;color:var(--faint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kpi-icon svg{width:17px;height:17px;stroke:currentColor;}
+.kpi-value{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.03em;}
+.kpi-delta{font-size:11.5px;margin-top:6px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.kpi-delta svg{width:12px;height:12px;stroke:currentColor;}
+.kpi-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);display:inline-block;}
+.kpi-card.kpi-accent{background:var(--navy);border-color:transparent;}
 .kpi-card.kpi-accent .kpi-label{color:rgba(255,255,255,.55);}
 .kpi-card.kpi-accent .kpi-value{color:#fff;}
-.kpi-card.kpi-accent .kpi-icon{background:rgba(255,255,255,.14);color:#fff;}
-.kpi-card.kpi-accent .kpi-delta{color:rgba(255,255,255,.7);}
+.kpi-card.kpi-accent .kpi-icon{color:rgba(255,255,255,.7);}
+.kpi-card.kpi-accent .kpi-delta{color:#5fd39c;}
 .delta-up{color:var(--green);}
 .card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--sh-sm);}
 .card-title{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .card-title .sub{color:var(--muted);font-weight:500;font-size:10px;margin-left:auto;}
-.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px;}
+.grid-2{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:18px;}
 .grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;color:var(--muted);}
 .spinner{width:28px;height:28px;border:3px solid #f0f2f8;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px;}
@@ -90,15 +112,29 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothi
 .opp-meta span{font-size:10px;color:var(--muted);}
 .grant-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:15px;box-shadow:var(--sh-sm);margin-bottom:10px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
 .grant-card:hover{border-color:rgba(21,41,120,.28);box-shadow:var(--sh-md);transform:translateY(-2px);}
+.grant-row{display:flex;align-items:flex-start;gap:10px;padding:13px 8px;border-radius:10px;transition:background .15s ease;}
+.grant-row:hover{background:var(--line-soft);}
+.grant-row+.grant-row{border-top:1px solid var(--line-soft);}
+.grant-row-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.grant-row-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.grant-row-tag{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin-top:4px;}
+.grant-row-ver{display:inline-flex;align-items:center;gap:2px;color:var(--red);font-size:11.5px;font-weight:700;text-decoration:none;flex-shrink:0;margin-left:auto;}
+.grant-row-ver svg{width:13px;height:13px;stroke:currentColor;}
+.grants-footer{display:block;text-align:center;padding:12px;margin-top:4px;border-top:1px solid var(--line-soft);color:var(--red);font-size:12px;font-weight:700;text-decoration:none;}
+.grants-footer:hover{background:var(--line-soft);}
 .badge{display:inline-block;padding:2.5px 9px;border-radius:var(--r-sm);font-size:9.5px;font-weight:700;letter-spacing:.2px;}
 .bg{background:#dcfce7;color:#15803d;}.bb{background:#dbeafe;color:#1d4ed8;}
 .by{background:#fef3c7;color:#92400e;}.br{background:#fee2e2;color:#b91c1c;}.bm{background:#f1f5f9;color:#475569;}
-.btn-red{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--r-sm);padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.3);transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;}
-.btn-red:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(228,45,44,.4);}
-.btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r-sm);padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(21,41,120,.3);transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;}
-.btn-blue:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(21,41,120,.4);}
-.btn-outline{background:#fff;color:var(--accent);border:1px solid rgba(228,45,44,.3);border-radius:var(--r-sm);padding:7px 14px;font-size:10.5px;font-weight:700;cursor:pointer;transition:background .15s ease,border-color .15s ease;font-family:inherit;}
-.btn-outline:hover{background:#fff5f5;border-color:rgba(228,45,44,.5);}
+.btn-red{background:var(--red);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
+.btn-red:hover{background:#a82333;transform:translateY(-1px);}
+.btn-blue{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
+.btn-blue:hover{background:#0d1c3d;transform:translateY(-1px);}
+.btn-outline{background:var(--card);color:var(--red);border:1px solid var(--line);border-radius:10px;padding:7px 14px;font-size:11.5px;font-weight:700;cursor:pointer;transition:background .15s ease,border-color .15s ease;font-family:inherit;}
+.btn-outline:hover{background:var(--red-soft);border-color:rgba(196,42,61,.3);}
+.btn-dark{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
+.btn-dark:hover{background:#1a2540;transform:translateY(-1px);}
+.btn-dark svg{width:14px;height:14px;stroke:currentColor;transition:transform .5s ease;}
+.btn-dark.spinning svg{animation:spin .9s linear infinite;}
 .search-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
 .search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:12px;outline:none;color:var(--text);background:#fff;font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
 .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,45,44,.1);}
@@ -120,15 +156,23 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothi
 .pipe-card:hover{border-color:var(--accent);box-shadow:var(--sh-sm);transform:translateY(-1px);}
 .pipe-card-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px;}
 .pipe-card-entity{font-size:9px;color:var(--muted);}
-.ai-panel{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:18px;box-shadow:var(--sh-xs);}
-.ai-badge{color:var(--text);font-size:12px;font-weight:800;letter-spacing:-.01em;}
-.icon-chip{width:26px;height:26px;border-radius:8px;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
-.icon-chip svg{width:14px;height:14px;stroke:currentColor;}
-.ai-response{font-size:11px;color:#374151;line-height:1.7;white-space:pre-wrap;margin-top:8px;}
-.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;display:inline-block;margin:0 2px;}
+.ai-panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-card);}
+.ai-badge{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--red);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.icon-chip{width:30px;height:30px;border-radius:9px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(20,38,79,.22);}
+.icon-chip svg{width:16px;height:16px;stroke:currentColor;}
+.ai-response{font-size:12.5px;color:var(--muted);line-height:1.7;white-space:pre-wrap;margin-top:10px;}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-left:2px;}
+.live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite;display:inline-block;margin:0 2px;}
 .ai-dot:nth-child(2){animation-delay:.2s;}.ai-dot:nth-child(3){animation-delay:.4s;}
-@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.2);}}
-.error-box{background:#fff5f5;border:1px solid #fecaca;border-radius:var(--r-sm);padding:15px;color:#b91c1c;font-size:11px;line-height:1.6;}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.85);}50%{opacity:1;transform:scale(1.15);}}
+.error-box{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:15px;color:var(--muted);font-size:11px;line-height:1.6;}
+.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 24px;}
+.empty-icon{width:44px;height:44px;border-radius:12px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.empty-icon svg{width:22px;height:22px;stroke:currentColor;}
+.empty-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.empty-body{font-size:12px;color:var(--muted);line-height:1.7;max-width:340px;margin-bottom:16px;}
+.chip-mono{font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--line-soft);color:var(--ink);padding:1px 6px;border-radius:5px;font-size:11px;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,14,35,.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:#fff;border-radius:var(--r-lg);padding:24px;max-width:580px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid rgba(255,255,255,.6);}
@@ -439,34 +483,39 @@ tr:hover td{background:#f8f9fc;}
      SIDEBAR
 ═══════════════════════════════════════════════════════ -->
 <div id="sidebar">
-  <div class="logo" style="padding:16px 18px 14px;background:transparent;">
-    <div style="background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 8px 20px rgba(8,14,45,.25);">
-      <img src="/logo-square.png" alt="GovBidder Club" style="width:100%;max-width:130px;height:auto;display:block;margin:0 auto;"/>
+  <div class="logo">
+    <div class="logo-lockup">
+      <img src="/logo-square.png" alt="GovBidder Club" class="logo-mark"/>
+      <div>
+        <div class="logo-word"><span class="logo-gov">GovBidder</span> <span class="logo-bidder">Club</span></div>
+        <div class="logo-sub">COMMAND CENTER</div>
+      </div>
     </div>
-    <div class="logo-sub" style="margin-top:9px;text-align:center;">COMMAND CENTER</div>
-    <div class="logo-tag" style="text-align:center;">The Bid That Wins</div>
   </div>
   <div class="nav-section">MAIN</div>
-  <div class="nav-item active" onclick="nav(this,'home')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</div>
-  <div class="nav-item" onclick="nav(this,'market')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg></span>Market Intelligence</div>
-  <div class="nav-item" onclick="nav(this,'tools')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M4 12h16"/><path d="M4 18h10"/><circle cx="17" cy="6" r="2"/><circle cx="9" cy="18" r="2"/></svg></span>Herramientas</div>
+  <div class="nav-item active" onclick="nav(this,'home')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>Home</div>
+  <div class="nav-item" onclick="nav(this,'market')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>Market Intelligence</div>
+  <div class="nav-item" onclick="nav(this,'tools')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg></span>Herramientas</div>
   <div class="nav-section">FIND</div>
-  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-5-5"/></svg></span>Opportunities<span class="nav-badge" id="nb-opps">—</span></div>
-  <div class="nav-item" onclick="nav(this,'grants')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.7c0-1.1 1.1-2 2.5-2s2.5.8 2.5 1.8-1.1 1.6-2.5 1.9-2.5 1-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-1.9"/></svg></span>Grants Hub<span class="nav-badge" id="nb-grants">—</span></div>
-  <div class="nav-item" onclick="nav(this,'codes')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3 7 21"/><path d="M17 3l-2.5 18"/><path d="M4 9h16"/><path d="M3 15h16"/></svg></span>Code Intelligence</div>
-  <div class="nav-item" onclick="nav(this,'geo')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5l6-2 6 2 6-2v16l-6 2-6-2-6 2z"/><path d="M10 3v16"/><path d="M16 5v16"/></svg></span>Buyer Geography</div>
+  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></span>Opportunities<span class="nav-badge" id="nb-opps">—</span></div>
+  <div class="nav-item" onclick="nav(this,'grants')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>Grants Hub<span class="nav-badge" id="nb-grants">—</span></div>
+  <div class="nav-item" onclick="nav(this,'codes')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span>Code Intelligence</div>
+  <div class="nav-item" onclick="nav(this,'geo')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg></span>Buyer Geography</div>
   <div class="nav-section">ANALYZE</div>
-  <div class="nav-item" onclick="nav(this,'compete')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 7.5"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 7.5"/><path d="M12 12v4"/><path d="M8.5 20h7"/><path d="M9.5 20c0-1.8 1-2.8 2.5-2.8s2.5 1 2.5 2.8"/></svg></span>Competitive Intel</div>
+  <div class="nav-item" onclick="nav(this,'compete')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span>Competitive Intel</div>
   <div class="nav-section">OPERATE</div>
   <!-- GovBidder Club Member title -->
-  <div style="margin:6px 10px 10px;background:linear-gradient(135deg,rgba(228,45,44,.18),rgba(21,41,120,.22));border:1px solid rgba(200,168,75,.3);border-radius:11px;padding:10px 12px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.15);">
-    <div style="font-size:8px;color:rgba(255,255,255,.45);letter-spacing:1.8px;font-weight:800;">GOVBIDDER CLUB</div>
-    <div style="font-size:10px;color:#fde68a;font-weight:800;margin-top:3px;">⭐ Member Portal</div>
+  <div style="margin:6px 10px 10px;background:var(--navy);border-radius:11px;padding:11px 13px;text-align:center;box-shadow:0 6px 18px rgba(20,38,79,.22);">
+    <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.16em;font-weight:600;">GOVBIDDER CLUB</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#fff;font-weight:700;margin-top:4px;">
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="#E3B341" stroke="#E3B341" stroke-width="1.5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
+      Member Portal
+    </div>
   </div>
-  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M8 11h8M8 15h5"/></svg></span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6"/><path d="M5 10v9M10 10v9M14 10v9M19 10v9"/><path d="M3 19h18"/></svg></span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg></span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -480,9 +529,11 @@ tr:hover td{background:#f8f9fc;}
       <div class="page-title" id="ptitle">Command Center</div>
       <div class="page-subtitle" id="psubtitle">Panorama de tu actividad de contratación pública</div>
     </div>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
 
       <!-- Global State filter -->
+      <div class="gf-chip">
+      <svg class="gf-chip-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
       <select class="gf-select" id="f-state" onchange="onGlobalFilter()">
         <optgroup label="NORTHEAST"><option value="CT">CT</option><option value="DC">DC</option><option value="DE">DE</option><option value="MA">MA</option><option value="MD">MD</option><option value="ME">ME</option><option value="NH">NH</option><option value="NJ" selected>NJ</option><option value="NY">NY</option><option value="PA">PA</option><option value="RI">RI</option><option value="VT">VT</option></optgroup>
         <optgroup label="SOUTH"><option value="AL">AL</option><option value="AR">AR</option><option value="FL">FL</option><option value="GA">GA</option><option value="KY">KY</option><option value="LA">LA</option><option value="MS">MS</option><option value="NC">NC</option><option value="OK">OK</option><option value="SC">SC</option><option value="TN">TN</option><option value="TX">TX</option><option value="VA">VA</option><option value="WV">WV</option></optgroup>
@@ -490,18 +541,22 @@ tr:hover td{background:#f8f9fc;}
         <optgroup label="WEST"><option value="AK">AK</option><option value="AZ">AZ</option><option value="CA">CA</option><option value="CO">CO</option><option value="HI">HI</option><option value="ID">ID</option><option value="MT">MT</option><option value="NM">NM</option><option value="NV">NV</option><option value="OR">OR</option><option value="UT">UT</option><option value="WA">WA</option><option value="WY">WY</option></optgroup>
         <optgroup label="TERRITORIES"><option value="PR">PR</option></optgroup>
       </select>
+      <svg class="gf-chip-chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
 
       <!-- Global NAICS filter (datalist input) -->
+      <div class="gf-chip">
       <input
         id="f-naics"
-        class="gf-select"
-        style="width:200px;cursor:text;"
+        class="gf-select mono"
+        style="width:170px;cursor:text;"
         placeholder="NAICS code o keyword..."
         value="561720"
         list="naics-suggestions"
         onchange="onGlobalFilter()"
         oninput="onGlobalFilter()"
       />
+      </div>
       <datalist id="naics-suggestions">
         <option value="111110">111110 - Soybean Farming</option>
         <option value="112111">112111 - Beef Cattle Ranching</option>
@@ -540,7 +595,8 @@ tr:hover td{background:#f8f9fc;}
       </datalist>
 
       <!-- Global Year filter -->
-      <select class="gf-select" id="f-year">
+      <div class="gf-chip">
+      <select class="gf-select" id="f-year" style="padding-left:10px;">
         <option value="2026">2026</option>
         <option value="2025">2025</option>
         <option value="2024" selected>2024</option>
@@ -549,9 +605,13 @@ tr:hover td{background:#f8f9fc;}
         <option value="2021">2021</option>
         <option value="2020">2020</option>
       </select>
+      <svg class="gf-chip-chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
 
-      <a href="https://app.govbidder.net/" target="_blank" class="crm-btn">⚡ GovBidder App</a>
-      <div class="member-badge" id="plan-badge">⭐ LEGACY</div>
+      <div class="topbar-sep"></div>
+
+      <a href="https://app.govbidder.net/" target="_blank" class="crm-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>GovBidder App</a>
+      <div class="member-badge" id="plan-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>LEGACY</div>
 
       <!-- AVATAR + DROPDOWN MENU -->
       <div style="position:relative;" id="avatar-wrapper">
@@ -594,45 +654,50 @@ tr:hover td{background:#f8f9fc;}
     <div class="page active" id="page-home">
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-top"><div class="kpi-label">LIVE OPPS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span></div>
-          <div class="kpi-value" id="kpi-opps">—</div><div class="kpi-delta delta-up" id="kpi-opps-d">SAM.gov</div>
+          <div class="kpi-top"><div class="kpi-label">LIVE OPPS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg></span></div>
+          <div class="kpi-value" id="kpi-opps" style="color:var(--faint);">—</div>
+          <div class="kpi-delta"><span class="kpi-dot"></span><span id="kpi-opps-d">SAM.gov</span></div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-top"><div class="kpi-label">GRANTS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.7c0-1.1 1.1-2 2.5-2s2.5.8 2.5 1.8-1.1 1.6-2.5 1.9-2.5 1-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-1.9"/></svg></span></div>
-          <div class="kpi-value" id="kpi-grants">—</div><div class="kpi-delta delta-up" id="kpi-grants-d">Grants.gov</div>
+          <div class="kpi-top"><div class="kpi-label">GRANTS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span></div>
+          <div class="kpi-value" id="kpi-grants">—</div>
+          <div class="kpi-delta delta-up" id="kpi-grants-d">Grants.gov</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-top"><div class="kpi-label">NAICS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3 7 21"/><path d="M17 3l-2.5 18"/><path d="M4 9h16"/><path d="M3 15h16"/></svg></span></div>
-          <div class="kpi-value" style="font-size:16px;" id="kpi-naics">561720</div><div class="kpi-delta" id="kpi-naics-desc">Janitorial</div>
+          <div class="kpi-top"><div class="kpi-label">NAICS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg></span></div>
+          <div class="kpi-value mono" style="font-size:25px;" id="kpi-naics">561720</div><div class="kpi-delta" id="kpi-naics-desc">Janitorial</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-top"><div class="kpi-label">ESTADO</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span></div>
-          <div class="kpi-value" style="font-size:16px;" id="kpi-state">NJ</div><div class="kpi-delta" id="kpi-state-desc">New Jersey</div>
+          <div class="kpi-top"><div class="kpi-label">ESTADO</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span></div>
+          <div class="kpi-value" style="font-size:22px;" id="kpi-state">NJ</div><div class="kpi-delta" id="kpi-state-desc">New Jersey</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-top"><div class="kpi-label">BIDS ACTIVOS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span></div>
+          <div class="kpi-top"><div class="kpi-label">BIDS ACTIVOS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg></span></div>
           <div class="kpi-value">3</div><div class="kpi-delta">en pipeline</div>
         </div>
         <div class="kpi-card kpi-accent">
-          <div class="kpi-top"><div class="kpi-label">WIN RATE</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 7.5"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 7.5"/><path d="M12 12v4"/><path d="M8.5 20h7"/><path d="M9.5 20c0-1.8 1-2.8 2.5-2.8s2.5 1 2.5 2.8"/></svg></span></div>
-          <div class="kpi-value">36%</div><div class="kpi-delta">↑ 4 ganados</div>
+          <div class="kpi-top"><div class="kpi-label">WIN RATE</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span></div>
+          <div class="kpi-value">36%</div>
+          <div class="kpi-delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>4 ganados</div>
         </div>
       </div>
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI DAILY BRIEF</span>
-          <button onclick="runAI('home')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Generar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span><span class="ai-badge">AI DAILY BRIEF</span>
+          <span class="live-dot">datos live</span>
+          <button class="btn-dark" style="margin-left:auto;" onclick="runAI('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>Generar brief</button>
         </div>
         <div class="ai-response" id="ai-home">Haz clic en "Generar" para tu brief diario con datos live.</div>
       </div>
       <div class="grid-2">
         <div class="card">
-          <div class="card-title">📋 Oportunidades Recientes <span class="sub" id="home-opps-src">SAM.gov</span></div>
+          <div class="card-title"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Oportunidades Recientes <span class="sub" id="home-opps-src">SAM.gov</span></div>
           <div id="home-opps"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando SAM.gov...</div></div></div>
         </div>
-        <div class="card">
-          <div class="card-title">💰 Grants Recientes <span class="sub" id="home-grants-src">Grants.gov</span></div>
-          <div id="home-grants"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando Grants.gov...</div></div></div>
+        <div class="card" style="padding:18px 0;">
+          <div class="card-title" style="padding-left:18px;padding-right:18px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--gold)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> Grants Recientes <span class="sub" id="home-grants-src">20 live</span></div>
+          <div id="home-grants" style="padding:0 18px;"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando Grants.gov...</div></div></div>
+          <a href="#" onclick="nav(document.querySelector(&quot;.nav-item[onclick*=grants]&quot;),'grants');return false;" class="grants-footer">Ver todos los grants →</a>
         </div>
       </div>
     </div>
@@ -641,8 +706,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-opps">
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI ANALYST</span>
-          <button onclick="runAI('opps')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span><span class="ai-badge">AI ANALYST</span>
+          <button class="btn-dark" style="margin-left:auto;" onclick="runAI('opps', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>Analizar</button>
         </div>
         <div class="ai-response" id="ai-opps">Busca oportunidades y luego haz clic en Analizar.</div>
       </div>
@@ -667,8 +732,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-grants">
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI GRANTS ADVISOR</span>
-          <button onclick="runAI('grants')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span><span class="ai-badge">AI GRANTS ADVISOR</span>
+          <button class="btn-dark" style="margin-left:auto;" onclick="runAI('grants', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>Analizar</button>
         </div>
         <div class="ai-response" id="ai-grants">Busca grants y haz clic en Analizar.</div>
       </div>
@@ -687,8 +752,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="page" id="page-market">
       <div class="ai-panel">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span><span class="ai-badge">AI MARKET BRIEF</span>
-          <button onclick="runAI('market')" style="margin-left:auto;background:linear-gradient(155deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:10px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span><span class="ai-badge">AI MARKET BRIEF</span>
+          <button class="btn-dark" style="margin-left:auto;" onclick="runAI('market', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>Analizar</button>
         </div>
         <div class="ai-response" id="ai-market">Haz clic en Cargar para ver datos live de USASpending.gov</div>
       </div>
@@ -1841,10 +1906,19 @@ async function fetchOpps() {
       : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${kw}" en ${st}.</div>`;
     document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
   } catch(e) {
-    const err = `<div class="error-box">❌ SAM.gov: ${e.message}</div>`;
+    const err = e.message.includes('SAM_API_KEY') ? samKeyEmptyState() : `<div class="error-box">${e.message}</div>`;
     document.getElementById('opps-list').innerHTML  = err;
     document.getElementById('home-opps').innerHTML  = err;
   }
+}
+
+function samKeyEmptyState() {
+  return `<div class="empty-state">
+    <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+    <div class="empty-title">Falta configurar tu API key de SAM.gov</div>
+    <div class="empty-body">La variable <span class="chip-mono">SAM_API_KEY</span> no está definida. Agregala en Vercel → Settings → Environment Variables para ver oportunidades en vivo.</div>
+    <a href="https://vercel.com" target="_blank" class="btn-red" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">Configurar ahora<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  </div>`;
 }
 
 function oppCard(o) {
@@ -1854,15 +1928,15 @@ function oppCard(o) {
   return `<div class="opp-card" onclick='openModal(${d})'>
     <div class="opp-title">${o.title||'Sin título'}</div>
     <div class="opp-meta">
-      <span>🏛️ <strong>${(o.organization||'—').substring(0,45)}</strong></span>
-      <span>📍 ${o.state||'—'}</span>
-      <span>📅 <strong style="color:${urgent?'var(--accent)':'var(--text)'}">${dl}${urgent?' ⚠️':''}</strong></span>
+      <span><strong>${(o.organization||'—').substring(0,45)}</strong></span>
+      <span>${o.state||'—'}</span>
+      <span><strong style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></span>
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;">
       <span class="badge bb">${o.type||'N/A'}</span>
-      ${o.naicsCode?`<span class="badge bm">NAICS ${o.naicsCode}</span>`:''}
+      ${o.naicsCode?`<span class="badge bm mono">NAICS ${o.naicsCode}</span>`:''}
       ${o.setAside?`<span class="badge bg">${o.setAside}</span>`:''}
-      <span style="margin-left:auto;font-size:10px;color:var(--accent);font-weight:700;">Ver detalle →</span>
+      <span style="margin-left:auto;font-size:10px;color:var(--red);font-weight:700;">Ver detalle →</span>
     </div>
   </div>`;
 }
@@ -1870,9 +1944,9 @@ function oppCard(o) {
 function oppRow(o) {
   const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
   const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
-  return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f4f6fb;align-items:center;">
-    <span style="font-size:11px;font-weight:600;color:var(--text);flex:1;margin-right:8px;">${(o.title||'').substring(0,50)}${(o.title||'').length>50?'...':''}</span>
-    <span style="font-size:9.5px;white-space:nowrap;color:${urgent?'var(--accent)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}${urgent?' ⚠️':''}</span>
+  return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line-soft);align-items:center;">
+    <span style="font-size:12px;font-weight:600;color:var(--ink);flex:1;margin-right:8px;">${(o.title||'').substring(0,50)}${(o.title||'').length>50?'...':''}</span>
+    <span class="mono" style="font-size:10.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}</span>
   </div>`;
 }
 
@@ -1903,20 +1977,34 @@ async function fetchGrants() {
     document.getElementById('kpi-grants').textContent     = data.total || liveGrants.length;
     document.getElementById('kpi-grants-d').textContent   = `${liveGrants.length} activos`;
     document.getElementById('nb-grants').textContent      = liveGrants.length;
-    document.getElementById('home-grants-src').textContent = `${liveGrants.length} live • Grants.gov`;
+    document.getElementById('home-grants-src').textContent = `${liveGrants.length} live`;
     document.getElementById('grants-list').innerHTML = liveGrants.length
       ? liveGrants.map(g => grantCard(g)).join('')
       : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${kw}".</div>`;
-    document.getElementById('home-grants').innerHTML = liveGrants.slice(0,4).map(g => `
-      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f4f6fb;">
-        <span style="font-size:11px;font-weight:600;color:var(--text);flex:1;margin-right:8px;">${(g.title||'').substring(0,45)}...</span>
-        <span style="font-size:9.5px;color:var(--green);white-space:nowrap;font-weight:700;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver'}</span>
-      </div>`).join('');
+    document.getElementById('home-grants').innerHTML = liveGrants.slice(0,4).map(g => grantRow(g)).join('');
   } catch(e) {
-    const err = `<div class="error-box">❌ Grants.gov: ${e.message}</div>`;
+    const err = `<div class="error-box">${e.message}</div>`;
     document.getElementById('grants-list').innerHTML  = err;
     document.getElementById('home-grants').innerHTML  = err;
   }
+}
+
+const CAT_COLORS = ['var(--red)','var(--navy)','var(--gold)','var(--green)'];
+function catColor(cat) {
+  const s = cat || 'general';
+  let h = 0; for (let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0;
+  return CAT_COLORS[h % CAT_COLORS.length];
+}
+
+function grantRow(g) {
+  return `<div class="grant-row">
+    <span class="grant-row-dot" style="background:${catColor(g.category)};"></span>
+    <div style="flex:1;min-width:0;">
+      <div class="grant-row-title">${g.title||''}</div>
+      <div class="grant-row-tag">${(g.category||'GRANT').toString().toUpperCase()}</div>
+    </div>
+    <a href="#" onclick="openModal({title:'${(g.title||'').replace(/'/g,"\\'")}',org:'${(g.agency||'—').replace(/'/g,"\\'")}',type:'Grant',deadline:'${g.closeDate||'N/A'}',naics:'—',city:'—',state:'—',desc:'${(g.description||'').replace(/'/g,"\\'").replace(/\n/g,' ')}',link:'${g.link||'#'}'});return false;" class="grant-row-ver">Ver<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
+  </div>`;
 }
 
 function grantCard(g) {
@@ -1927,13 +2015,13 @@ function grantCard(g) {
       <div style="font-size:12.5px;font-weight:700;color:var(--text);flex:1;margin-right:12px;">${g.title||'Sin título'}</div>
       <div style="font-size:12px;font-weight:800;color:var(--green);white-space:nowrap;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver conv.'}</div>
     </div>
-    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">${g.agency||'—'} · <strong style="color:${urgent?'var(--accent)':'var(--text)'}">${dl}${urgent?' ⚠️':''}</strong></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">${g.agency||'—'} · <strong class="mono" style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
-      <span class="badge bb">${g.oppNumber||'—'}</span>
+      <span class="badge bb mono">${g.oppNumber||'—'}</span>
       ${g.category?`<span class="badge bm">${g.category}</span>`:''}
     </div>
     <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">${(g.synopsis||'').substring(0,180)}...</div>
-    <a href="${g.link}" target="_blank" style="font-size:10px;color:var(--accent);font-weight:700;text-decoration:none;">🔗 Ver en Grants.gov →</a>
+    <a href="${g.link}" target="_blank" style="font-size:10px;color:var(--red);font-weight:700;text-decoration:none;">Ver en Grants.gov →</a>
   </div>`;
 }
 
@@ -2115,7 +2203,7 @@ async function searchCodes() {
             </div>
             <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M6.5 6.5 9 9M15 15l2.5 2.5M17.5 6.5 15 9M9 15l-2.5 2.5"/></svg></span>
+                <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span>
                 <span style="background:linear-gradient(135deg,#E42D2C,#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
                 <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:#E42D2C;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
               </div>
@@ -2195,24 +2283,30 @@ async function getCodeAI(naics, title) {
 }
 
 // ── AI ───────────────────────────────────────────────────
-async function runAI(page) {
+async function runAI(page, btn) {
   const el = document.getElementById(`ai-${page}`);
   el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
+  if (btn) { btn.classList.add('spinning'); btn.disabled = true; }
   const prompts = {
     home:    `Soy negocio cleaning/janitorial NJ plan Legacy GovBidder. ${liveOpps.length} opps en SAM.gov, ${liveGrants.length} grants activos. Dame brief estratégico de hoy.`,
     opps:    `Tengo ${liveOpps.length} oportunidades live SAM.gov cleaning NJ. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
     grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy cleaning/janitorial NJ bajo 10 empleados plan Legacy. ¿Cuáles aplican?`,
     market:  `Analiza mercado contratos gubernamentales cleaning/janitorial NAICS 561720 NJ 2024. Tendencias, top buyers y oportunidades.`
   };
+  const minDelay = new Promise(r => setTimeout(r, 1400));
   try {
-    const res  = await fetch(`${API}/ai`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompts[page], context: 'Plan Legacy, Cleaning/Janitorial, New Jersey' })
-    });
+    const [res] = await Promise.all([
+      fetch(`${API}/ai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompts[page], context: 'Plan Legacy, Cleaning/Janitorial, New Jersey' })
+      }),
+      minDelay
+    ]);
     const data = await res.json();
     el.textContent = data.success ? data.response : 'IA no disponible.';
   } catch(e) { el.textContent = 'IA no disponible: ' + e.message; }
+  if (btn) { btn.classList.remove('spinning'); btn.disabled = false; }
 }
 
 // ── GEO ──────────────────────────────────────────────────
