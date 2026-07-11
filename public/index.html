@@ -1533,45 +1533,60 @@ tr:hover td{background:var(--line-soft);}
 
     <!-- ADMIN -->
     <div class="page" id="page-admin">
-      <div class="grid-2b" style="margin-bottom:16px;">
-        <div class="card">
-          <div class="card-title">➕ Crear Tarea desde Catálogo</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <select class="gf-select" id="admin-catalog-select" style="width:100%;padding:9px;"><option value="">Cargando catálogo...</option></select>
-            <input class="search-input" id="admin-client-ref" placeholder="Referencia de cliente (ej. Cliente #12)..." style="width:100%;"/>
-            <div id="admin-job-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
-            <button onclick="createAdminJob()" class="btn-red" style="padding:10px;">Crear tarea</button>
+      <!-- TABS -->
+      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div class="geo-tab active" id="tab-admin-jobs"         onclick="adminTab('jobs')">🗂️ Tareas</div>
+        <div class="geo-tab"        id="tab-admin-applications" onclick="adminTab('applications')">📥 Postulaciones</div>
+        <div class="geo-tab"        id="tab-admin-tickets"      onclick="adminTab('tickets')">🎯 Tickets de Soporte</div>
+        <div class="geo-tab"        id="tab-admin-alliance"     onclick="adminTab('alliance')">🤝 Solicitudes Alliance</div>
+      </div>
+
+      <!-- TAB: TAREAS -->
+      <div id="admin-panel-jobs" class="geo-panel active">
+        <div class="grid-2b">
+          <div class="card">
+            <div class="card-title">➕ Crear Tarea desde Catálogo</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <select class="gf-select" id="admin-catalog-select" style="width:100%;padding:9px;"><option value="">Cargando catálogo...</option></select>
+              <input class="search-input" id="admin-client-ref" placeholder="Referencia de cliente (ej. Cliente #12)..." style="width:100%;"/>
+              <div id="admin-job-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
+              <button onclick="createAdminJob()" class="btn-red" style="padding:10px;">Crear tarea</button>
+            </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="card-title">🗂️ Trabajos Creados</div>
-          <div style="max-height:260px;overflow-y:auto;">
-            <table><thead><tr><th>TAREA</th><th>CLIENTE</th><th>ESTADO</th><th>ASIGNADO A</th><th>ACCIÓN</th></tr></thead>
-            <tbody id="admin-jobs-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          <div class="card">
+            <div class="card-title">🗂️ Trabajos Creados</div>
+            <div style="max-height:400px;overflow-y:auto;">
+              <table><thead><tr><th>TAREA</th><th>CLIENTE</th><th>ESTADO</th><th>ASIGNADO A</th><th>ACCIÓN</th></tr></thead>
+              <tbody id="admin-jobs-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-title">📥 Postulaciones Pendientes</div>
-        <table><thead><tr><th>MIEMBRO</th><th>PLAN</th><th>TAREA</th><th>PRECIO</th><th>ACCIÓN</th></tr></thead>
-        <tbody id="admin-applications-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+      <!-- TAB: POSTULACIONES -->
+      <div id="admin-panel-applications" class="geo-panel">
+        <div class="card">
+          <div class="card-title">📥 Postulaciones Pendientes</div>
+          <table><thead><tr><th>MIEMBRO</th><th>PLAN</th><th>TAREA</th><th>PRECIO</th><th>ACCIÓN</th></tr></thead>
+          <tbody id="admin-applications-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+        </div>
       </div>
 
-      <div class="grid-2b">
+      <!-- TAB: TICKETS -->
+      <div id="admin-panel-tickets" class="geo-panel">
         <div class="card">
           <div class="card-title">🎯 Tickets de Soporte</div>
-          <div style="max-height:260px;overflow-y:auto;">
-            <table><thead><tr><th>MIEMBRO</th><th>TIPO</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
-            <tbody id="admin-tickets-body"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
-          </div>
+          <table><thead><tr><th>MIEMBRO</th><th>TIPO</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
+          <tbody id="admin-tickets-body"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
         </div>
+      </div>
+
+      <!-- TAB: ALLIANCE -->
+      <div id="admin-panel-alliance" class="geo-panel">
         <div class="card">
           <div class="card-title">🤝 Solicitudes Alliance</div>
-          <div style="max-height:260px;overflow-y:auto;">
-            <table><thead><tr><th>MIEMBRO</th><th>EMPRESA</th><th>PO / COSTO</th><th>DOC</th><th>ESTADO</th></tr></thead>
-            <tbody id="admin-alliance-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
-          </div>
+          <table><thead><tr><th>MIEMBRO</th><th>EMPRESA</th><th>PO / COSTO</th><th>DOC</th><th>ESTADO</th></tr></thead>
+          <tbody id="admin-alliance-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
         </div>
       </div>
     </div>
@@ -3094,6 +3109,13 @@ async function clubAdminFetch(action, extra) {
 const JOB_STATUS_BADGE = {
   open: ['bb','Abierto'], applied: ['by','Postulada'], assigned: ['bg','Asignada'], completed: ['bm','Completada']
 };
+
+function adminTab(tab) {
+  document.querySelectorAll('#page-admin .geo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#page-admin .geo-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-admin-' + tab).classList.add('active');
+  document.getElementById('admin-panel-' + tab).classList.add('active');
+}
 
 async function loadAdminPanel() {
   if (!isAdmin()) return;
