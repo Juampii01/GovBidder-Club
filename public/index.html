@@ -1624,6 +1624,7 @@ const PLAN_LIMITS = {
   Prime:   { bidSupportPerMonth: 3, alliancePct: 60, shopDiscount: 20 },
   Legacy:  { bidSupportPerMonth: 5, alliancePct: 90, shopDiscount: 50 },
 };
+const PLAN_LEVEL = { Elevate: 1, Prime: 2, Legacy: 3 };
 
 function nav(el, page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -2970,9 +2971,10 @@ function calcAlliance() {
 }
 
 // ── TASK WORK (bolsa de trabajo "Done For You") ───────────
-function renderOpenJob(job, alreadyApplied) {
+function renderOpenJob(job, alreadyApplied, myLevel) {
   const c = job.task_catalog;
-  return `<div class="pipe-card" style="cursor:default;">
+  const locked = PLAN_LEVEL[c.required_plan] > myLevel;
+  return `<div class="pipe-card" style="cursor:default;${locked ? 'opacity:.65;' : ''}">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
       <div>
         <div class="pipe-card-title">${escapeHtml(c.name)}</div>
@@ -2981,9 +2983,11 @@ function renderOpenJob(job, alreadyApplied) {
       <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
     </div>
     <div style="margin-top:8px;">
-      ${alreadyApplied
-        ? `<span class="badge by">Postulación enviada</span>`
-        : `<button class="btn-outline" style="width:100%;padding:6px;" onclick="applyToJob('${job.id}')">Postularme</button>`}
+      ${locked
+        ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px;border:1px dashed var(--line);border-radius:8px;">🔒 Requiere plan <strong>${escapeHtml(c.required_plan)}</strong> — actualizá tu membresía para postularte</div>`
+        : alreadyApplied
+          ? `<span class="badge by">Postulación enviada</span>`
+          : `<button class="btn-outline" style="width:100%;padding:6px;" onclick="applyToJob('${job.id}')">Postularme</button>`}
     </div>
   </div>`;
 }
@@ -3025,15 +3029,18 @@ async function loadTaskWork() {
     const data = await res.json();
     if (!data.success) return;
 
-    document.getElementById('tw-open-count').textContent  = data.open.length;
+    const myLevel = PLAN_LEVEL[currentMember.plan] || 0;
+    const eligibleCount = data.open.filter(j => PLAN_LEVEL[j.task_catalog?.required_plan] <= myLevel).length;
+
+    document.getElementById('tw-open-count').textContent  = eligibleCount;
     document.getElementById('tw-mine-count').textContent  = data.mine.length;
     document.getElementById('tw-mine-value').textContent  = '$' + data.mine.reduce((s,j) => s + Number(j.task_catalog?.price||0), 0).toLocaleString();
 
     const openEl = document.getElementById('tw-open-container');
     if (openEl) {
       openEl.innerHTML = data.open.length
-        ? data.open.map(j => renderOpenJob(j, data.appliedJobIds.includes(j.id))).join('')
-        : `<div style="text-align:center;padding:30px;color:var(--muted);">No hay tareas disponibles para tu plan en este momento.</div>`;
+        ? data.open.map(j => renderOpenJob(j, data.appliedJobIds.includes(j.id), myLevel)).join('')
+        : `<div style="text-align:center;padding:30px;color:var(--muted);">No hay tareas disponibles en este momento.</div>`;
     }
 
     const mineEl = document.getElementById('tw-mine-container');

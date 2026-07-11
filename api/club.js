@@ -130,16 +130,12 @@ export default async function handler(req, res) {
 
     // ── TASK WORK (bolsa de trabajo) ───────────────────
     if (action === 'work_pool_list') {
-      const myLevel = PLAN_LEVEL[profile.plan] || 0;
-      const { data: catalog } = await supabase.from('task_catalog').select('*').order('sort_order');
-      const visibleCatalogIds = (catalog || [])
-        .filter(c => PLAN_LEVEL[c.required_plan] <= myLevel)
-        .map(c => c.id);
-
+      // Se muestran TODAS las tareas abiertas, sin importar el plan — así un miembro
+      // ve el catálogo completo y lo que gana cada tarea, aunque solo pueda postularse
+      // a las de su nivel o inferior (incentiva el upgrade de plan).
       const { data: openJobs } = await supabase.from('work_pool_jobs')
         .select('*, task_catalog(name, price, required_plan)')
-        .eq('status', 'open')
-        .in('catalog_id', visibleCatalogIds.length ? visibleCatalogIds : [0]);
+        .eq('status', 'open');
 
       const { data: myJobs } = await supabase.from('work_pool_jobs')
         .select('*, task_catalog(name, price, required_plan)')
