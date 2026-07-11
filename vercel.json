@@ -18,6 +18,7 @@
     { "source": "/api/codes",         "destination": "/api/codes.js"         },
     { "source": "/api/geography",     "destination": "/api/geography.js"     },
     { "source": "/api/auth",          "destination": "/api/auth.js"          },
+    { "source": "/api/club",          "destination": "/api/club.js"          },
     { "source": "/:file(.+\\.\\w+)",  "destination": "/public/:file"         },
     { "source": "/((?!api/).*)",      "destination": "/public/index.html"    }
   ],
