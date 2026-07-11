@@ -97,7 +97,7 @@ export default async function handler(req, res) {
       if (limits.alliancePct <= 0) {
         return res.status(403).json({ success: false, error: 'Tu plan no incluye acceso a GovBidder Alliance.' });
       }
-      const { company, contractState, description } = body;
+      const { company, contractState, description, poDocumentBase64, poDocumentName } = body;
       const poValue = Number(body.poValue);
       const cost = Number(body.cost);
       if (!company || !Number.isFinite(poValue) || !Number.isFinite(cost) || poValue <= 0 || cost <= 0) {
@@ -106,9 +106,23 @@ export default async function handler(req, res) {
       if (cost > poValue) {
         return res.status(400).json({ success: false, error: 'El costo de mercancía no puede ser mayor al valor de la PO.' });
       }
+      if (!poDocumentBase64 || !poDocumentName || !/\.pdf$/i.test(poDocumentName)) {
+        return res.status(400).json({ success: false, error: 'Adjuntá la orden de compra (PDF) para continuar.' });
+      }
+
+      const buffer = Buffer.from(poDocumentBase64, 'base64');
+      if (buffer.length > 3 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: 'El PDF no puede superar los 3MB.' });
+      }
+
+      const path = `${profile.id}/${Date.now()}-${poDocumentName.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const { error: upErr } = await supabase.storage.from('alliance-documents')
+        .upload(path, buffer, { contentType: 'application/pdf' });
+      if (upErr) return res.status(500).json({ success: false, error: 'No se pudo subir el documento: ' + upErr.message });
 
       const { data, error: insErr } = await supabase.from('alliance_requests').insert({
-        member_id: profile.id, company, po_value: poValue, cost, contract_state: contractState || '', description: description || ''
+        member_id: profile.id, company, po_value: poValue, cost, contract_state: contractState || '', description: description || '',
+        po_document_path: path
       }).select().single();
       if (insErr) return res.status(500).json({ success: false, error: insErr.message });
       return res.status(200).json({ success: true, request: data });
@@ -282,6 +296,17 @@ export default async function handler(req, res) {
           .select('*, profiles!alliance_requests_member_id_fkey(name, email, plan)')
           .order('created_at', { ascending: false });
         return res.status(200).json({ success: true, requests: data || [] });
+      }
+
+      if (action === 'admin_alliance_get_document') {
+        const { requestId } = body;
+        if (!requestId) return res.status(400).json({ success: false, error: 'requestId requerido' });
+        const { data: reqRow } = await supabase.from('alliance_requests').select('po_document_path').eq('id', requestId).single();
+        if (!reqRow || !reqRow.po_document_path) return res.status(404).json({ success: false, error: 'Esta solicitud no tiene documento adjunto.' });
+        const { data: signed, error: signErr } = await supabase.storage.from('alliance-documents')
+          .createSignedUrl(reqRow.po_document_path, 300);
+        if (signErr) return res.status(500).json({ success: false, error: signErr.message });
+        return res.status(200).json({ success: true, url: signed.signedUrl });
       }
 
       if (action === 'admin_alliance_review') {

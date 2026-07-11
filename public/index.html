@@ -1205,7 +1205,7 @@ tr:hover td{background:var(--line-soft);}
         <div style="font-size:36px;">🤝</div>
         <div>
           <div style="color:#fff;font-size:15px;font-weight:800;">GovBidder Alliance — Programa de Fondos</div>
-          <div style="color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;line-height:1.6;">Financiamiento de Purchase Orders para miembros activos.<br>GovBidder aporta hasta un % del costo de mercancía según tu plan.</div>
+          <div style="color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;line-height:1.6;">Apoyo económico para cumplir tus Purchase Orders, para miembros activos.<br>GovBidder aporta hasta un % del costo de mercancía según tu plan.</div>
         </div>
         <div style="margin-left:auto;text-align:right;">
           <div style="background:rgba(200,168,75,.2);border:1px solid rgba(200,168,75,.3);border-radius:8px;padding:6px 14px;">
@@ -1293,6 +1293,12 @@ tr:hover td{background:var(--line-soft);}
                 <option value="Activo — en ejecución">🔄 Activo — en ejecución</option>
                 <option value="Pendiente — esperando award">⏳ Pendiente — esperando award</option>
               </select>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ORDEN DE COMPRA (PO) — PDF *</label>
+              <input id="alliance-po-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:7px;"/>
+              <div style="font-size:9px;color:var(--muted);margin-top:3px;">Necesario para verificar los montos — máx. 3MB.</div>
             </div>
 
           </div>
@@ -1563,8 +1569,8 @@ tr:hover td{background:var(--line-soft);}
         <div class="card">
           <div class="card-title">🤝 Solicitudes Alliance</div>
           <div style="max-height:260px;overflow-y:auto;">
-            <table><thead><tr><th>MIEMBRO</th><th>EMPRESA</th><th>PO / COSTO</th><th>ESTADO</th></tr></thead>
-            <tbody id="admin-alliance-body"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+            <table><thead><tr><th>MIEMBRO</th><th>EMPRESA</th><th>PO / COSTO</th><th>DOC</th><th>ESTADO</th></tr></thead>
+            <tbody id="admin-alliance-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
           </div>
         </div>
       </div>
@@ -1609,7 +1615,7 @@ const SUBTITLES = {
   grants:'Subvenciones federales activas en Grants.gov', codes:'NAICS, PSC y NIGP explicados y cruzados',
   geo:'Compradores por estado, distrito escolar y condado', compete:'Quién está ganando en tu mercado',
   pipeline:'Seguimiento de tus licitaciones en curso', support:'Soporte dedicado para miembros',
-  alliance:'Financiamiento de Purchase Orders para miembros', taskwork:'Bolsa de trabajo GovBidder Club',
+  alliance:'Apoyo económico para Purchase Orders de miembros', taskwork:'Bolsa de trabajo GovBidder Club',
   admin:'Gestión de tareas, postulaciones, tickets y solicitudes'
 };
 
@@ -1920,7 +1926,7 @@ function showMemberLock(page) {
           💼 Trabajos asignados por GovBidder Club<br>
           📋 Bid Pipeline para seguimiento de licitaciones<br>
           🎯 Soporte dedicado con expertos<br>
-          🤝 Programa Alliance — financiamiento de POs
+          🤝 Programa Alliance — apoyo económico para POs
         </div>
       </div>
     </div>`;
@@ -2748,7 +2754,7 @@ function updateAlliancePreview() {
 
   cont.innerHTML = `
     💰 Valor PO: <strong>$${po.toLocaleString()}</strong><br>
-    🏦 GovBidder aporta (${pct}%): <strong style="color:var(--blue)">$${apoyo.toLocaleString()}</strong><br>
+    🏦 GovBidder aporta (${pct}%): <strong style="color:var(--ink)">$${apoyo.toLocaleString()}</strong><br>
     👤 Tu aporte (${100 - pct}%): <strong>$${tuParte.toLocaleString()}</strong><br>
     📈 Ganancia bruta: <strong>$${ganancia.toLocaleString()}</strong><br>
     🤝 Fee Alliance (20%): $${fee.toLocaleString()}<br>
@@ -2794,6 +2800,15 @@ async function loadAllianceStatus() {
   } catch(e) { /* deja los valores por defecto */ }
 }
 
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(',')[1] || '');
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 async function submitAllianceApp() {
   const name    = (document.getElementById('alliance-name')?.value    || '').trim();
   const company = (document.getElementById('alliance-company')?.value || '').trim();
@@ -2801,6 +2816,7 @@ async function submitAllianceApp() {
   const cost    = (document.getElementById('alliance-cost')?.value    || '').trim();
   const status  = (document.getElementById('alliance-status')?.value  || '').trim();
   const desc    = (document.getElementById('alliance-desc')?.value    || '').trim();
+  const docFile = document.getElementById('alliance-po-doc')?.files?.[0];
 
   const errEl  = document.getElementById('alliance-error');
   const succEl = document.getElementById('alliance-success');
@@ -2814,18 +2830,32 @@ async function submitAllianceApp() {
     if (errEl) { errEl.textContent = 'Por favor completa todos los campos requeridos.'; errEl.style.display = 'block'; }
     return;
   }
+  if (!docFile) {
+    if (errEl) { errEl.textContent = 'Adjuntá la orden de compra (PDF) para continuar.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (docFile.type !== 'application/pdf') {
+    if (errEl) { errEl.textContent = 'El archivo debe ser un PDF.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (docFile.size > 3 * 1024 * 1024) {
+    if (errEl) { errEl.textContent = 'El PDF no puede superar los 3MB.'; errEl.style.display = 'block'; }
+    return;
+  }
 
   if (btn)    btn.disabled    = true;
   if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
 
   try {
+    const poDocumentBase64 = await readFileAsBase64(docFile);
     const res  = await fetch('/api/club?action=alliance_request_create', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({
         token: clubToken(), company,
         poValue: parseFloat(po) || 0, cost: parseFloat(cost) || 0,
-        contractState: status, description: `${name} — ${desc}`
+        contractState: status, description: `${name} — ${desc}`,
+        poDocumentBase64, poDocumentName: docFile.name
       })
     });
     const data = await res.json();
@@ -2834,7 +2864,7 @@ async function submitAllianceApp() {
       if (succEl) succEl.style.display = 'block';
       if (btn)    btn.style.display    = 'none';
       // Clear form
-      ['alliance-name','alliance-company','alliance-po','alliance-cost','alliance-desc'].forEach(id => {
+      ['alliance-name','alliance-company','alliance-po','alliance-cost','alliance-desc','alliance-po-doc'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
@@ -3177,13 +3207,23 @@ async function loadAdminAlliance() {
           <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved')">Aprobar</button>
           <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="reviewAlliance('${r.id}','rejected')">Rechazar</button>
         </div>` : '';
+    const docLink = r.po_document_path
+      ? `<button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="viewAllianceDocument('${r.id}')">📄 Ver PO</button>`
+      : '<span style="color:var(--muted);font-size:9.5px;">—</span>';
     return `<tr>
       <td>${escapeHtml(r.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(r.profiles?.plan)}</span></td>
       <td>${escapeHtml(r.company)}</td>
       <td>$${Number(r.po_value).toLocaleString()} / $${Number(r.cost).toLocaleString()}</td>
+      <td>${docLink}</td>
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
+}
+
+async function viewAllianceDocument(requestId) {
+  const data = await clubAdminFetch('admin_alliance_get_document', { requestId });
+  if (!data.success) { alert(data.error || 'No se pudo abrir el documento.'); return; }
+  window.open(data.url, '_blank');
 }
 
 async function reviewAlliance(requestId, decision) {
