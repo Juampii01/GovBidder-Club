@@ -64,27 +64,27 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .logo{padding:22px 20px 18px;border-bottom:1px solid var(--line);background:transparent;}
 .logo-lockup{display:flex;align-items:center;gap:11px;}
 .logo-mark{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);background:#fff;object-fit:contain;padding:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.15);}
-.logo-word{font-size:15px;font-weight:800;letter-spacing:-.02em;line-height:1.15;}
+.logo-word{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.15;}
 .logo-main{display:flex;align-items:baseline;}
 .logo-gov{color:var(--navy);}
 .logo-bidder{color:var(--red);}
-.logo-sub{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--faint);font-size:9px;letter-spacing:.16em;font-weight:600;margin-top:2px;}
+.logo-sub{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--faint);font-size:12px;letter-spacing:.16em;font-weight:700;margin-top:2px;}
 .logo-tag{display:none;}
-.nav-section{padding:20px 0 8px 22px;color:var(--faint);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.16em;font-weight:600;}
-.nav-item{display:flex;align-items:center;gap:11px;margin:1px 10px;padding:9px 13px;border-radius:10px;color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;position:relative;transition:background .15s ease,color .15s ease;}
+.nav-section{padding:20px 0 8px 22px;color:var(--faint);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;letter-spacing:.16em;font-weight:700;}
+.nav-item{display:flex;align-items:center;gap:11px;margin:1px 10px;padding:9px 13px;border-radius:10px;color:var(--ink);font-size:16.5px;font-weight:700;cursor:pointer;position:relative;transition:background .15s ease,color .15s ease;}
 .nav-item:hover{background:var(--line-soft);}
 .nav-item.active{background:var(--red-soft);color:var(--red);font-weight:700;}
 .nav-item.active::before{content:'';position:absolute;left:-10px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--red);}
 .nav-item .icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .nav-item.active .icon,.nav-item:hover .icon{color:currentColor;}
 .nav-item .icon svg{width:18px;height:18px;stroke:currentColor;}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;padding:1.5px 7px;border-radius:9px;font-weight:600;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;padding:1.5px 7px;border-radius:9px;font-weight:700;}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;display:none;}
 #topbar{background:rgba(245,246,248,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:18px 28px;display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:wrap;position:sticky;top:0;z-index:4;}
 .page-title-wrap{margin-right:auto;min-width:0;}
-.page-title{font-size:19px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-.02em;line-height:1.25;}
-.page-subtitle{font-size:12.5px;color:var(--muted);margin-top:2px;}
-.gf-select{border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:12px;color:var(--ink);background:var(--card);cursor:pointer;outline:none;transition:border-color .15s ease,background .15s ease;font-family:inherit;}
+.page-title{font-size:20px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-.02em;line-height:1.25;}
+.page-subtitle{font-size:15.5px;color:var(--muted);margin-top:2px;}
+.gf-select{border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:15px;color:var(--ink);background:var(--card);cursor:pointer;outline:none;transition:border-color .15s ease,background .15s ease;font-family:inherit;}
 .gf-select:hover{border-color:#d3d7de;}
 .gf-select:focus{border-color:var(--navy);}
 .gf-chip{position:relative;display:flex;align-items:center;}
@@ -94,16 +94,16 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .gf-chip input.gf-select{padding-left:9px;padding-right:9px;}
 .gf-chip input.gf-select.mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
 .topbar-sep{width:1px;height:22px;background:var(--line);flex-shrink:0;}
-.crm-btn{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(196,42,61,.25);transition:transform .15s ease,box-shadow .15s ease;}
+.crm-btn{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:15.5px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(196,42,61,.25);transition:transform .15s ease,box-shadow .15s ease;}
 .crm-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(196,42,61,.32);}
 .crm-btn svg{width:14px;height:14px;stroke:currentColor;}
-.member-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:7px 13px;border-radius:10px;}
+.member-badge{display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:700;padding:7px 13px;border-radius:10px;}
 .member-badge svg{width:13px;height:13px;stroke:currentColor;fill:currentColor;fill-opacity:.15;}
 .member-badge.plan-legacy{background:var(--gold-soft);color:var(--gold);}
 .member-badge.plan-elevate{background:var(--red-soft);color:var(--red);}
 .member-badge.plan-prime{background:rgba(59,130,246,.12);color:#1d4ed8;}
 [data-theme="dark"] .member-badge.plan-prime{background:rgba(59,130,246,.18);color:#8ec0f8;}
-.top-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;flex-shrink:0;transition:transform .15s ease;}
+.top-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800;flex-shrink:0;transition:transform .15s ease;}
 .top-avatar:hover{transform:scale(1.06);}
 .theme-toggle-btn{width:34px;height:34px;border-radius:10px;background:var(--line-soft);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s ease,color .15s ease;}
 .theme-toggle-btn:hover{background:var(--red-soft);color:var(--red);}
@@ -117,11 +117,11 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .kpi-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 19px;position:relative;overflow:hidden;box-shadow:var(--sh-card);transition:transform .2s ease,box-shadow .2s ease;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--sh-sm);}
 .kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:16px;}
-.kpi-label{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.kpi-label{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
 .kpi-icon{width:26px;height:26px;border-radius:8px;color:var(--faint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .kpi-icon svg{width:17px;height:17px;stroke:currentColor;}
 .kpi-value{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.03em;}
-.kpi-delta{font-size:11.5px;margin-top:6px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.kpi-delta{font-size:14.5px;margin-top:6px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:4px;}
 .kpi-delta svg{width:12px;height:12px;stroke:currentColor;}
 .kpi-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);display:inline-block;}
 .kpi-card.kpi-accent{background:var(--navy);border-color:transparent;}
@@ -131,53 +131,53 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .kpi-card.kpi-accent .kpi-delta{color:#5fd39c;}
 .delta-up{color:var(--green);}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--sh-sm);}
-.card-title{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.card-title .sub{color:var(--muted);font-weight:500;font-size:10px;margin-left:auto;}
+.card-title{font-size:14.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.card-title .sub{color:var(--muted);font-weight:500;font-size:13px;margin-left:auto;}
 .grid-2{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:18px;}
 .grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;color:var(--muted);}
 .spinner{width:28px;height:28px;border:3px solid #f0f2f8;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-size:11px;}
+.loading-text{font-size:14px;}
 .opp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--sh-sm);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:pointer;margin-bottom:10px;}
 .opp-card:hover{border-color:rgba(228,45,44,.32);box-shadow:var(--sh-md);transform:translateY(-2px);}
-.opp-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.opp-title{font-size:15.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
 .opp-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
-.opp-meta span{font-size:10px;color:var(--muted);}
+.opp-meta span{font-size:13px;color:var(--muted);}
 .grant-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:15px;box-shadow:var(--sh-sm);margin-bottom:10px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
 .grant-card:hover{border-color:rgba(21,41,120,.28);box-shadow:var(--sh-md);transform:translateY(-2px);}
 .grant-row{display:flex;align-items:flex-start;gap:10px;padding:13px 8px;border-radius:10px;transition:background .15s ease;}
 .grant-row:hover{background:var(--line-soft);}
 .grant-row+.grant-row{border-top:1px solid var(--line-soft);}
 .grant-row-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:6px;}
-.grant-row-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.grant-row-tag{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin-top:4px;}
-.grant-row-ver{display:inline-flex;align-items:center;gap:2px;color:var(--red);font-size:11.5px;font-weight:700;text-decoration:none;flex-shrink:0;margin-left:auto;}
+.grant-row-title{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.grant-row-tag{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin-top:4px;}
+.grant-row-ver{display:inline-flex;align-items:center;gap:2px;color:var(--red);font-size:14.5px;font-weight:700;text-decoration:none;flex-shrink:0;margin-left:auto;}
 .grant-row-ver svg{width:13px;height:13px;stroke:currentColor;}
-.grants-footer{display:block;text-align:center;padding:12px;margin-top:4px;border-top:1px solid var(--line-soft);color:var(--red);font-size:12px;font-weight:700;text-decoration:none;}
+.grants-footer{display:block;text-align:center;padding:12px;margin-top:4px;border-top:1px solid var(--line-soft);color:var(--red);font-size:15px;font-weight:700;text-decoration:none;}
 .grants-footer:hover{background:var(--line-soft);}
-.badge{display:inline-block;padding:2.5px 9px;border-radius:var(--r-sm);font-size:9.5px;font-weight:700;letter-spacing:.2px;}
+.badge{display:inline-block;padding:4px 11px;border-radius:var(--r-sm);font-size:12.5px;font-weight:700;letter-spacing:.2px;}
 .bg{background:#dcfce7;color:#15803d;}.bb{background:#dbeafe;color:#1d4ed8;}
 .by{background:#fef3c7;color:#92400e;}.br{background:#fee2e2;color:#b91c1c;}.bm{background:#f1f5f9;color:#475569;}
-.btn-red{background:var(--red);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
+.btn-red{background:var(--red);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
 .btn-red:hover{background:#a82333;transform:translateY(-1px);}
-.btn-blue{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
+.btn-blue{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
 .btn-blue:hover{background:#0d1c3d;transform:translateY(-1px);}
-.btn-outline{background:var(--card);color:var(--red);border:1px solid var(--line);border-radius:10px;padding:7px 14px;font-size:11.5px;font-weight:700;cursor:pointer;transition:background .15s ease,border-color .15s ease;font-family:inherit;}
+.btn-outline{background:var(--card);color:var(--red);border:1px solid var(--line);border-radius:10px;padding:7px 14px;font-size:14.5px;font-weight:700;cursor:pointer;transition:background .15s ease,border-color .15s ease;font-family:inherit;}
 .btn-outline:hover{background:var(--red-soft);border-color:rgba(196,42,61,.3);}
-.btn-dark{display:inline-flex;align-items:center;gap:7px;background:var(--ink-fixed);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
+.btn-dark{display:inline-flex;align-items:center;gap:7px;background:var(--ink-fixed);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:15.5px;font-weight:700;cursor:pointer;transition:background .15s ease,transform .15s ease;font-family:inherit;}
 .btn-dark:hover{background:#1a2540;transform:translateY(-1px);}
 .btn-dark svg{width:14px;height:14px;stroke:currentColor;transition:transform .5s ease;}
 .btn-dark.spinning svg{animation:spin .9s linear infinite;}
 .search-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
-.search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:12px;outline:none;color:var(--text);background:var(--card);font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
+.search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:15px;outline:none;color:var(--text);background:var(--card);font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
 .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,45,44,.1);}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.bar-label{font-size:10px;color:var(--muted);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bar-track{flex:1;height:7px;background:#eef0f7;border-radius:5px;overflow:hidden;}
+.bar-label{font-size:13px;color:var(--muted);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:10px;background:#eef0f7;border-radius:5px;overflow:hidden;}
 .bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
 .bar-fill-blue{background:linear-gradient(90deg,var(--blue),#1e3090);}
-.bar-val{font-size:10px;font-weight:700;color:var(--text);width:56px;text-align:right;}
+.bar-val{font-size:13px;font-weight:700;color:var(--text);width:56px;text-align:right;}
 .pipeline-board{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
 .pipe-col{background:var(--line-soft);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;border-top:3px solid var(--muted);}
 .pipe-col:nth-child(1){border-top-color:#94a3b8;}
@@ -185,42 +185,42 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .pipe-col:nth-child(3){border-top-color:#d97706;}
 .pipe-col:nth-child(4){border-top-color:#7c3aed;}
 .pipe-col:nth-child(5){border-top-color:#16a34a;}
-.pipe-col-title{font-size:8.5px;font-weight:800;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;}
+.pipe-col-title{font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;}
 .pipe-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
 .pipe-card:hover{border-color:var(--accent);box-shadow:var(--sh-sm);transform:translateY(-1px);}
-.pipe-card-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px;}
-.pipe-card-entity{font-size:9px;color:var(--muted);}
+.pipe-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.pipe-card-entity{font-size:12px;color:var(--muted);}
 .ai-panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-card);}
-.ai-badge{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--red);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.ai-badge{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--red);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
 .icon-chip{width:30px;height:30px;border-radius:9px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(20,38,79,.22);}
 .icon-chip svg{width:16px;height:16px;stroke:currentColor;}
-.ai-response{font-size:12.5px;color:var(--muted);line-height:1.7;white-space:pre-wrap;margin-top:10px;}
-.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-left:2px;}
+.ai-response{font-size:15.5px;color:var(--muted);line-height:1.7;white-space:pre-wrap;margin-top:10px;}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:14.5px;color:var(--muted);margin-left:2px;}
 .live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;}
 .ai-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite;display:inline-block;margin:0 2px;}
 .ai-dot:nth-child(2){animation-delay:.2s;}.ai-dot:nth-child(3){animation-delay:.4s;}
 @keyframes pulse{0%,100%{opacity:.35;transform:scale(.85);}50%{opacity:1;transform:scale(1.15);}}
-.error-box{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:15px;color:var(--muted);font-size:11px;line-height:1.6;}
+.error-box{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:15px;color:var(--muted);font-size:14px;line-height:1.6;}
 .empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 24px;}
 .empty-icon{width:44px;height:44px;border-radius:12px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
 .empty-icon svg{width:22px;height:22px;stroke:currentColor;}
-.empty-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:6px;}
-.empty-body{font-size:12px;color:var(--muted);line-height:1.7;max-width:340px;margin-bottom:16px;}
-.chip-mono{font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--line-soft);color:var(--ink);padding:1px 6px;border-radius:5px;font-size:11px;}
+.empty-title{font-size:16.5px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.empty-body{font-size:15px;color:var(--muted);line-height:1.7;max-width:340px;margin-bottom:16px;}
+.chip-mono{font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--line-soft);color:var(--ink);padding:1px 6px;border-radius:5px;font-size:14px;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,14,35,.55);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--card);border-radius:var(--r-lg);padding:24px;max-width:580px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid rgba(255,255,255,.6);}
-.modal-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px;padding-right:24px;letter-spacing:-.02em;}
+.modal-title{font-size:16.5px;font-weight:800;color:var(--text);margin-bottom:14px;padding-right:24px;letter-spacing:-.02em;}
 .modal-field{margin-bottom:10px;}
-.modal-field label{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:3px;}
-.modal-field p{font-size:11px;color:var(--text);line-height:1.5;}
-.modal-close{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);transition:color .15s ease;}
+.modal-field label{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:3px;}
+.modal-field p{font-size:14px;color:var(--text);line-height:1.5;}
+.modal-close{float:right;background:none;border:none;font-size:19px;cursor:pointer;color:var(--muted);transition:color .15s ease;}
 .modal-close:hover{color:var(--accent);}
 table{width:100%;border-collapse:collapse;}
-th{font-size:8.5px;color:var(--muted);font-weight:800;letter-spacing:1.1px;padding:9px 10px;border-bottom:2px solid var(--border);text-align:left;background:var(--line-soft);}
-td{font-size:10.5px;padding:9px 10px;border-bottom:1px solid var(--line-soft);color:var(--muted);}
+th{font-size:11.5px;color:var(--muted);font-weight:800;letter-spacing:1.1px;padding:11px 12px;border-bottom:2px solid var(--border);text-align:left;background:var(--line-soft);}
+td{font-size:13.5px;padding:11px 12px;border-bottom:1px solid var(--line-soft);color:var(--muted);}
 tr:hover td{background:var(--line-soft);}
-.geo-tab{flex:1;padding:13px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
+.geo-tab{flex:1;padding:13px 8px;text-align:center;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
 .geo-tab:last-child{border-right:none;}
 .geo-tab:hover{background:var(--line-soft);color:var(--text);}
 .geo-tab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
@@ -280,19 +280,19 @@ tr:hover td{background:var(--line-soft);}
     <!-- LOGO -->
     <div style="text-align:center;margin-bottom:28px;">
       <div style="background:#fff;border-radius:16px;padding:16px 20px;display:inline-block;margin-bottom:4px;box-shadow:0 4px 20px rgba(0,0,0,.2);"><img src="/logo-square.png" alt="GovBidder Club" style="width:140px;height:auto;display:block;margin:0 auto 10px;"/></div>
-      <div style="color:rgba(255,255,255,.4);font-size:9px;letter-spacing:3px;font-weight:700;margin-top:3px;">COMMAND CENTER</div>
-      <div style="color:rgba(255,255,255,.2);font-size:10px;font-style:italic;margin-top:4px;">The Bid That Wins</div>
+      <div style="color:rgba(255,255,255,.4);font-size:12px;letter-spacing:3px;font-weight:700;margin-top:3px;">COMMAND CENTER</div>
+      <div style="color:rgba(255,255,255,.2);font-size:13px;font-style:italic;margin-top:4px;">The Bid That Wins</div>
       <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(228,45,44,.4),transparent);margin:20px 0 0;"></div>
     </div>
 
     <!-- TABS -->
     <div style="display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:4px;margin-bottom:22px;gap:4px;">
       <button id="tab-login-btn" onclick="switchTab('login')"
-        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;">
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;">
         🔑 Ingresar
       </button>
       <button id="tab-register-btn" onclick="switchTab('register')"
-        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:transparent;color:rgba(255,255,255,.5);">
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;background:transparent;color:rgba(255,255,255,.5);">
         ✍️ Registrarse
       </button>
     </div>
@@ -300,41 +300,41 @@ tr:hover td{background:var(--line-soft);}
     <!-- ══ TAB: LOGIN ══ -->
     <div id="tab-login">
       <div style="text-align:center;margin-bottom:20px;">
-        <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:3px;">Acceso Exclusivo — GovBidder Club</div>
-        <div style="color:rgba(255,255,255,.4);font-size:11px;">Ingresa tus credenciales para continuar.</div>
+        <div style="color:#fff;font-size:16.5px;font-weight:700;margin-bottom:3px;">Acceso Exclusivo — GovBidder Club</div>
+        <div style="color:rgba(255,255,255,.4);font-size:14px;">Ingresa tus credenciales para continuar.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div>
-          <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
+          <label style="color:rgba(255,255,255,.5);font-size:12.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
           <input id="login-email" type="email" placeholder="tu@email.com"
             onkeydown="if(event.key==='Enter')doLogin()"
-            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:16px;outline:none;font-family:inherit;transition:.2s;"
             onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
             onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
           />
         </div>
         <div>
-          <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONTRASEÑA</label>
+          <label style="color:rgba(255,255,255,.5);font-size:12.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONTRASEÑA</label>
           <div style="position:relative;">
             <input id="login-password" type="password" placeholder="••••••••••"
               onkeydown="if(event.key==='Enter')doLogin()"
-              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:16px;outline:none;font-family:inherit;transition:.2s;"
               onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
               onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
             />
             <button id="pass-toggle" onclick="togglePass()"
-              style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;">👁️</button>
+              style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16.5px;">👁️</button>
           </div>
         </div>
-        <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11.5px;text-align:center;"></div>
+        <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:14.5px;text-align:center;"></div>
         <button id="login-btn" onclick="doLogin()"
-          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:9px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
+          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:9px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
           onmouseover="this.style.transform='translateY(-1px)'"
           onmouseout="this.style.transform='translateY(0)'">
           <span id="login-btn-text">Ingresar al Command Center →</span>
         </button>
         <div style="text-align:center;margin-top:4px;">
-          <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:11px;text-decoration:none;">¿Problemas? Escríbenos</a>
+          <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:14px;text-decoration:none;">¿Problemas? Escríbenos</a>
         </div>
       </div>
     </div>
@@ -342,24 +342,24 @@ tr:hover td{background:var(--line-soft);}
     <!-- ══ TAB: REGISTER ══ -->
     <div id="tab-register" style="display:none;">
       <div style="text-align:center;margin-bottom:20px;">
-        <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:3px;">Solicitar Membresía</div>
-        <div style="color:rgba(255,255,255,.4);font-size:11px;">Revisaremos tu solicitud en 24–48 horas.</div>
+        <div style="color:#fff;font-size:16.5px;font-weight:700;margin-bottom:3px;">Solicitar Membresía</div>
+        <div style="color:rgba(255,255,255,.4);font-size:14px;">Revisaremos tu solicitud en 24–48 horas.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:11px;">
 
         <!-- Fila: Nombre + Empresa -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
-            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NOMBRE *</label>
+            <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NOMBRE *</label>
             <input id="reg-name" type="text" placeholder="Tu nombre"
-              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;transition:.2s;"
               onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
             />
           </div>
           <div>
-            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMPRESA *</label>
+            <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMPRESA *</label>
             <input id="reg-company" type="text" placeholder="Tu empresa"
-              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;transition:.2s;"
               onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
             />
           </div>
@@ -367,18 +367,18 @@ tr:hover td{background:var(--line-soft);}
 
         <!-- Email -->
         <div>
-          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMAIL *</label>
+          <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMAIL *</label>
           <input id="reg-email" type="email" placeholder="tu@empresa.com"
-            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;transition:.2s;"
             onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
           />
         </div>
 
         <!-- Teléfono -->
         <div>
-          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">TELÉFONO</label>
+          <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">TELÉFONO</label>
           <input id="reg-phone" type="tel" placeholder="(555) 000-0000"
-            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;transition:.2s;"
             onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
           />
         </div>
@@ -386,9 +386,9 @@ tr:hover td{background:var(--line-soft);}
         <!-- Fila: Estado + NAICS -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
-            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">ESTADO</label>
+            <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">ESTADO</label>
             <select id="reg-state"
-              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;">
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;">
               <option value="" style="background:#1a1f36;">Selecciona...</option>
               <optgroup label="── NORTHEAST ──" style="background:#1a1f36;">
                 <option value="CT" style="background:#1a1f36;">Connecticut</option>
@@ -455,9 +455,9 @@ tr:hover td{background:var(--line-soft);}
             </select>
           </div>
           <div>
-            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NAICS CODE</label>
+            <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NAICS CODE</label>
             <input id="reg-naics" type="text" placeholder="Ej: 561720"
-              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;transition:.2s;"
               onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
             />
           </div>
@@ -465,27 +465,27 @@ tr:hover td{background:var(--line-soft);}
 
         <!-- Plan -->
         <div>
-          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">PLAN DE INTERÉS</label>
+          <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">PLAN DE INTERÉS</label>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
             <label style="cursor:pointer;">
               <input type="radio" name="reg-plan" value="Elevate" style="display:none;" onchange="selectPlan(this)"/>
               <div class="plan-opt" id="plan-Elevate" style="background:rgba(228,45,44,.1);border:1px solid rgba(228,45,44,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
-                <div style="color:#fca5a5;font-size:9px;font-weight:800;">ELEVATE</div>
-                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Premium</div>
+                <div style="color:#fca5a5;font-size:12px;font-weight:800;">ELEVATE</div>
+                <div style="color:rgba(255,255,255,.4);font-size:11px;margin-top:2px;">Premium</div>
               </div>
             </label>
             <label style="cursor:pointer;">
               <input type="radio" name="reg-plan" value="Prime" style="display:none;" onchange="selectPlan(this)"/>
               <div class="plan-opt" id="plan-Prime" style="background:rgba(21,41,120,.2);border:1px solid rgba(21,41,120,.3);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
-                <div style="color:#93c5fd;font-size:9px;font-weight:800;">PRIME</div>
-                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Avanzado</div>
+                <div style="color:#93c5fd;font-size:12px;font-weight:800;">PRIME</div>
+                <div style="color:rgba(255,255,255,.4);font-size:11px;margin-top:2px;">Avanzado</div>
               </div>
             </label>
             <label style="cursor:pointer;">
               <input type="radio" name="reg-plan" value="Legacy" style="display:none;" onchange="selectPlan(this)"/>
               <div class="plan-opt" id="plan-Legacy" style="background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
-                <div style="color:#fde68a;font-size:9px;font-weight:800;">LEGACY</div>
-                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Elite</div>
+                <div style="color:#fde68a;font-size:12px;font-weight:800;">LEGACY</div>
+                <div style="color:rgba(255,255,255,.4);font-size:11px;margin-top:2px;">Elite</div>
               </div>
             </label>
           </div>
@@ -493,23 +493,23 @@ tr:hover td{background:var(--line-soft);}
 
         <!-- Mensaje opcional -->
         <div>
-          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">MENSAJE (OPCIONAL)</label>
+          <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">MENSAJE (OPCIONAL)</label>
           <textarea id="reg-message" rows="2" placeholder="Cuéntanos sobre tu negocio..."
-            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;resize:none;transition:.2s;"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:15px;outline:none;font-family:inherit;resize:none;transition:.2s;"
             onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"></textarea>
         </div>
 
         <!-- Error / Success -->
-        <div id="reg-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11px;text-align:center;"></div>
+        <div id="reg-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:14px;text-align:center;"></div>
         <div id="reg-success" style="display:none;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:14px;text-align:center;">
           <div style="font-size:24px;margin-bottom:6px;">✅</div>
-          <div style="color:#86efac;font-size:13px;font-weight:700;margin-bottom:4px;">¡Solicitud Enviada!</div>
-          <div style="color:rgba(255,255,255,.6);font-size:11px;line-height:1.6;">Revisaremos tu información y te contactaremos en <strong style="color:#fff;">24–48 horas</strong>.</div>
+          <div style="color:#86efac;font-size:16px;font-weight:700;margin-bottom:4px;">¡Solicitud Enviada!</div>
+          <div style="color:rgba(255,255,255,.6);font-size:14px;line-height:1.6;">Revisaremos tu información y te contactaremos en <strong style="color:#fff;">24–48 horas</strong>.</div>
         </div>
 
         <!-- Botón submit -->
         <button id="reg-btn" onclick="doRegister()"
-          style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:9px;padding:13px;font-size:12px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
+          style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:9px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
           <span id="reg-btn-text">Enviar Solicitud →</span>
         </button>
       </div>
@@ -517,9 +517,9 @@ tr:hover td{background:var(--line-soft);}
 
     <!-- PLAN BADGES -->
     <div style="display:flex;justify-content:center;gap:8px;margin-top:20px;">
-      <span style="background:rgba(228,45,44,.15);color:#fca5a5;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(228,45,44,.2);">ELEVATE</span>
-      <span style="background:rgba(21,41,120,.2);color:#93c5fd;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(21,41,120,.3);">PRIME</span>
-      <span style="background:rgba(200,168,75,.15);color:#fde68a;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,168,75,.25);">LEGACY</span>
+      <span style="background:rgba(228,45,44,.15);color:#fca5a5;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(228,45,44,.2);">ELEVATE</span>
+      <span style="background:rgba(21,41,120,.2);color:#93c5fd;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(21,41,120,.3);">PRIME</span>
+      <span style="background:rgba(200,168,75,.15);color:#fde68a;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,168,75,.25);">LEGACY</span>
     </div>
   </div>
 </div>
@@ -551,16 +551,16 @@ tr:hover td{background:var(--line-soft);}
   <div class="nav-section">OPERATE</div>
   <!-- GovBidder Club Member title -->
   <div style="margin:6px 10px 10px;background:var(--navy-2);border-radius:11px;padding:11px 13px;text-align:center;box-shadow:0 6px 18px rgba(20,38,79,.22);">
-    <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.16em;font-weight:600;">GOVBIDDER CLUB</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#fff;font-weight:700;margin-top:4px;">
+    <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.16em;font-weight:700;">GOVBIDDER CLUB</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;color:#fff;font-weight:700;margin-top:4px;">
       <svg viewBox="0 0 24 24" width="12" height="12" fill="#E3B341" stroke="#E3B341" stroke-width="1.5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
       Member Portal
     </div>
   </div>
-  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg></span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
-  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:10px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'pipeline')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg></span>Bid Pipeline<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg></span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
+  <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
   <div class="nav-item" id="nav-admin" style="display:none;" onclick="nav(this,'admin')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1.5a3 3 0 0 1-1.5 2.6L6 10a3 3 0 0 0-1.5 2.6V14a3 3 0 0 0 1.5 2.6l1.5.9a3 3 0 0 1 1.5 2.6V22"/><circle cx="12" cy="12" r="3"/></svg></span>Admin</div>
 </div>
 
@@ -675,20 +675,20 @@ tr:hover td{background:var(--line-soft);}
         ">
           <!-- Member info -->
           <div style="padding:13px 15px;background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;">
-            <div style="font-size:12px;font-weight:800;" id="menu-name">—</div>
-            <div style="font-size:9.5px;opacity:.7;margin-top:1px;" id="menu-email">—</div>
+            <div style="font-size:15px;font-weight:800;" id="menu-name">—</div>
+            <div style="font-size:12.5px;opacity:.7;margin-top:1px;" id="menu-email">—</div>
             <div style="margin-top:7px;" id="menu-plan-badge">
-              <span style="background:rgba(200,168,75,.3);color:#fde68a;font-size:8.5px;font-weight:800;padding:2px 9px;border-radius:10px;border:1px solid rgba(200,168,75,.4);">⭐ LEGACY</span>
+              <span style="background:rgba(200,168,75,.3);color:#fde68a;font-size:11.5px;font-weight:800;padding:2px 9px;border-radius:10px;border:1px solid rgba(200,168,75,.4);">⭐ LEGACY</span>
             </div>
           </div>
           <!-- Divider -->
           <div style="height:1px;background:var(--border);"></div>
           <!-- Actions -->
           <div style="padding:6px;">
-            <div style="padding:8px 10px;font-size:11px;color:var(--muted);border-radius:7px;cursor:default;">
+            <div style="padding:8px 10px;font-size:14px;color:var(--muted);border-radius:7px;cursor:default;">
               📊 Command Center
             </div>
-            <div onclick="doLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:11px;font-weight:700;color:var(--red);border-radius:7px;cursor:pointer;transition:.15s;"
+            <div onclick="doLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:14px;font-weight:700;color:var(--red);border-radius:7px;cursor:pointer;transition:.15s;"
               onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background='transparent'">
               <span>⏻</span> Cerrar Sesión
             </div>
@@ -720,7 +720,7 @@ tr:hover td{background:var(--line-soft);}
         </div>
         <div class="kpi-card">
           <div class="kpi-top"><div class="kpi-label">ESTADO</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span></div>
-          <div class="kpi-value" style="font-size:22px;" id="kpi-state">NJ</div><div class="kpi-delta" id="kpi-state-desc">New Jersey</div>
+          <div class="kpi-value" style="font-size:23px;" id="kpi-state">NJ</div><div class="kpi-delta" id="kpi-state-desc">New Jersey</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-top"><div class="kpi-label">BIDS ACTIVOS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg></span></div>
@@ -845,7 +845,7 @@ tr:hover td{background:var(--line-soft);}
             <option value="Midwest">Midwest</option>
             <option value="West">West</option>
           </select>
-          <div style="margin-left:auto;font-size:10px;color:var(--muted);" id="states-count">Cargando...</div>
+          <div style="margin-left:auto;font-size:13px;color:var(--muted);" id="states-count">Cargando...</div>
         </div>
         <div id="states-grid">
           <div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>
@@ -1015,13 +1015,13 @@ tr:hover td{background:var(--line-soft);}
             <option value="562111">562111 - Waste Collection</option>
           </select>
           <input id="county-search" class="search-input" placeholder="🔍 Filtrar condado..." oninput="filterCounties(this.value)" style="max-width:200px;"/>
-          <div style="margin-left:auto;font-size:10px;color:var(--muted);" id="counties-count"></div>
+          <div style="margin-left:auto;font-size:13px;color:var(--muted);" id="counties-count"></div>
         </div>
         <div id="counties-container">
           <div style="text-align:center;padding:40px;color:var(--muted);">
             <div style="font-size:32px;margin-bottom:8px;">🏛️</div>
-            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Selecciona un estado</div>
-            <div style="font-size:11.5px;">El sistema cargará todos los condados con datos de contratos</div>
+            <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:14.5px;">El sistema cargará todos los condados con datos de contratos</div>
           </div>
         </div>
       </div>
@@ -1090,8 +1090,8 @@ tr:hover td{background:var(--line-soft);}
         <div id="detail-container">
           <div style="text-align:center;padding:40px;color:var(--muted);">
             <div style="font-size:32px;margin-bottom:8px;">🗺️</div>
-            <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Selecciona un estado</div>
-            <div style="font-size:11.5px;">Haz clic en cualquier estado del grid o selecciónalo arriba</div>
+            <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:14.5px;">Haz clic en cualquier estado del grid o selecciónalo arriba</div>
           </div>
         </div>
       </div>
@@ -1119,8 +1119,8 @@ tr:hover td{background:var(--line-soft);}
     <!-- CODES -->
     <div class="page" id="page-codes">
       <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
-        <div style="font-size:13px;font-weight:800;color:var(--ink);margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
+        <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
           <input class="search-input" id="code-q" placeholder="Ej: 561720  ó  janitorial  ó  cleaning..." style="flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')searchCodes()"/>
           <select class="gf-select" id="code-search-type" style="width:160px;">
@@ -1130,22 +1130,22 @@ tr:hover td{background:var(--line-soft);}
           <button class="btn-red" onclick="searchCodes()">Buscar</button>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span style="font-size:9.5px;color:var(--muted);margin-right:4px;line-height:24px;">Populares:</span>
-          <span onclick="quickSearch('561720')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561720 Janitorial</span>
-          <span onclick="quickSearch('541519')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">541519 IT Services</span>
-          <span onclick="quickSearch('236220')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">236220 Construction</span>
-          <span onclick="quickSearch('722310')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">722310 Food Service</span>
-          <span onclick="quickSearch('561730')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561730 Landscaping</span>
-          <span onclick="quickSearch('561612')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561612 Security</span>
-          <span onclick="quickSearch('484110')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">484110 Trucking</span>
-          <span onclick="quickSearch('621610')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">621610 Home Health</span>
+          <span style="font-size:12.5px;color:var(--muted);margin-right:4px;line-height:24px;">Populares:</span>
+          <span onclick="quickSearch('561720')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">561720 Janitorial</span>
+          <span onclick="quickSearch('541519')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">541519 IT Services</span>
+          <span onclick="quickSearch('236220')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">236220 Construction</span>
+          <span onclick="quickSearch('722310')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">722310 Food Service</span>
+          <span onclick="quickSearch('561730')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">561730 Landscaping</span>
+          <span onclick="quickSearch('561612')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">561612 Security</span>
+          <span onclick="quickSearch('484110')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">484110 Trucking</span>
+          <span onclick="quickSearch('621610')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">621610 Home Health</span>
         </div>
       </div>
       <div id="codes-container">
         <div style="text-align:center;padding:40px;color:var(--muted);">
           <div style="font-size:40px;margin-bottom:12px;">🔢</div>
-          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Busca tu código NAICS</div>
-          <div style="font-size:11.5px;">Ingresa tu NAICS code o keyword y el sistema te dirá<br>tu equivalente en SIC, PSC, UNSPSC y NIGP</div>
+          <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;">Busca tu código NAICS</div>
+          <div style="font-size:14.5px;">Ingresa tu NAICS code o keyword y el sistema te dirá<br>tu equivalente en SIC, PSC, UNSPSC y NIGP</div>
         </div>
       </div>
     </div>
@@ -1154,7 +1154,7 @@ tr:hover td{background:var(--line-soft);}
     <div class="page" id="page-pipeline">
       <div class="pipeline-board">
         <div class="pipe-col"><div class="pipe-col-title">🔍 DETECTED</div>
-          <div class="pipe-card"><div class="pipe-card-title">Bergen Window Cleaning</div><div class="pipe-card-entity">Bergen County</div><div style="font-size:8.5px;color:var(--muted);margin-top:4px;">Apr 19</div></div>
+          <div class="pipe-card"><div class="pipe-card-title">Bergen Window Cleaning</div><div class="pipe-card-entity">Bergen County</div><div style="font-size:11.5px;color:var(--muted);margin-top:4px;">Apr 19</div></div>
           <div class="pipe-card"><div class="pipe-card-title">Custodial — Essex</div><div class="pipe-card-entity">Essex County Schools</div></div>
         </div>
         <div class="pipe-col"><div class="pipe-col-title">🔎 ANALYZING</div>
@@ -1162,7 +1162,7 @@ tr:hover td{background:var(--line-soft);}
         </div>
         <div class="pipe-col"><div class="pipe-col-title">📝 PREPARING</div>
           <div class="pipe-card"><div class="pipe-card-title">NJ DOE Custodial</div><div class="pipe-card-entity">NJ Dept. of Education</div></div>
-          <div class="pipe-card" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Janitorial — Middlesex</div><div class="pipe-card-entity">Middlesex Co. Schools</div><div style="font-size:8.5px;color:var(--accent);margin-top:4px;">⚠️ Apr 14</div></div>
+          <div class="pipe-card" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Janitorial — Middlesex</div><div class="pipe-card-entity">Middlesex Co. Schools</div><div style="font-size:11.5px;color:var(--accent);margin-top:4px;">⚠️ Apr 14</div></div>
         </div>
         <div class="pipe-col"><div class="pipe-col-title">📤 SUBMITTED</div>
           <div class="pipe-card"><div class="pipe-card-title">Newark City Cleaning</div><div class="pipe-card-entity">Newark City Hall</div></div>
@@ -1182,8 +1182,8 @@ tr:hover td{background:var(--line-soft);}
           <div style="display:flex;flex-direction:column;gap:8px;">
             <select class="gf-select" id="support-type" style="width:100%;padding:9px;"><option value="">Tipo de soporte...</option><option>Análisis de Oportunidad</option><option>Revisión de Documentos</option><option>Consulta de Códigos</option><option>Buyer Research</option></select>
             <input class="search-input" id="support-link" placeholder="Link de la oportunidad..." style="width:100%;"/>
-            <textarea id="support-message" style="border:1px solid var(--border);border-radius:7px;padding:9px;font-size:11px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);" rows="4" placeholder="Describe en qué necesitas ayuda..."></textarea>
-            <div id="support-error" style="display:none;color:var(--red);font-size:10.5px;"></div>
+            <textarea id="support-message" style="border:1px solid var(--border);border-radius:7px;padding:9px;font-size:14px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);" rows="4" placeholder="Describe en qué necesitas ayuda..."></textarea>
+            <div id="support-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
             <button onclick="submitTicket()" class="btn-red" id="support-submit-btn" style="padding:10px;">Enviar</button>
           </div>
         </div>
@@ -1204,14 +1204,14 @@ tr:hover td{background:var(--line-soft);}
       <div style="background:linear-gradient(135deg,#0a0c14,var(--navy));border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
         <div style="font-size:36px;">🤝</div>
         <div>
-          <div style="color:#fff;font-size:15px;font-weight:800;">GovBidder Alliance — Programa de Fondos</div>
-          <div style="color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;line-height:1.6;">Apoyo económico para cumplir tus Purchase Orders, para miembros activos.<br>GovBidder aporta hasta un % del costo de mercancía según tu plan.</div>
+          <div style="color:#fff;font-size:17px;font-weight:800;">GovBidder Alliance — Programa de Fondos</div>
+          <div style="color:rgba(255,255,255,.55);font-size:14px;margin-top:3px;line-height:1.6;">Apoyo económico para cumplir tus Purchase Orders, para miembros activos.<br>GovBidder aporta hasta un % del costo de mercancía según tu plan.</div>
         </div>
         <div style="margin-left:auto;text-align:right;">
           <div style="background:rgba(200,168,75,.2);border:1px solid rgba(200,168,75,.3);border-radius:8px;padding:6px 14px;">
-            <div style="color:#fde68a;font-size:9px;font-weight:700;letter-spacing:1px;">FEE PROGRAMA</div>
-            <div style="color:#fff;font-size:18px;font-weight:900;">20%</div>
-            <div style="color:rgba(255,255,255,.5);font-size:9px;">de ganancia neta</div>
+            <div style="color:#fde68a;font-size:12px;font-weight:700;letter-spacing:1px;">FEE PROGRAMA</div>
+            <div style="color:#fff;font-size:19px;font-weight:900;">20%</div>
+            <div style="color:rgba(255,255,255,.5);font-size:12px;">de ganancia neta</div>
           </div>
         </div>
       </div>
@@ -1219,8 +1219,8 @@ tr:hover td{background:var(--line-soft);}
       <!-- Bloqueado para Elevate -->
       <div id="alliance-locked" class="card" style="display:none;text-align:center;padding:36px 20px;">
         <div style="font-size:32px;margin-bottom:10px;">🔒</div>
-        <div style="font-size:14px;font-weight:800;color:var(--ink);margin-bottom:6px;">GovBidder Alliance no está incluido en tu plan</div>
-        <div style="font-size:11.5px;color:var(--muted);max-width:420px;margin:0 auto;line-height:1.7;">El fondeo de Purchase Orders está disponible desde el plan <strong>Prime</strong> (hasta 60%) y <strong>Legacy</strong> (hasta 90%). Contactá a GovBidder para actualizar tu membresía.</div>
+        <div style="font-size:16.5px;font-weight:800;color:var(--ink);margin-bottom:6px;">GovBidder Alliance no está incluido en tu plan</div>
+        <div style="font-size:14.5px;color:var(--muted);max-width:420px;margin:0 auto;line-height:1.7;">El fondeo de Purchase Orders está disponible desde el plan <strong>Prime</strong> (hasta 60%) y <strong>Legacy</strong> (hasta 90%). Contactá a GovBidder para actualizar tu membresía.</div>
       </div>
 
       <div id="alliance-content">
@@ -1229,12 +1229,12 @@ tr:hover td{background:var(--line-soft);}
         <div class="card">
           <div class="card-title">📊 Mi Estado Alliance</div>
           <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;">
-            <div class="kpi-card"><div class="kpi-label">PLAN</div><div class="kpi-value" style="font-size:16px;color:var(--gold)" id="alliance-plan">—</div></div>
+            <div class="kpi-card"><div class="kpi-label">PLAN</div><div class="kpi-value" style="font-size:17.5px;color:var(--gold)" id="alliance-plan">—</div></div>
             <div class="kpi-card"><div class="kpi-label">DÍAS</div><div class="kpi-value" id="alliance-days">—</div></div>
             <div class="kpi-card"><div class="kpi-label">MÁX</div><div class="kpi-value" id="alliance-max">—</div></div>
           </div>
           <div class="bar-row"><div class="bar-label">Elegibilidad</div><div class="bar-track"><div class="bar-fill" id="alliance-bar" style="width:0%;background:linear-gradient(90deg,var(--green),#15803d)"></div></div><div class="bar-val" style="color:var(--green)" id="alliance-bar-val">—</div></div>
-          <div style="margin-top:10px;font-size:10.5px;color:var(--muted);line-height:1.8;" id="alliance-checklist">Cargando...</div>
+          <div style="margin-top:10px;font-size:13.5px;color:var(--muted);line-height:1.8;" id="alliance-checklist">Cargando...</div>
         </div>
         <div class="card">
           <div class="card-title">🧮 Calculadora Alliance</div>
@@ -1242,14 +1242,14 @@ tr:hover td{background:var(--line-soft);}
             <input class="search-input" id="c-po" placeholder="Valor de la PO (ej. 10000)..." style="width:100%;"/>
             <input class="search-input" id="c-cost" placeholder="Costo de mercancía (ej. 8000)..." style="width:100%;"/>
             <button onclick="calcAlliance()" class="btn-red" style="padding:9px;">Calcular</button>
-            <div id="c-result" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.8;"></div>
+            <div id="c-result" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:14px;color:var(--muted);line-height:1.8;"></div>
           </div>
         </div>
       </div>
 
       <!-- Application Form -->
       <div class="card">
-        <div class="card-title" style="font-size:13px;">
+        <div class="card-title" style="font-size:16px;">
           📋 Solicitar Apoyo Alliance
           <span class="sub">Completa el formulario — te contactaremos en 24-48 hrs</span>
         </div>
@@ -1260,17 +1260,17 @@ tr:hover td{background:var(--line-soft);}
           <div style="display:flex;flex-direction:column;gap:10px;">
 
             <div>
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">NOMBRE COMPLETO *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">NOMBRE COMPLETO *</label>
               <input id="alliance-name" class="search-input" placeholder="Tu nombre completo..." style="width:100%;"/>
             </div>
 
             <div>
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">EMPRESA *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">EMPRESA *</label>
               <input id="alliance-company" class="search-input" placeholder="Nombre de tu empresa..." style="width:100%;"/>
             </div>
 
             <div>
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA PO *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA PO *</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
                 <input id="alliance-po" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
@@ -1278,7 +1278,7 @@ tr:hover td{background:var(--line-soft);}
             </div>
 
             <div>
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">COSTO DE PRODUCTOS/SERVICIOS *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">COSTO DE PRODUCTOS/SERVICIOS *</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
                 <input id="alliance-cost" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
@@ -1286,7 +1286,7 @@ tr:hover td{background:var(--line-soft);}
             </div>
 
             <div>
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ESTADO DEL CONTRATO *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ESTADO DEL CONTRATO *</label>
               <select id="alliance-status" class="search-input" style="width:100%;cursor:pointer;">
                 <option value="">Selecciona...</option>
                 <option value="Ganado — listo para ejecutar">✅ Ganado — listo para ejecutar</option>
@@ -1296,9 +1296,9 @@ tr:hover td{background:var(--line-soft);}
             </div>
 
             <div>
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ORDEN DE COMPRA (PO) — PDF *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ORDEN DE COMPRA (PO) — PDF *</label>
               <input id="alliance-po-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:7px;"/>
-              <div style="font-size:9px;color:var(--muted);margin-top:3px;">Necesario para verificar los montos — máx. 3MB.</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:3px;">Necesario para verificar los montos — máx. 3MB.</div>
             </div>
 
           </div>
@@ -1307,29 +1307,29 @@ tr:hover td{background:var(--line-soft);}
           <div style="display:flex;flex-direction:column;gap:10px;">
 
             <div style="flex:1;">
-              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DESCRIPCIÓN DEL CONTRATO *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DESCRIPCIÓN DEL CONTRATO *</label>
               <textarea id="alliance-desc" rows="5"
-                style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);transition:.2s;"
+                style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:15px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);transition:.2s;"
                 onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
                 placeholder="Describe el contrato: qué servicios/productos, con qué agencia, plazo de ejecución..."></textarea>
             </div>
 
             <!-- Preview calc -->
             <div id="alliance-preview" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;">
-              <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;">RESUMEN ESTIMADO</div>
-              <div id="alliance-preview-content" style="font-size:11px;color:var(--ink);line-height:2;"></div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;">RESUMEN ESTIMADO</div>
+              <div id="alliance-preview-content" style="font-size:14px;color:var(--ink);line-height:2;"></div>
             </div>
 
             <!-- Error / Success -->
-            <div id="alliance-error" style="display:none;background:var(--red-soft);border:1px solid var(--red-soft);border-radius:8px;padding:10px 14px;color:var(--red);font-size:11px;"></div>
+            <div id="alliance-error" style="display:none;background:var(--red-soft);border:1px solid var(--red-soft);border-radius:8px;padding:10px 14px;color:var(--red);font-size:14px;"></div>
             <div id="alliance-success" style="display:none;background:var(--green-soft);border:1px solid var(--green-soft);border-radius:10px;padding:16px;text-align:center;">
               <div style="font-size:28px;margin-bottom:6px;">✅</div>
-              <div style="font-size:13px;font-weight:800;color:var(--green);margin-bottom:4px;">¡Solicitud Enviada!</div>
-              <div style="font-size:11px;color:var(--muted);line-height:1.6;">El equipo de GovBidder revisará tu solicitud<br>y te contactará en <strong>24–48 horas</strong>.</div>
+              <div style="font-size:16px;font-weight:800;color:var(--green);margin-bottom:4px;">¡Solicitud Enviada!</div>
+              <div style="font-size:14px;color:var(--muted);line-height:1.6;">El equipo de GovBidder revisará tu solicitud<br>y te contactará en <strong>24–48 horas</strong>.</div>
             </div>
 
             <button id="alliance-submit-btn" onclick="submitAllianceApp()"
-              style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;padding:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.25);transition:.2s;"
+              style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.25);transition:.2s;"
               onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
               <span id="alliance-submit-txt">🤝 Enviar Solicitud Alliance →</span>
             </button>
@@ -1339,10 +1339,10 @@ tr:hover td{background:var(--line-soft);}
 
         <!-- Info pills -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-          <span style="background:#dcfce7;color:#15803d;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">✅ Sin historial crediticio requerido</span>
-          <span style="background:#dbeafe;color:#1d4ed8;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">📋 Solo necesitas la PO</span>
-          <span style="background:#fef3c7;color:#92400e;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">⚡ Respuesta en 24-48 hrs</span>
-          <span style="background:#f3e8ff;color:#7e22ce;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">🤝 Fee: 20% de ganancia neta</span>
+          <span style="background:#dcfce7;color:#15803d;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">✅ Sin historial crediticio requerido</span>
+          <span style="background:#dbeafe;color:#1d4ed8;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">📋 Solo necesitas la PO</span>
+          <span style="background:#fef3c7;color:#92400e;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">⚡ Respuesta en 24-48 hrs</span>
+          <span style="background:#f3e8ff;color:#7e22ce;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">🤝 Fee: 20% de ganancia neta</span>
         </div>
       </div>
       </div><!-- /#alliance-content -->
@@ -1357,8 +1357,8 @@ tr:hover td{background:var(--line-soft);}
         <div style="position:absolute;inset:0;opacity:.07;background:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px;"></div>
         <div style="position:relative;">
           <div style="font-size:36px;margin-bottom:10px;">🧰</div>
-          <div style="color:#fff;font-size:20px;font-weight:900;margin-bottom:6px;">Herramientas <span style="color:var(--red);">GovBidder</span></div>
-          <div style="color:rgba(255,255,255,.5);font-size:12px;max-width:500px;margin:0 auto;line-height:1.7;">
+          <div style="color:#fff;font-size:21px;font-weight:900;margin-bottom:6px;">Herramientas <span style="color:var(--red);">GovBidder</span></div>
+          <div style="color:rgba(255,255,255,.5);font-size:15px;max-width:500px;margin:0 auto;line-height:1.7;">
             El ecosistema completo para operar, analizar y escalar tus contratos con el gobierno de EE. UU.
           </div>
         </div>
@@ -1373,21 +1373,21 @@ tr:hover td{background:var(--line-soft);}
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
           <div style="background:linear-gradient(135deg,var(--red),var(--accent2));padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">⚡</div>
-            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder App</div>
-            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">CRM & Operations Hub</div>
+            <div style="color:#fff;font-size:17.5px;font-weight:900;">GovBidder App</div>
+            <div style="color:rgba(255,255,255,.7);font-size:14px;margin-top:4px;">CRM & Operations Hub</div>
           </div>
           <div style="padding:20px;">
-            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+            <div style="font-size:14.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
               Centraliza tu operación de contratos: contactos, oportunidades, pipelines, tareas y seguimiento en un solo lugar. Tu CRM para government contracting.
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Pipeline de oportunidades</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Gestión de contactos y clientes</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Seguimiento de tareas y deadlines</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Reportes de performance</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Pipeline de oportunidades</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Gestión de contactos y clientes</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Seguimiento de tareas y deadlines</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Reportes de performance</div>
             </div>
             <a href="https://app.govbidder.net/" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(228,45,44,.25);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;padding:11px;border-radius:9px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(228,45,44,.25);">
               Abrir GovBidder App →
             </a>
           </div>
@@ -1399,21 +1399,21 @@ tr:hover td{background:var(--line-soft);}
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
           <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">🤖</div>
-            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder AI</div>
-            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Inteligencia Artificial para Licitaciones</div>
+            <div style="color:#fff;font-size:17.5px;font-weight:900;">GovBidder AI</div>
+            <div style="color:rgba(255,255,255,.7);font-size:14px;margin-top:4px;">Inteligencia Artificial para Licitaciones</div>
           </div>
           <div style="padding:20px;">
-            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+            <div style="font-size:14.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
               IA especializada en contratos gubernamentales. Analiza, verifica cumplimiento y acelera la preparación de licitaciones con criterio profesional.
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Análisis de RFPs y solicitudes</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Verificación de cumplimiento</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Redacción de propuestas</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Estrategia de pricing</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Análisis de RFPs y solicitudes</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Verificación de cumplimiento</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Redacción de propuestas</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Estrategia de pricing</div>
             </div>
             <a href="https://govbidder.ai" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(21,41,120,.25);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;padding:11px;border-radius:9px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(21,41,120,.25);">
               Explorar GovBidder AI →
             </a>
           </div>
@@ -1425,21 +1425,21 @@ tr:hover td{background:var(--line-soft);}
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
           <div style="background:linear-gradient(135deg,#15803d,#16a34a);padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">🔗</div>
-            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Connect</div>
-            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Licitaciones en Tiempo Real</div>
+            <div style="color:#fff;font-size:17.5px;font-weight:900;">GovBidder Connect</div>
+            <div style="color:rgba(255,255,255,.7);font-size:14px;margin-top:4px;">Licitaciones en Tiempo Real</div>
           </div>
           <div style="padding:20px;">
-            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+            <div style="font-size:14.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
               Plataforma que muestra licitaciones del gobierno de EE. UU. en tiempo real. Encuentra oportunidades que encajan exactamente con tu empresa y capacidad.
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Feed de licitaciones en vivo</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Filtros por industria y estado</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Alertas de nuevas oportunidades</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Match con tu perfil de empresa</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Feed de licitaciones en vivo</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Filtros por industria y estado</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Alertas de nuevas oportunidades</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Match con tu perfil de empresa</div>
             </div>
             <a href="https://govbidderconnect.com" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(22,163,74,.25);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;padding:11px;border-radius:9px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(22,163,74,.25);">
               Ver GovBidder Connect →
             </a>
           </div>
@@ -1451,21 +1451,21 @@ tr:hover td{background:var(--line-soft);}
              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
           <div style="background:linear-gradient(135deg,#92400e,var(--gold));padding:24px;text-align:center;">
             <div style="font-size:44px;margin-bottom:8px;">🎓</div>
-            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Academy</div>
-            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Formación & Entrenamiento</div>
+            <div style="color:#fff;font-size:17.5px;font-weight:900;">GovBidder Academy</div>
+            <div style="color:rgba(255,255,255,.7);font-size:14px;margin-top:4px;">Formación & Entrenamiento</div>
           </div>
           <div style="padding:20px;">
-            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+            <div style="font-size:14.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
               Formación especializada en contratos gubernamentales. Desde tu primer contrato hasta escalar y ejecutar como profesional con estructura y metodología probada.
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Tu Primer Contrato USA</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder Bootcamp presencial</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder VIP 365</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Soporte continuo y mentoring</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Tu Primer Contrato USA</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder Bootcamp presencial</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder VIP 365</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Soporte continuo y mentoring</div>
             </div>
             <a href="https://govbidderacademy.com/login" target="_blank"
-              style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,var(--gold));color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(200,168,75,.3);">
+              style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,var(--gold));color:#fff;padding:11px;border-radius:9px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(200,168,75,.3);">
               Ir a GovBidder Academy →
             </a>
           </div>
@@ -1477,11 +1477,11 @@ tr:hover td{background:var(--line-soft);}
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
         <div style="font-size:28px;">🦅</div>
         <div>
-          <div style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;">¿Necesitas más información sobre alguna herramienta?</div>
-          <div style="font-size:11px;color:var(--muted);">Visita <a href="https://govbidder.net/soluciones" target="_blank" style="color:var(--accent);font-weight:700;">govbidder.net/soluciones</a> o escríbenos a <a href="mailto:club@govbidder.net" style="color:var(--accent);font-weight:700;">club@govbidder.net</a></div>
+          <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px;">¿Necesitas más información sobre alguna herramienta?</div>
+          <div style="font-size:14px;color:var(--muted);">Visita <a href="https://govbidder.net/soluciones" target="_blank" style="color:var(--accent);font-weight:700;">govbidder.net/soluciones</a> o escríbenos a <a href="mailto:club@govbidder.net" style="color:var(--accent);font-weight:700;">club@govbidder.net</a></div>
         </div>
         <a href="https://govbidder.net/soluciones" target="_blank"
-          style="margin-left:auto;white-space:nowrap;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;">
+          style="margin-left:auto;white-space:nowrap;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;">
           Ver todas las soluciones →
         </a>
       </div>
@@ -1495,13 +1495,13 @@ tr:hover td{background:var(--line-soft);}
       <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));border-radius:12px;padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
         <div style="font-size:36px;">💼</div>
         <div>
-          <div style="color:#fff;font-size:15px;font-weight:800;">Task Work — Bolsa de Trabajos</div>
-          <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Trabajos asignados por GovBidder Club · Solo visible para ti</div>
+          <div style="color:#fff;font-size:17px;font-weight:800;">Task Work — Bolsa de Trabajos</div>
+          <div style="color:rgba(255,255,255,.6);font-size:14px;margin-top:2px;">Trabajos asignados por GovBidder Club · Solo visible para ti</div>
         </div>
         <div style="margin-left:auto;text-align:right;">
-          <div style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;">MIEMBRO</div>
-          <div style="color:#fff;font-size:13px;font-weight:800;" id="tw-member-name">—</div>
-          <div id="tw-plan-badge" style="margin-top:4px;display:inline-block;background:rgba(200,168,75,.25);color:#fde68a;font-size:8.5px;font-weight:800;padding:2px 10px;border-radius:10px;border:1px solid rgba(200,168,75,.3);">⭐ LEGACY</div>
+          <div style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;">MIEMBRO</div>
+          <div style="color:#fff;font-size:16px;font-weight:800;" id="tw-member-name">—</div>
+          <div id="tw-plan-badge" style="margin-top:4px;display:inline-block;background:rgba(200,168,75,.25);color:#fde68a;font-size:11.5px;font-weight:800;padding:2px 10px;border-radius:10px;border:1px solid rgba(200,168,75,.3);">⭐ LEGACY</div>
         </div>
       </div>
 
@@ -1509,8 +1509,8 @@ tr:hover td{background:var(--line-soft);}
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;" id="tw-kpis">
         <div class="kpi-card"><div class="kpi-label">DISPONIBLES</div><div class="kpi-value" id="tw-open-count">—</div><div class="kpi-delta" style="color:var(--muted)">para tu plan</div></div>
         <div class="kpi-card"><div class="kpi-label">MIS TRABAJOS</div><div class="kpi-value" style="color:var(--green)" id="tw-mine-count">—</div><div class="kpi-delta delta-up">asignados</div></div>
-        <div class="kpi-card"><div class="kpi-label">VALOR ASIGNADO</div><div class="kpi-value" style="font-size:18px;" id="tw-mine-value">—</div><div class="kpi-delta delta-up">en tareas</div></div>
-        <div class="kpi-card"><div class="kpi-label">TU PLAN</div><div class="kpi-value" style="font-size:16px;color:var(--gold)" id="tw-plan-level">—</div><div class="kpi-delta" style="color:var(--muted)">nivel de acceso</div></div>
+        <div class="kpi-card"><div class="kpi-label">VALOR ASIGNADO</div><div class="kpi-value" style="font-size:19px;" id="tw-mine-value">—</div><div class="kpi-delta delta-up">en tareas</div></div>
+        <div class="kpi-card"><div class="kpi-label">TU PLAN</div><div class="kpi-value" style="font-size:17.5px;color:var(--gold)" id="tw-plan-level">—</div><div class="kpi-delta" style="color:var(--muted)">nivel de acceso</div></div>
       </div>
 
       <div class="grid-2" style="margin-bottom:16px;">
@@ -1539,7 +1539,7 @@ tr:hover td{background:var(--line-soft);}
           <div style="display:flex;flex-direction:column;gap:8px;">
             <select class="gf-select" id="admin-catalog-select" style="width:100%;padding:9px;"><option value="">Cargando catálogo...</option></select>
             <input class="search-input" id="admin-client-ref" placeholder="Referencia de cliente (ej. Cliente #12)..." style="width:100%;"/>
-            <div id="admin-job-error" style="display:none;color:var(--red);font-size:10.5px;"></div>
+            <div id="admin-job-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
             <button onclick="createAdminJob()" class="btn-red" style="padding:10px;">Crear tarea</button>
           </div>
         </div>
@@ -1804,7 +1804,7 @@ function applyMemberProfile(member) {
   const menuPlan  = document.getElementById('menu-plan-badge');
   if (menuName)  menuName.textContent  = member.name  || initials;
   if (menuEmail) menuEmail.textContent = member.email || '—';
-  if (menuPlan)  menuPlan.innerHTML    = `<span class="member-badge ${planClass}" style="font-size:10px;padding:3px 10px;">${(member.plan||'').toUpperCase()}</span>`;
+  if (menuPlan)  menuPlan.innerHTML    = `<span class="member-badge ${planClass}" style="font-size:13px;padding:3px 10px;">${(member.plan||'').toUpperCase()}</span>`;
 
   // NAICS filter
   const naicsEl = document.getElementById('f-naics');
@@ -1905,24 +1905,24 @@ function showMemberLock(page) {
   el.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px;">
       <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#f1f5f9,var(--line));display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);">🔒</div>
-      <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:8px;">Acceso Exclusivo</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:400px;margin-bottom:24px;">
+      <div style="font-size:21px;font-weight:900;color:var(--text);margin-bottom:8px;">Acceso Exclusivo</div>
+      <div style="font-size:16px;color:var(--muted);line-height:1.7;max-width:400px;margin-bottom:24px;">
         Este módulo es exclusivo para <strong>Miembros de GovBidder Club</strong>.<br>
         Únete al club para acceder a trabajos asignados, pipeline de bids,<br>soporte dedicado y el programa Alliance.
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
         <a href="https://www.govbidderclub.com" target="_blank"
-          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;padding:12px 24px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(228,45,44,.3);">
+          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;padding:12px 24px;border-radius:9px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(228,45,44,.3);">
           🦅 Unirme a GovBidder Club →
         </a>
         <a href="mailto:club@govbidder.net"
-          style="background:var(--card);color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">
+          style="background:var(--card);color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:9px;font-size:15px;font-weight:700;text-decoration:none;">
           ✉️ Contactar al Club
         </a>
       </div>
       <div style="margin-top:20px;background:var(--line-soft);border:1px solid var(--line);border-radius:10px;padding:14px 20px;max-width:380px;">
-        <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">BENEFICIOS DE MEMBRESÍA</div>
-        <div style="font-size:11px;color:var(--ink);line-height:2;text-align:left;">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">BENEFICIOS DE MEMBRESÍA</div>
+        <div style="font-size:14px;color:var(--ink);line-height:2;text-align:left;">
           💼 Trabajos asignados por GovBidder Club<br>
           📋 Bid Pipeline para seguimiento de licitaciones<br>
           🎯 Soporte dedicado con expertos<br>
@@ -2116,7 +2116,7 @@ function oppCard(o) {
       <span class="badge bb">${escapeHtml(o.type)||'N/A'}</span>
       ${o.naicsCode?`<span class="badge bm mono">NAICS ${escapeHtml(o.naicsCode)}</span>`:''}
       ${o.setAside?`<span class="badge bg">${escapeHtml(o.setAside)}</span>`:''}
-      <span style="margin-left:auto;font-size:10px;color:var(--red);font-weight:700;">Ver detalle →</span>
+      <span style="margin-left:auto;font-size:13px;color:var(--red);font-weight:700;">Ver detalle →</span>
     </div>
   </div>`;
 }
@@ -2125,8 +2125,8 @@ function oppRow(o) {
   const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
   const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
   return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line-soft);align-items:center;">
-    <span style="font-size:12px;font-weight:600;color:var(--ink);flex:1;margin-right:8px;">${(o.title||'').substring(0,50)}${(o.title||'').length>50?'...':''}</span>
-    <span class="mono" style="font-size:10.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}</span>
+    <span style="font-size:15px;font-weight:700;color:var(--ink);flex:1;margin-right:8px;">${(o.title||'').substring(0,50)}${(o.title||'').length>50?'...':''}</span>
+    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}</span>
   </div>`;
 }
 
@@ -2192,16 +2192,16 @@ function grantCard(g) {
   const urgent = g.closeDate && (new Date(g.closeDate) - Date.now()) < 30*864e5;
   return `<div class="grant-card">
     <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <div style="font-size:12.5px;font-weight:700;color:var(--text);flex:1;margin-right:12px;">${escapeHtml(g.title)||'Sin título'}</div>
-      <div style="font-size:12px;font-weight:800;color:var(--green);white-space:nowrap;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver conv.'}</div>
+      <div style="font-size:15.5px;font-weight:700;color:var(--text);flex:1;margin-right:12px;">${escapeHtml(g.title)||'Sin título'}</div>
+      <div style="font-size:15px;font-weight:800;color:var(--green);white-space:nowrap;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver conv.'}</div>
     </div>
-    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">${escapeHtml(g.agency)||'—'} · <strong class="mono" style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">${escapeHtml(g.agency)||'—'} · <strong class="mono" style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
       <span class="badge bb mono">${escapeHtml(g.oppNumber)||'—'}</span>
       ${g.category?`<span class="badge bm">${escapeHtml(g.category)}</span>`:''}
     </div>
-    <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">${escapeHtml((g.synopsis||'').substring(0,180))}...</div>
-    <a href="${escapeHtml(g.link)}" target="_blank" style="font-size:10px;color:var(--red);font-weight:700;text-decoration:none;">Ver en Grants.gov →</a>
+    <div style="font-size:13.5px;color:var(--muted);margin-bottom:8px;">${escapeHtml((g.synopsis||'').substring(0,180))}...</div>
+    <a href="${escapeHtml(g.link)}" target="_blank" style="font-size:13px;color:var(--red);font-weight:700;text-decoration:none;">Ver en Grants.gov →</a>
   </div>`;
 }
 
@@ -2223,7 +2223,7 @@ async function fetchMarket() {
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
-            <div style="font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:10px;">GASTO POR ESTADO</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:10px;">GASTO POR ESTADO</div>
             ${(data.byState||[]).map(s=>`<div class="bar-row">
               <div class="bar-label" style="${s.code==='NJ'?'color:var(--accent);font-weight:700;':''}">${s.state||s.code}${s.code==='NJ'?' ⭐':''}</div>
               <div class="bar-track"><div class="bar-fill ${s.code==='NJ'?'':'bar-fill-blue'}" style="width:${Math.round(s.amount/maxS*100)}%"></div></div>
@@ -2231,7 +2231,7 @@ async function fetchMarket() {
             </div>`).join('')}
           </div>
           <div>
-            <div style="font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:10px;">TOP VENDORS</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:10px;">TOP VENDORS</div>
             ${(data.topVendors||[]).slice(0,8).map(v=>`<div class="bar-row">
               <div class="bar-label">${(v.name||'').substring(0,16)}</div>
               <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
@@ -2244,7 +2244,7 @@ async function fetchMarket() {
         <div class="card-title">📋 Contratos Recientes <span class="sub">live • USASpending.gov</span></div>
         <table><thead><tr><th>RECIPIENT</th><th>AGENCIA</th><th>ESTADO</th><th>MONTO</th><th>FECHA</th></tr></thead>
         <tbody>${(data.recentContracts||[]).map(c=>`<tr>
-          <td style="color:var(--text);font-weight:600;">${(c.recipient||'—').substring(0,28)}</td>
+          <td style="color:var(--text);font-weight:700;">${(c.recipient||'—').substring(0,28)}</td>
           <td>${(c.agency||'—').substring(0,26)}</td>
           <td>${c.state||'—'}</td>
           <td style="font-weight:700;color:var(--text);">$${Number(c.amount||0).toLocaleString()}</td>
@@ -2272,10 +2272,10 @@ async function fetchCompetitors() {
         <table><thead><tr><th>#</th><th>VENDOR</th><th>CONTRATOS</th><th>TOTAL</th><th>TOP COMPRADOR</th></tr></thead>
         <tbody>${vendors.map((v,i)=>`<tr>
           <td><strong style="color:var(--text)">${i+1}</strong></td>
-          <td style="color:var(--text);font-weight:600;">${(v.name||'').substring(0,28)}</td>
+          <td style="color:var(--text);font-weight:700;">${(v.name||'').substring(0,28)}</td>
           <td><span class="badge bb">${v.count}</span></td>
           <td style="font-weight:700;color:var(--text);">$${v.total.toLocaleString()}</td>
-          <td style="font-size:9.5px;">${(v.topAgency||'').substring(0,26)}</td>
+          <td style="font-size:12.5px;">${(v.topAgency||'').substring(0,26)}</td>
         </tr>`).join('')}</tbody></table>
       </div>
       <div class="card">
@@ -2312,111 +2312,111 @@ async function searchCodes() {
         <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
           <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));padding:20px 24px;">
             <div style="display:flex;align-items:center;gap:12px;">
-              <div style="background:var(--red);color:#fff;padding:6px 14px;border-radius:8px;font-size:18px;font-weight:900;font-family:monospace;">${data.naics}</div>
+              <div style="background:var(--red);color:#fff;padding:6px 14px;border-radius:8px;font-size:19px;font-weight:900;font-family:monospace;">${data.naics}</div>
               <div>
-                <div style="color:#fff;font-size:14px;font-weight:800;">${data.title}</div>
-                <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Sector: ${data.sector}</div>
+                <div style="color:#fff;font-size:16.5px;font-weight:800;">${data.title}</div>
+                <div style="color:rgba(255,255,255,.6);font-size:14px;margin-top:2px;">Sector: ${data.sector}</div>
               </div>
             </div>
           </div>
           <div style="padding:20px;">
-            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
+            <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:var(--navy);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">NAICS</div>
-                  <div style="font-size:9px;color:#6b7a99;">North American Industry Classification</div>
+                  <div style="background:var(--navy);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">NAICS</div>
+                  <div style="font-size:12px;color:#6b7a99;">North American Industry Classification</div>
                 </div>
                 <div style="font-size:26px;font-weight:900;color:var(--navy);font-family:monospace;">${data.codes.naics.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.naics.title}</div>
+                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.naics.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
-                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022" target="_blank" style="margin-left:6px;font-size:10px;color:var(--red);font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022" target="_blank" style="margin-left:6px;font-size:13px;color:var(--red);font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
                 </div>
               </div>
               <div style="background:linear-gradient(135deg,#fff7ed,#fff);border:2px solid #fed7aa;border-radius:10px;padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#c2410c;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">SIC</div>
-                  <div style="font-size:9px;color:#6b7a99;">Standard Industrial Classification</div>
+                  <div style="background:#c2410c;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">SIC</div>
+                  <div style="font-size:12px;color:#6b7a99;">Standard Industrial Classification</div>
                 </div>
                 <div style="font-size:26px;font-weight:900;color:#c2410c;font-family:monospace;">${data.codes.sic.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.sic.title}</div>
+                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.sic.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" style="background:#ffedd5;color:#c2410c;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" style="background:#ffedd5;color:#c2410c;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
                 </div>
               </div>
               <div style="background:linear-gradient(135deg,#f0fdf4,#fff);border:2px solid #86efac;border-radius:10px;padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#15803d;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">PSC</div>
-                  <div style="font-size:9px;color:#6b7a99;">Product Service Code — Federal</div>
+                  <div style="background:#15803d;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">PSC</div>
+                  <div style="font-size:12px;color:#6b7a99;">Product Service Code — Federal</div>
                 </div>
                 <div style="font-size:26px;font-weight:900;color:#15803d;font-family:monospace;">${data.codes.psc.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.psc.title}</div>
+                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.psc.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" style="background:#dcfce7;color:#15803d;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" style="background:#dcfce7;color:#15803d;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
                 </div>
               </div>
               <div style="background:linear-gradient(135deg,#fdf4ff,#fff);border:2px solid #e9d5ff;border-radius:10px;padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#7e22ce;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">UNSPSC</div>
-                  <div style="font-size:9px;color:#6b7a99;">UN Standard Products & Services Code</div>
+                  <div style="background:#7e22ce;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">UNSPSC</div>
+                  <div style="font-size:12px;color:#6b7a99;">UN Standard Products & Services Code</div>
                 </div>
-                <div style="font-size:22px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.unspsc.title}</div>
+                <div style="font-size:23px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code}</div>
+                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.unspsc.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" style="background:#f3e8ff;color:#7e22ce;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" style="background:#f3e8ff;color:#7e22ce;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
                 </div>
               </div>
             </div>
             <div style="margin-top:12px;background:linear-gradient(135deg,#fffbeb,#fff);border:2px solid #fde68a;border-radius:10px;padding:16px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="background:#92400e;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;">NIGP</div>
-                <div style="font-size:9px;color:#6b7a99;">National Institute of Governmental Purchasing</div>
+                <div style="background:#92400e;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">NIGP</div>
+                <div style="font-size:12px;color:#6b7a99;">National Institute of Governmental Purchasing</div>
               </div>
               <div style="display:flex;align-items:center;gap:16px;">
                 <div style="font-size:26px;font-weight:900;color:#92400e;font-family:monospace;">${data.codes.nigp.code}</div>
                 <div>
-                  <div style="font-size:11px;color:#1a1f36;font-weight:600;">${data.codes.nigp.title}</div>
-                  <div style="font-size:10px;color:#6b7a99;margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
+                  <div style="font-size:14px;color:#1a1f36;font-weight:700;">${data.codes.nigp.title}</div>
+                  <div style="font-size:13px;color:#6b7a99;margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
                 </div>
               </div>
             </div>
             <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                 <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span>
-                <span style="background:linear-gradient(135deg,var(--red),#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
-                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:var(--red);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+                <span style="background:linear-gradient(135deg,var(--red),#8b1514);color:#fff;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
+                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:var(--red);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:12.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
               </div>
-              <div id="code-ai-tip" style="font-size:11px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código.</div>
+              <div id="code-ai-tip" style="font-size:14px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código.</div>
             </div>
             <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades</button>
-              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
+              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades</button>
+              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
             </div>
           </div>
         </div>`;
     } else if (data.results) {
       if (!data.results.length) {
-        el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;">Sin resultados para "${q}"</div></div>`;
+        el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;">Sin resultados para "${q}"</div></div>`;
         return;
       }
       el.innerHTML = `
-        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
+        <div style="font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
         ${data.results.map(r => `
           <div onclick="quickCrosswalk('${r.naics}')" style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.04);"
                onmouseover="this.style.borderColor='var(--red)';this.style.boxShadow='0 4px 12px rgba(228,45,44,.1)'"
                onmouseout="this.style.borderColor='var(--line)';this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-              <span style="background:var(--red);color:#fff;padding:3px 10px;border-radius:6px;font-size:13px;font-weight:900;font-family:monospace;">${r.naics}</span>
-              <span style="font-size:12.5px;font-weight:700;color:var(--ink);">${r.title}</span>
-              <span style="margin-left:auto;font-size:9.5px;color:var(--muted);background:var(--line-soft);padding:2px 8px;border-radius:5px;">${r.sector}</span>
+              <span style="background:var(--red);color:#fff;padding:3px 10px;border-radius:6px;font-size:16px;font-weight:900;font-family:monospace;">${r.naics}</span>
+              <span style="font-size:15.5px;font-weight:700;color:var(--ink);">${r.title}</span>
+              <span style="margin-left:auto;font-size:12.5px;color:var(--muted);background:var(--line-soft);padding:2px 8px;border-radius:5px;">${r.sector}</span>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">SIC: ${r.sic}</span>
-              <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">PSC: ${r.psc}</span>
-              <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">UNSPSC: ${r.unspsc}</span>
-              ${r.nigp?`<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">NIGP: ${r.nigp}</span>`:''}
-              <span style="margin-left:auto;font-size:10px;color:var(--red);font-weight:700;">Ver crosswalk completo →</span>
+              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:12.5px;font-weight:700;">SIC: ${r.sic}</span>
+              <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:12.5px;font-weight:700;">PSC: ${r.psc}</span>
+              <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:6px;font-size:12.5px;font-weight:700;">UNSPSC: ${r.unspsc}</span>
+              ${r.nigp?`<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:12.5px;font-weight:700;">NIGP: ${r.nigp}</span>`:''}
+              <span style="margin-left:auto;font-size:13px;color:var(--red);font-weight:700;">Ver crosswalk completo →</span>
             </div>
           </div>`).join('')}`;
     }
@@ -2509,7 +2509,7 @@ async function loadAllStates() {
     document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`;
     renderStates(allStates);
   } catch(e) {
-    grid.innerHTML = `<div style="color:#b91c1c;font-size:11px;padding:20px;">❌ ${e.message}</div>`;
+    grid.innerHTML = `<div style="color:#b91c1c;font-size:14px;padding:20px;">❌ ${e.message}</div>`;
   }
 }
 
@@ -2523,16 +2523,16 @@ function renderStates(states) {
   grid.innerHTML = states.length
     ? states.map(s => `
         <div class="state-card ${s.code === myState ? 'my-state' : ''}" onclick="selectState('${s.code}')">
-          ${s.code === myState ? '<div style="font-size:8.5px;color:var(--red);font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
-          <div style="font-size:20px;font-weight:900;color:var(--navy);font-family:monospace;">${s.code}</div>
-          <div style="font-size:10px;color:var(--ink);font-weight:600;margin-top:3px;">${s.name}</div>
-          <div style="font-size:9px;color:var(--muted);margin-top:1px;">📍 ${s.capital}</div>
+          ${s.code === myState ? '<div style="font-size:11.5px;color:var(--red);font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
+          <div style="font-size:21px;font-weight:900;color:var(--navy);font-family:monospace;">${s.code}</div>
+          <div style="font-size:13px;color:var(--ink);font-weight:700;margin-top:3px;">${s.name}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:1px;">📍 ${s.capital}</div>
           <div style="margin-top:6px;">
-            <span style="background:${REGION_COLORS[s.region]||'#f1f5f9'};color:#374151;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;">${s.region}</span>
+            <span style="background:${REGION_COLORS[s.region]||'#f1f5f9'};color:#374151;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:10px;">${s.region}</span>
           </div>
           <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
-            <button onclick="event.stopPropagation();selectState('${s.code}')" style="background:var(--navy);color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;">📊 Análisis</button>
-            <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()" style="background:var(--red);color:#fff;border-radius:5px;padding:3px 8px;font-size:9px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+            <button onclick="event.stopPropagation();selectState('${s.code}')" style="background:var(--navy);color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:12px;cursor:pointer;font-weight:700;">📊 Análisis</button>
+            <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()" style="background:var(--red);color:#fff;border-radius:5px;padding:3px 8px;font-size:12px;font-weight:700;text-decoration:none;">🔗 Portal</a>
           </div>
         </div>`).join('')
     : '<div style="text-align:center;padding:30px;color:var(--muted);grid-column:1/-1;">Sin resultados.</div>';
@@ -2569,7 +2569,7 @@ async function loadStateDetail() {
   const year  = document.getElementById('detail-year').value;
   const el    = document.getElementById('detail-container');
   if (!state) {
-    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🗺️</div><div style="font-size:13px;font-weight:700;color:var(--ink);">Selecciona un estado primero</div></div>`;
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🗺️</div><div style="font-size:16px;font-weight:700;color:var(--ink);">Selecciona un estado primero</div></div>`;
     return;
   }
   setLoading('detail-container', `Cargando análisis de ${state}...`);
@@ -2587,22 +2587,22 @@ async function loadStateDetail() {
         <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
           <div style="font-size:52px;font-weight:900;font-family:monospace;opacity:.85;line-height:1;">${s.code}</div>
           <div>
-            <div style="font-size:18px;font-weight:800;">${s.name}</div>
-            <div style="font-size:11px;opacity:.7;margin-top:3px;">Capital: ${s.capital} · Región: ${s.region}</div>
-            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:var(--red);color:#fff;padding:5px 14px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement</a>
+            <div style="font-size:19px;font-weight:800;">${s.name}</div>
+            <div style="font-size:14px;opacity:.7;margin-top:3px;">Capital: ${s.capital} · Región: ${s.region}</div>
+            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:var(--red);color:#fff;padding:5px 14px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement</a>
           </div>
           <div style="margin-left:auto;text-align:right;">
             <div style="font-size:28px;font-weight:900;">$${(spend.total/1e6).toFixed(1)}M</div>
-            <div style="font-size:10px;opacity:.7;">NAICS ${naics} · ${year}</div>
-            <div style="margin-top:6px;background:rgba(255,255,255,.15);padding:4px 12px;border-radius:6px;font-size:11px;">${spend.contractCount} contratos</div>
+            <div style="font-size:13px;opacity:.7;">NAICS ${naics} · ${year}</div>
+            <div style="margin-top:6px;background:rgba(255,255,255,.15);padding:4px 12px;border-radius:6px;font-size:14px;">${spend.contractCount} contratos</div>
           </div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
-        <div class="kpi-card"><div class="kpi-label">TOTAL SPEND</div><div class="kpi-value" style="font-size:18px;">$${(spend.total/1e6).toFixed(1)}M</div><div class="kpi-delta" style="color:var(--muted);">NAICS ${naics}</div></div>
-        <div class="kpi-card"><div class="kpi-label">CONTRATOS</div><div class="kpi-value" style="font-size:18px;">${spend.contractCount}</div><div class="kpi-delta delta-up">Año ${year}</div></div>
-        <div class="kpi-card"><div class="kpi-label">SCHOOL DISTRICTS</div><div class="kpi-value" style="font-size:18px;">${schools.length}</div><div class="kpi-delta" style="color:var(--muted);">En base de datos</div></div>
-        <div class="kpi-card"><div class="kpi-label">UNIVERSIDADES</div><div class="kpi-value" style="font-size:18px;">${univs.length}</div><div class="kpi-delta" style="color:var(--muted);">En base de datos</div></div>
+        <div class="kpi-card"><div class="kpi-label">TOTAL SPEND</div><div class="kpi-value" style="font-size:19px;">$${(spend.total/1e6).toFixed(1)}M</div><div class="kpi-delta" style="color:var(--muted);">NAICS ${naics}</div></div>
+        <div class="kpi-card"><div class="kpi-label">CONTRATOS</div><div class="kpi-value" style="font-size:19px;">${spend.contractCount}</div><div class="kpi-delta delta-up">Año ${year}</div></div>
+        <div class="kpi-card"><div class="kpi-label">SCHOOL DISTRICTS</div><div class="kpi-value" style="font-size:19px;">${schools.length}</div><div class="kpi-delta" style="color:var(--muted);">En base de datos</div></div>
+        <div class="kpi-card"><div class="kpi-label">UNIVERSIDADES</div><div class="kpi-value" style="font-size:19px;">${univs.length}</div><div class="kpi-delta" style="color:var(--muted);">En base de datos</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
         <div class="card">
@@ -2611,41 +2611,41 @@ async function loadStateDetail() {
             <div class="bar-label">${(v.name||'').substring(0,18)}</div>
             <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
             <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
-          </div>`).join('') : '<div style="font-size:11px;color:var(--muted);padding:10px 0;">Sin vendors para este filtro.</div>'}
+          </div>`).join('') : '<div style="font-size:14px;color:var(--muted);padding:10px 0;">Sin vendors para este filtro.</div>'}
         </div>
         <div class="card">
           <div class="card-title">📋 Contratos Recientes <span class="sub">live • USASpending</span></div>
           ${spend.recentContracts.length ? `<table><thead><tr><th>RECIPIENT</th><th>CIUDAD</th><th>MONTO</th></tr></thead>
             <tbody>${spend.recentContracts.slice(0,8).map(c=>`<tr>
-              <td style="color:var(--ink);font-weight:600;">${(c.recipient||'—').substring(0,22)}</td>
+              <td style="color:var(--ink);font-weight:700;">${(c.recipient||'—').substring(0,22)}</td>
               <td>${c.city||'—'}</td>
               <td style="font-weight:700;color:var(--ink);">$${Number(c.amount||0).toLocaleString()}</td>
             </tr>`).join('')}</tbody></table>`
-          : '<div style="font-size:11px;color:var(--muted);padding:10px 0;">Sin contratos para estos filtros.</div>'}
+          : '<div style="font-size:14px;color:var(--muted);padding:10px 0;">Sin contratos para estos filtros.</div>'}
         </div>
       </div>
       ${schools.length ? `<div class="card" style="margin-bottom:14px;">
         <div class="card-title">🏫 School Districts — ${s.name} <span class="sub">${schools.length} principales</span></div>
         <table><thead><tr><th>DISTRITO</th><th>CIUDAD</th><th>ESTUDIANTES</th><th>PORTAL</th></tr></thead>
         <tbody>${schools.map(d=>`<tr>
-          <td style="color:var(--ink);font-weight:600;">${d.name}</td><td>${d.city}</td>
+          <td style="color:var(--ink);font-weight:700;">${d.name}</td><td>${d.city}</td>
           <td><span class="badge bb">${Number(d.students).toLocaleString()}</span></td>
-          <td><a href="${d.portal}" target="_blank" style="color:var(--red);font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
+          <td><a href="${d.portal}" target="_blank" style="color:var(--red);font-size:13px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
         </tr>`).join('')}</tbody></table>
       </div>` : ''}
       ${univs.length ? `<div class="card" style="margin-bottom:14px;">
         <div class="card-title">🎓 Colleges & Universities — ${s.name} <span class="sub">${univs.length} instituciones</span></div>
         <table><thead><tr><th>INSTITUCIÓN</th><th>CIUDAD</th><th>TIPO</th><th>PORTAL</th></tr></thead>
         <tbody>${univs.map(u=>`<tr>
-          <td style="color:var(--ink);font-weight:600;">${u.name}</td><td>${u.city}</td>
+          <td style="color:var(--ink);font-weight:700;">${u.name}</td><td>${u.city}</td>
           <td><span class="badge ${u.type==='Public'?'bb':'by'}">${u.type==='Public'?'🏛️ Pública':'🏫 Privada'}</span></td>
-          <td><a href="${u.portal}" target="_blank" style="color:var(--red);font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
+          <td><a href="${u.portal}" target="_blank" style="color:var(--red);font-size:13px;font-weight:700;text-decoration:none;">🔗 Portal</a></td>
         </tr>`).join('')}</tbody></table>
       </div>` : ''}
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Opps en ${s.code}</button>
-        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🏆 Competidores en ${s.code}</button>
-        <a href="${s.procurement}" target="_blank" style="background:var(--line-soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;text-decoration:none;">🔗 Portal Oficial ${s.code}</a>
+        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">🔍 Buscar Opps en ${s.code}</button>
+        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">🏆 Competidores en ${s.code}</button>
+        <a href="${s.procurement}" target="_blank" style="background:var(--line-soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;text-decoration:none;">🔗 Portal Oficial ${s.code}</a>
       </div>`;
   } catch(e) {
     el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`;
@@ -2664,17 +2664,17 @@ async function loadSchools() {
     const schools = data.schoolDistricts || [];
     if (!schools.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">No hay datos de school districts para ${state}.</div>`; return; }
     el.innerHTML = `
-      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
+      <div style="font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
         ${schools.map(d=>`
           <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;"
                onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--line)'">
-            <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;">🏫 ${d.name}</div>
-            <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">📍 ${d.city} · ${state}</div>
+            <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;">🏫 ${d.name}</div>
+            <div style="font-size:13.5px;color:var(--muted);margin-bottom:8px;">📍 ${d.city} · ${state}</div>
             <div style="margin-bottom:10px;"><span class="badge bb">👥 ${Number(d.students).toLocaleString()} estudiantes</span></div>
             <div style="display:flex;gap:6px;">
-              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:var(--red);color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
-              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
+              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:var(--red);color:#fff;padding:6px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:6px;font-size:13px;font-weight:700;cursor:pointer;">🔍 Opps</button>
             </div>
           </div>`).join('')}
       </div>`;
@@ -2693,16 +2693,16 @@ async function loadColleges() {
     const univs = data.universities || [];
     if (!univs.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">No hay datos de universidades para ${state}.</div>`; return; }
     el.innerHTML = `
-      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
+      <div style="font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
         ${univs.map(u=>`
           <div style="background:var(--card);border:1px solid var(--line);border-top:3px solid ${u.type==='Public'?'var(--navy)':'var(--red)'};border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
-            <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;">🎓 ${u.name}</div>
-            <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">📍 ${u.city} · ${state}</div>
+            <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;">🎓 ${u.name}</div>
+            <div style="font-size:13.5px;color:var(--muted);margin-bottom:8px;">📍 ${u.city} · ${state}</div>
             <div style="margin-bottom:10px;"><span class="badge ${u.type==='Public'?'bb':'by'}">${u.type==='Public'?'🏛️ Pública':'🏫 Privada'}</span></div>
             <div style="display:flex;gap:6px;">
-              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:var(--red);color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal</a>
-              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Opps</button>
+              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:var(--red);color:#fff;padding:6px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;">🔗 Portal</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:6px;font-size:13px;font-weight:700;cursor:pointer;">🔍 Opps</button>
             </div>
           </div>`).join('')}
       </div>`;
@@ -2978,7 +2978,7 @@ function renderOpenJob(job, alreadyApplied) {
         <div class="pipe-card-title">${escapeHtml(c.name)}</div>
         <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')} · <span class="mono">${escapeHtml(c.required_plan)}+</span></div>
       </div>
-      <div style="font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
+      <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
     </div>
     <div style="margin-top:8px;">
       ${alreadyApplied
@@ -2997,7 +2997,7 @@ function renderMyJob(job) {
         <div class="pipe-card-title">${escapeHtml(c.name)}</div>
         <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')}</div>
       </div>
-      <div style="font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
+      <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
     </div>
     <div style="margin-top:8px;"><span class="badge ${badge[0]}">${badge[1]}</span></div>
   </div>`;
@@ -3013,7 +3013,7 @@ async function loadTaskWork() {
   if (twLevel) twLevel.textContent = currentMember.plan || '—';
   if (twPlan) {
     const planColors = { Legacy:'rgba(200,168,75,.25);color:#fde68a;border:1px solid rgba(200,168,75,.3)', Prime:'rgba(21,41,120,.3);color:#93c5fd;border:1px solid rgba(93,130,253,.3)', Elevate:'rgba(228,45,44,.2);color:#fca5a5;border:1px solid rgba(228,45,44,.3)' };
-    twPlan.style.cssText = `display:inline-block;background:${planColors[currentMember.plan]||planColors.Elevate};font-size:8.5px;font-weight:800;padding:2px 10px;border-radius:10px;`;
+    twPlan.style.cssText = `display:inline-block;background:${planColors[currentMember.plan]||planColors.Elevate};font-size:11.5px;font-weight:800;padding:2px 10px;border-radius:10px;`;
     twPlan.textContent = (currentMember.plan||'').toUpperCase();
   }
 
@@ -3071,7 +3071,7 @@ async function loadLeaderboard() {
     if (!data.success) return;
     el.innerHTML = data.ranking.length
       ? data.ranking.map(r => `<div class="bar-row"><div class="bar-label">#${r.rank} GovBidder ${r.plan}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, r.amount/20)}%;"></div></div><div class="bar-val">$${r.amount.toLocaleString()}</div></div>`).join('')
-      : `<div style="text-align:center;padding:20px;color:var(--muted);font-size:11px;">Todavía no hay tareas completadas este mes.</div>`;
+      : `<div style="text-align:center;padding:20px;color:var(--muted);font-size:14px;">Todavía no hay tareas completadas este mes.</div>`;
   } catch(e) { /* silencioso */ }
 }
 
@@ -3128,7 +3128,7 @@ async function loadAdminJobs() {
     const badge = JOB_STATUS_BADGE[j.status] || ['bm', escapeHtml(j.status)];
     const assignee = j.profiles ? `${escapeHtml(j.profiles.name)} (${escapeHtml(j.profiles.plan)})` : '—';
     const action = j.status === 'assigned'
-      ? `<button class="btn-outline" style="padding:4px 9px;font-size:10px;color:var(--green);" onclick="completeJob('${j.id}')">Marcar completada</button>`
+      ? `<button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="completeJob('${j.id}')">Marcar completada</button>`
       : '';
     return `<tr><td>${escapeHtml(j.task_catalog?.name) || '—'}</td><td>${escapeHtml(j.client_ref) || '—'}</td><td><span class="badge ${badge[0]}">${badge[1]}</span></td><td>${assignee}</td><td>${action}</td></tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">Todavía no creaste ninguna tarea.</td></tr>';
@@ -3149,13 +3149,13 @@ async function loadAdminApplications() {
     const job = a.work_pool_jobs;
     const member = a.profiles;
     return `<tr>
-      <td>${escapeHtml(member?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(member?.email)}</span></td>
+      <td>${escapeHtml(member?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(member?.email)}</span></td>
       <td><span class="badge bb">${escapeHtml(member?.plan) || '—'}</span></td>
       <td>${escapeHtml(job?.task_catalog?.name) || '—'}</td>
       <td>$${Number(job?.task_catalog?.price || 0).toLocaleString()}</td>
       <td style="white-space:nowrap;">
-        <button class="btn-outline" style="padding:4px 9px;font-size:10px;color:var(--green);" onclick="reviewApplication('${a.id}','approved')">Aprobar</button>
-        <button class="btn-outline" style="padding:4px 9px;font-size:10px;" onclick="reviewApplication('${a.id}','rejected')">Rechazar</button>
+        <button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="reviewApplication('${a.id}','approved')">Aprobar</button>
+        <button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="reviewApplication('${a.id}','rejected')">Rechazar</button>
       </td>
     </tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay postulaciones pendientes.</td></tr>';
@@ -3177,11 +3177,11 @@ async function loadAdminTickets() {
     const badge = STATUS_BADGE[t.status] || ['bm', escapeHtml(t.status)];
     const action = t.status !== 'resolved'
       ? `<div style="display:flex;gap:4px;margin-top:4px;">
-          ${t.status !== 'in_review' ? `<button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="reviewTicket('${t.id}','in_review')">En revisión</button>` : ''}
-          <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;color:var(--green);" onclick="reviewTicket('${t.id}','resolved')">Resolver</button>
+          ${t.status !== 'in_review' ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewTicket('${t.id}','in_review')">En revisión</button>` : ''}
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewTicket('${t.id}','resolved')">Resolver</button>
         </div>` : '';
     return `<tr>
-      <td>${escapeHtml(t.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(t.profiles?.plan)}</span></td>
+      <td>${escapeHtml(t.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(t.profiles?.plan)}</span></td>
       <td>${escapeHtml(t.type)}</td>
       <td style="max-width:220px;white-space:normal;">${escapeHtml(t.message)}</td>
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
@@ -3204,14 +3204,14 @@ async function loadAdminAlliance() {
     const badge = r.status === 'approved' ? ['bg','Aprobada'] : r.status === 'rejected' ? ['br','Rechazada'] : ['by','Pendiente'];
     const action = r.status === 'pending'
       ? `<div style="display:flex;gap:4px;margin-top:4px;">
-          <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved')">Aprobar</button>
-          <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="reviewAlliance('${r.id}','rejected')">Rechazar</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved')">Aprobar</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewAlliance('${r.id}','rejected')">Rechazar</button>
         </div>` : '';
     const docLink = r.po_document_path
-      ? `<button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="viewAllianceDocument('${r.id}')">📄 Ver PO</button>`
-      : '<span style="color:var(--muted);font-size:9.5px;">—</span>';
+      ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="viewAllianceDocument('${r.id}')">📄 Ver PO</button>`
+      : '<span style="color:var(--muted);font-size:12.5px;">—</span>';
     return `<tr>
-      <td>${escapeHtml(r.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(r.profiles?.plan)}</span></td>
+      <td>${escapeHtml(r.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(r.profiles?.plan)}</span></td>
       <td>${escapeHtml(r.company)}</td>
       <td>$${Number(r.po_value).toLocaleString()} / $${Number(r.cost).toLocaleString()}</td>
       <td>${docLink}</td>
