@@ -485,7 +485,7 @@ tr:hover td{background:var(--line-soft);}
               <input type="radio" name="reg-plan" value="Legacy" style="display:none;" onchange="selectPlan(this)"/>
               <div class="plan-opt" id="plan-Legacy" style="background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
                 <div style="color:#fde68a;font-size:9px;font-weight:800;">LEGACY</div>
-                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Básico</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Elite</div>
               </div>
             </label>
           </div>
@@ -1241,7 +1241,6 @@ tr:hover td{background:var(--line-soft);}
           <div style="display:flex;flex-direction:column;gap:7px;">
             <input class="search-input" id="c-po" placeholder="Valor de la PO (ej. 10000)..." style="width:100%;"/>
             <input class="search-input" id="c-cost" placeholder="Costo de mercancía (ej. 8000)..." style="width:100%;"/>
-            <input class="search-input" id="c-margin" placeholder="Tu margen % (ej. 20)..." style="width:100%;"/>
             <button onclick="calcAlliance()" class="btn-red" style="padding:9px;">Calcular</button>
             <div id="c-result" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.8;"></div>
           </div>
@@ -1541,8 +1540,8 @@ tr:hover td{background:var(--line-soft);}
         <div class="card">
           <div class="card-title">🗂️ Trabajos Creados</div>
           <div style="max-height:260px;overflow-y:auto;">
-            <table><thead><tr><th>TAREA</th><th>CLIENTE</th><th>ESTADO</th><th>ASIGNADO A</th></tr></thead>
-            <tbody id="admin-jobs-body"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+            <table><thead><tr><th>TAREA</th><th>CLIENTE</th><th>ESTADO</th><th>ASIGNADO A</th><th>ACCIÓN</th></tr></thead>
+            <tbody id="admin-jobs-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
           </div>
         </div>
       </div>
@@ -1780,7 +1779,7 @@ function applyMemberProfile(member) {
   if (!member) return;
 
   // Avatar initials
-  const initials = member.avatar || member.name.substring(0,2).toUpperCase();
+  const initials = member.avatar || member.name?.substring(0,2).toUpperCase() || '??';
   const avatarEl = document.getElementById('top-avatar');
   if (avatarEl) avatarEl.textContent = initials;
 
@@ -2100,17 +2099,17 @@ function oppCard(o) {
   const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'N/A';
   const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
   const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||'—',deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#'});
-  return `<div class="opp-card" onclick='openModal(${d})'>
-    <div class="opp-title">${o.title||'Sin título'}</div>
+  return `<div class="opp-card" onclick='openModal(${escapeHtml(d)})'>
+    <div class="opp-title">${escapeHtml(o.title)||'Sin título'}</div>
     <div class="opp-meta">
-      <span><strong>${(o.organization||'—').substring(0,45)}</strong></span>
-      <span>${o.state||'—'}</span>
+      <span><strong>${escapeHtml((o.organization||'—').substring(0,45))}</strong></span>
+      <span>${escapeHtml(o.state)||'—'}</span>
       <span><strong style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></span>
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;">
-      <span class="badge bb">${o.type||'N/A'}</span>
-      ${o.naicsCode?`<span class="badge bm mono">NAICS ${o.naicsCode}</span>`:''}
-      ${o.setAside?`<span class="badge bg">${o.setAside}</span>`:''}
+      <span class="badge bb">${escapeHtml(o.type)||'N/A'}</span>
+      ${o.naicsCode?`<span class="badge bm mono">NAICS ${escapeHtml(o.naicsCode)}</span>`:''}
+      ${o.setAside?`<span class="badge bg">${escapeHtml(o.setAside)}</span>`:''}
       <span style="margin-left:auto;font-size:10px;color:var(--red);font-weight:700;">Ver detalle →</span>
     </div>
   </div>`;
@@ -2129,13 +2128,13 @@ function openModal(o) {
   document.getElementById('modal').classList.add('open');
   document.getElementById('modal-title').textContent = o.title || 'Oportunidad';
   document.getElementById('modal-body').innerHTML = `
-    <div class="modal-field"><label>ENTIDAD</label><p>${o.org}</p></div>
-    <div class="modal-field"><label>TIPO</label><p>${o.type}</p></div>
-    <div class="modal-field"><label>DEADLINE</label><p>${o.deadline}</p></div>
-    <div class="modal-field"><label>NAICS</label><p>${o.naics}</p></div>
-    <div class="modal-field"><label>UBICACIÓN</label><p>${o.city}, ${o.state}</p></div>
-    ${o.setAside?`<div class="modal-field"><label>SET-ASIDE</label><p>${o.setAside}</p></div>`:''}
-    <div class="modal-field"><label>DESCRIPCIÓN</label><p>${o.desc||'No disponible'}</p></div>`;
+    <div class="modal-field"><label>ENTIDAD</label><p>${escapeHtml(o.org)}</p></div>
+    <div class="modal-field"><label>TIPO</label><p>${escapeHtml(o.type)}</p></div>
+    <div class="modal-field"><label>DEADLINE</label><p>${escapeHtml(o.deadline)}</p></div>
+    <div class="modal-field"><label>NAICS</label><p>${escapeHtml(o.naics)}</p></div>
+    <div class="modal-field"><label>UBICACIÓN</label><p>${escapeHtml(o.city)}, ${escapeHtml(o.state)}</p></div>
+    ${o.setAside?`<div class="modal-field"><label>SET-ASIDE</label><p>${escapeHtml(o.setAside)}</p></div>`:''}
+    <div class="modal-field"><label>DESCRIPCIÓN</label><p>${escapeHtml(o.desc)||'No disponible'}</p></div>`;
   document.getElementById('modal-link').onclick = () => window.open(o.link, '_blank');
 }
 
@@ -2187,16 +2186,16 @@ function grantCard(g) {
   const urgent = g.closeDate && (new Date(g.closeDate) - Date.now()) < 30*864e5;
   return `<div class="grant-card">
     <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <div style="font-size:12.5px;font-weight:700;color:var(--text);flex:1;margin-right:12px;">${g.title||'Sin título'}</div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--text);flex:1;margin-right:12px;">${escapeHtml(g.title)||'Sin título'}</div>
       <div style="font-size:12px;font-weight:800;color:var(--green);white-space:nowrap;">${g.awardCeiling?'$'+Number(g.awardCeiling).toLocaleString():'Ver conv.'}</div>
     </div>
-    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">${g.agency||'—'} · <strong class="mono" style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">${escapeHtml(g.agency)||'—'} · <strong class="mono" style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
-      <span class="badge bb mono">${g.oppNumber||'—'}</span>
-      ${g.category?`<span class="badge bm">${g.category}</span>`:''}
+      <span class="badge bb mono">${escapeHtml(g.oppNumber)||'—'}</span>
+      ${g.category?`<span class="badge bm">${escapeHtml(g.category)}</span>`:''}
     </div>
-    <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">${(g.synopsis||'').substring(0,180)}...</div>
-    <a href="${g.link}" target="_blank" style="font-size:10px;color:var(--red);font-weight:700;text-decoration:none;">Ver en Grants.gov →</a>
+    <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;">${escapeHtml((g.synopsis||'').substring(0,180))}...</div>
+    <a href="${escapeHtml(g.link)}" target="_blank" style="font-size:10px;color:var(--red);font-weight:700;text-decoration:none;">Ver en Grants.gov →</a>
   </div>`;
 }
 
@@ -2474,7 +2473,7 @@ async function runAI(page, btn) {
       fetch(`${API}/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: prompts[page], context: 'Plan Legacy, Cleaning/Janitorial, New Jersey' })
+        body: JSON.stringify({ token: clubToken(), prompt: prompts[page], context: 'Plan Legacy, Cleaning/Janitorial, New Jersey' })
       }),
       minDelay
     ]);
@@ -2732,23 +2731,35 @@ function updateAlliancePreview() {
   const cont = document.getElementById('alliance-preview-content');
   if (!po || !cost || !prev || !cont) { if (prev) prev.style.display = 'none'; return; }
 
-  const apoyo   = cost * 0.9;
-  const tuParte = cost * 0.1;
-  const ganancia = po - cost;
-  const fee     = ganancia * 0.2;
-  const neta    = ganancia - fee;
+  const plan = currentMember?.plan || 'Elevate';
+  const pct  = (PLAN_LIMITS[plan] || PLAN_LIMITS.Elevate).alliancePct;
 
   prev.style.display = 'block';
+  if (pct <= 0) {
+    cont.innerHTML = `Tu plan <strong>${plan}</strong> no incluye acceso a GovBidder Alliance — actualizá a Prime o Legacy para fondear tus POs.`;
+    return;
+  }
+
+  const apoyo    = cost * (pct / 100);
+  const tuParte  = cost - apoyo;
+  const ganancia = po - cost;
+  const fee      = ganancia * 0.2;
+  const neta     = ganancia - fee;
+
   cont.innerHTML = `
     💰 Valor PO: <strong>$${po.toLocaleString()}</strong><br>
-    🏦 GovBidder aporta (90%): <strong style="color:var(--blue)">$${apoyo.toLocaleString()}</strong><br>
-    👤 Tu aporte (10%): <strong>$${tuParte.toLocaleString()}</strong><br>
+    🏦 GovBidder aporta (${pct}%): <strong style="color:var(--blue)">$${apoyo.toLocaleString()}</strong><br>
+    👤 Tu aporte (${100 - pct}%): <strong>$${tuParte.toLocaleString()}</strong><br>
     📈 Ganancia bruta: <strong>$${ganancia.toLocaleString()}</strong><br>
     🤝 Fee Alliance (20%): $${fee.toLocaleString()}<br>
     <strong style="color:var(--green)">✅ Tu utilidad neta: $${neta.toLocaleString()}</strong>`;
 }
 
 function clubToken() { return localStorage.getItem('gb_token') || ''; }
+
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
 
 async function loadAllianceStatus() {
   const contentEl = document.getElementById('alliance-content');
@@ -2861,8 +2872,8 @@ async function loadSupportTickets() {
 
     if (body) {
       body.innerHTML = data.tickets.length ? data.tickets.map(t => {
-        const [cls, label] = STATUS_BADGE[t.status] || ['bm', t.status];
-        return `<tr><td class="mono">#${t.id.slice(0,6)}</td><td>${t.type}</td><td><span class="badge ${cls}">${label}</span></td></tr>`;
+        const [cls, label] = STATUS_BADGE[t.status] || ['bm', escapeHtml(t.status)];
+        return `<tr><td class="mono">#${t.id.slice(0,6)}</td><td>${escapeHtml(t.type)}</td><td><span class="badge ${cls}">${label}</span></td></tr>`;
       }).join('') : `<tr><td colspan="3" style="text-align:center;color:var(--muted);">Todavía no enviaste tickets.</td></tr>`;
     }
   } catch(e) { /* silencioso */ }
@@ -2909,13 +2920,12 @@ function setLoading(id, txt='Cargando...') {
 }
 
 function calcAlliance() {
-  const po     = parseFloat(document.getElementById('c-po').value)     || 0;
-  const cost   = parseFloat(document.getElementById('c-cost').value)   || 0;
-  const margin = parseFloat(document.getElementById('c-margin').value) || 0;
+  const po   = parseFloat(document.getElementById('c-po').value)   || 0;
+  const cost = parseFloat(document.getElementById('c-cost').value) || 0;
   if (!po || !cost) { alert('Ingresa PO y costo'); return; }
   const plan  = currentMember?.plan || 'Elevate';
   const pct   = (PLAN_LIMITS[plan] || PLAN_LIMITS.Elevate).alliancePct;
-  const apoyo = cost * (pct/100), gan = po * (margin/100), fee = gan * .2, neta = gan - fee;
+  const apoyo = cost * (pct/100), gan = po - cost, fee = gan * .2, neta = gan - fee;
   const r = document.getElementById('c-result');
   r.style.display = 'block';
   if (pct <= 0) {
@@ -2924,7 +2934,7 @@ function calcAlliance() {
   }
   r.innerHTML = `<strong>Alliance — Plan ${plan}</strong><br>
     ✅ GovBidder presta (${pct}%): <strong>$${apoyo.toLocaleString()}</strong><br>
-    📈 Tu ganancia (${margin}%): $${gan.toLocaleString()}<br>
+    📈 Ganancia bruta (PO − costo): $${gan.toLocaleString()}<br>
     🤝 Fee (20%): $${fee.toLocaleString()}<br>
     <strong style="color:var(--green)">💰 Utilidad neta: $${neta.toLocaleString()}</strong>`;
 }
@@ -2935,8 +2945,8 @@ function renderOpenJob(job, alreadyApplied) {
   return `<div class="pipe-card" style="cursor:default;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
       <div>
-        <div class="pipe-card-title">${c.name}</div>
-        <div class="pipe-card-entity">${job.client_ref || 'GovBidder Club'} · <span class="mono">${c.required_plan}+</span></div>
+        <div class="pipe-card-title">${escapeHtml(c.name)}</div>
+        <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')} · <span class="mono">${escapeHtml(c.required_plan)}+</span></div>
       </div>
       <div style="font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
     </div>
@@ -2954,8 +2964,8 @@ function renderMyJob(job) {
   return `<div class="pipe-card" style="cursor:default;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
       <div>
-        <div class="pipe-card-title">${c.name}</div>
-        <div class="pipe-card-entity">${job.client_ref || 'GovBidder Club'}</div>
+        <div class="pipe-card-title">${escapeHtml(c.name)}</div>
+        <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')}</div>
       </div>
       <div style="font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
     </div>
@@ -3085,10 +3095,19 @@ async function loadAdminJobs() {
   const data = await clubAdminFetch('admin_job_list');
   if (!data.success) return;
   body.innerHTML = data.jobs.length ? data.jobs.map(j => {
-    const badge = JOB_STATUS_BADGE[j.status] || ['bm', j.status];
-    const assignee = j.profiles ? `${j.profiles.name} (${j.profiles.plan})` : '—';
-    return `<tr><td>${j.task_catalog?.name || '—'}</td><td>${j.client_ref || '—'}</td><td><span class="badge ${badge[0]}">${badge[1]}</span></td><td>${assignee}</td></tr>`;
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">Todavía no creaste ninguna tarea.</td></tr>';
+    const badge = JOB_STATUS_BADGE[j.status] || ['bm', escapeHtml(j.status)];
+    const assignee = j.profiles ? `${escapeHtml(j.profiles.name)} (${escapeHtml(j.profiles.plan)})` : '—';
+    const action = j.status === 'assigned'
+      ? `<button class="btn-outline" style="padding:4px 9px;font-size:10px;color:var(--green);" onclick="completeJob('${j.id}')">Marcar completada</button>`
+      : '';
+    return `<tr><td>${escapeHtml(j.task_catalog?.name) || '—'}</td><td>${escapeHtml(j.client_ref) || '—'}</td><td><span class="badge ${badge[0]}">${badge[1]}</span></td><td>${assignee}</td><td>${action}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">Todavía no creaste ninguna tarea.</td></tr>';
+}
+
+async function completeJob(jobId) {
+  const data = await clubAdminFetch('admin_job_complete', { jobId });
+  if (!data.success) { alert(data.error || 'No se pudo completar la tarea.'); return; }
+  loadAdminJobs();
 }
 
 async function loadAdminApplications() {
@@ -3100,9 +3119,9 @@ async function loadAdminApplications() {
     const job = a.work_pool_jobs;
     const member = a.profiles;
     return `<tr>
-      <td>${member?.name || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${member?.email || ''}</span></td>
-      <td><span class="badge bb">${member?.plan || '—'}</span></td>
-      <td>${job?.task_catalog?.name || '—'}</td>
+      <td>${escapeHtml(member?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(member?.email)}</span></td>
+      <td><span class="badge bb">${escapeHtml(member?.plan) || '—'}</span></td>
+      <td>${escapeHtml(job?.task_catalog?.name) || '—'}</td>
       <td>$${Number(job?.task_catalog?.price || 0).toLocaleString()}</td>
       <td style="white-space:nowrap;">
         <button class="btn-outline" style="padding:4px 9px;font-size:10px;color:var(--green);" onclick="reviewApplication('${a.id}','approved')">Aprobar</button>
@@ -3125,14 +3144,25 @@ async function loadAdminTickets() {
   const data = await clubAdminFetch('admin_ticket_list');
   if (!data.success) return;
   body.innerHTML = data.tickets.length ? data.tickets.map(t => {
-    const badge = STATUS_BADGE[t.status] || ['bm', t.status];
+    const badge = STATUS_BADGE[t.status] || ['bm', escapeHtml(t.status)];
+    const action = t.status !== 'resolved'
+      ? `<div style="display:flex;gap:4px;margin-top:4px;">
+          ${t.status !== 'in_review' ? `<button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="reviewTicket('${t.id}','in_review')">En revisión</button>` : ''}
+          <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;color:var(--green);" onclick="reviewTicket('${t.id}','resolved')">Resolver</button>
+        </div>` : '';
     return `<tr>
-      <td>${t.profiles?.name || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${t.profiles?.plan || ''}</span></td>
-      <td>${t.type}</td>
-      <td style="max-width:220px;white-space:normal;">${t.message}</td>
-      <td><span class="badge ${badge[0]}">${badge[1]}</span></td>
+      <td>${escapeHtml(t.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(t.profiles?.plan)}</span></td>
+      <td>${escapeHtml(t.type)}</td>
+      <td style="max-width:220px;white-space:normal;">${escapeHtml(t.message)}</td>
+      <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No hay tickets.</td></tr>';
+}
+
+async function reviewTicket(ticketId, status) {
+  const data = await clubAdminFetch('admin_ticket_review', { ticketId, status });
+  if (!data.success) { alert(data.error || 'No se pudo actualizar el ticket.'); return; }
+  loadAdminTickets();
 }
 
 async function loadAdminAlliance() {
@@ -3142,13 +3172,24 @@ async function loadAdminAlliance() {
   if (!data.success) return;
   body.innerHTML = data.requests.length ? data.requests.map(r => {
     const badge = r.status === 'approved' ? ['bg','Aprobada'] : r.status === 'rejected' ? ['br','Rechazada'] : ['by','Pendiente'];
+    const action = r.status === 'pending'
+      ? `<div style="display:flex;gap:4px;margin-top:4px;">
+          <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved')">Aprobar</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:9.5px;" onclick="reviewAlliance('${r.id}','rejected')">Rechazar</button>
+        </div>` : '';
     return `<tr>
-      <td>${r.profiles?.name || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${r.profiles?.plan || ''}</span></td>
-      <td>${r.company}</td>
+      <td>${escapeHtml(r.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:9.5px;">${escapeHtml(r.profiles?.plan)}</span></td>
+      <td>${escapeHtml(r.company)}</td>
       <td>$${Number(r.po_value).toLocaleString()} / $${Number(r.cost).toLocaleString()}</td>
-      <td><span class="badge ${badge[0]}">${badge[1]}</span></td>
+      <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
+}
+
+async function reviewAlliance(requestId, decision) {
+  const data = await clubAdminFetch('admin_alliance_review', { requestId, decision });
+  if (!data.success) { alert(data.error || 'No se pudo procesar la solicitud.'); return; }
+  loadAdminAlliance();
 }
 
 // ── THEME ────────────────────────────────────────────────

@@ -14,6 +14,8 @@ const PLAN_LIMITS = {
   Prime:   { bidSupportPerMonth: 3, alliancePct: 60, shopDiscount: 20 },
   Legacy:  { bidSupportPerMonth: 5, alliancePct: 90, shopDiscount: 50 },
 };
+const NO_PLAN_LIMITS = { bidSupportPerMonth: 0, alliancePct: 0, shopDiscount: 0 };
+function planLimits(plan) { return PLAN_LIMITS[plan] || NO_PLAN_LIMITS; }
 const ALLIANCE_FEE_PCT = 20; // fijo, sobre la ganancia — igual para Prime y Legacy
 const PLAN_LEVEL = { Elevate: 1, Prime: 2, Legacy: 3 };
 
@@ -51,7 +53,7 @@ export default async function handler(req, res) {
       const { type, opportunityLink, message } = body;
       if (!type || !message) return res.status(400).json({ success: false, error: 'Tipo y mensaje requeridos' });
 
-      const limit = PLAN_LIMITS[profile.plan]?.bidSupportPerMonth ?? 0;
+      const limit = planLimits(profile.plan).bidSupportPerMonth;
       const { count } = await supabase.from('support_tickets').select('*', { count: 'exact', head: true })
         .eq('member_id', profile.id).gte('created_at', monthStart());
       if ((count || 0) >= limit) {
@@ -66,7 +68,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'ticket_list') {
-      const limit = PLAN_LIMITS[profile.plan]?.bidSupportPerMonth ?? 0;
+      const limit = planLimits(profile.plan).bidSupportPerMonth;
       const { data: tickets } = await supabase.from('support_tickets').select('*')
         .eq('member_id', profile.id).order('created_at', { ascending: false });
       const { count: usedThisMonth } = await supabase.from('support_tickets').select('*', { count: 'exact', head: true })
@@ -76,7 +78,7 @@ export default async function handler(req, res) {
 
     // ── FUNDING ACCESS (Alliance) ─────────────────────
     if (action === 'alliance_status') {
-      const limits = PLAN_LIMITS[profile.plan] || PLAN_LIMITS.Elevate;
+      const limits = planLimits(profile.plan);
       const daysAsMember = Math.floor((Date.now() - new Date(profile.member_since).getTime()) / 86400000);
       const eligible = profile.active && daysAsMember >= 60 && limits.alliancePct > 0;
       return res.status(200).json({
@@ -91,12 +93,19 @@ export default async function handler(req, res) {
     }
 
     if (action === 'alliance_request_create') {
-      const limits = PLAN_LIMITS[profile.plan] || PLAN_LIMITS.Elevate;
+      const limits = planLimits(profile.plan);
       if (limits.alliancePct <= 0) {
         return res.status(403).json({ success: false, error: 'Tu plan no incluye acceso a GovBidder Alliance.' });
       }
-      const { company, poValue, cost, contractState, description } = body;
-      if (!company || !poValue || !cost) return res.status(400).json({ success: false, error: 'Faltan datos requeridos' });
+      const { company, contractState, description } = body;
+      const poValue = Number(body.poValue);
+      const cost = Number(body.cost);
+      if (!company || !Number.isFinite(poValue) || !Number.isFinite(cost) || poValue <= 0 || cost <= 0) {
+        return res.status(400).json({ success: false, error: 'Faltan datos requeridos o los montos no son válidos.' });
+      }
+      if (cost > poValue) {
+        return res.status(400).json({ success: false, error: 'El costo de mercancía no puede ser mayor al valor de la PO.' });
+      }
 
       const { data, error: insErr } = await supabase.from('alliance_requests').insert({
         member_id: profile.id, company, po_value: poValue, cost, contract_state: contractState || '', description: description || ''
@@ -145,9 +154,18 @@ export default async function handler(req, res) {
         return res.status(403).json({ success: false, error: 'Necesitas un plan superior para postularte a esta tarea.' });
       }
 
+      // Update condicional atómico: solo si sigue 'open' — evita que dos miembros la tomen a la vez
+      const { data: claimed } = await supabase.from('work_pool_jobs')
+        .update({ status: 'applied' }).eq('id', jobId).eq('status', 'open').select();
+      if (!claimed || claimed.length === 0) {
+        return res.status(400).json({ success: false, error: 'Esta tarea ya no está disponible.' });
+      }
+
       const { error: insErr } = await supabase.from('job_applications').insert({ job_id: jobId, member_id: profile.id });
-      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
-      await supabase.from('work_pool_jobs').update({ status: 'applied' }).eq('id', jobId).eq('status', 'open');
+      if (insErr) {
+        await supabase.from('work_pool_jobs').update({ status: 'open' }).eq('id', jobId).eq('status', 'applied');
+        return res.status(500).json({ success: false, error: insErr.message });
+      }
       return res.status(200).json({ success: true });
     }
 
@@ -208,15 +226,36 @@ export default async function handler(req, res) {
         }
         const { data: application } = await supabase.from('job_applications').select('*').eq('id', applicationId).single();
         if (!application) return res.status(404).json({ success: false, error: 'Postulación no encontrada' });
+        if (application.status !== 'pending') {
+          return res.status(400).json({ success: false, error: 'Esta postulación ya fue resuelta.' });
+        }
 
-        await supabase.from('job_applications').update({ status: decision }).eq('id', applicationId);
+        const { data: updatedApp } = await supabase.from('job_applications')
+          .update({ status: decision }).eq('id', applicationId).eq('status', 'pending').select();
+        if (!updatedApp || updatedApp.length === 0) {
+          return res.status(400).json({ success: false, error: 'Esta postulación ya fue resuelta.' });
+        }
 
         if (decision === 'approved') {
-          await supabase.from('work_pool_jobs').update({ status: 'assigned', claimed_by: application.member_id }).eq('id', application.job_id);
+          await supabase.from('work_pool_jobs').update({ status: 'assigned', claimed_by: application.member_id })
+            .eq('id', application.job_id).eq('status', 'applied');
           await supabase.from('job_applications').update({ status: 'rejected' })
-            .eq('job_id', application.job_id).neq('id', applicationId);
+            .eq('job_id', application.job_id).eq('status', 'pending').neq('id', applicationId);
         } else {
-          await supabase.from('work_pool_jobs').update({ status: 'open' }).eq('id', application.job_id);
+          await supabase.from('work_pool_jobs').update({ status: 'open' }).eq('id', application.job_id).eq('status', 'applied');
+        }
+        return res.status(200).json({ success: true });
+      }
+
+      if (action === 'admin_job_complete') {
+        const { jobId } = body;
+        if (!jobId) return res.status(400).json({ success: false, error: 'jobId requerido' });
+        const { data: updated, error: updErr } = await supabase.from('work_pool_jobs')
+          .update({ status: 'completed', completed_at: new Date().toISOString() })
+          .eq('id', jobId).eq('status', 'assigned').select();
+        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (!updated || updated.length === 0) {
+          return res.status(400).json({ success: false, error: 'Solo se pueden completar tareas asignadas.' });
         }
         return res.status(200).json({ success: true });
       }
@@ -228,11 +267,35 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, tickets: data || [] });
       }
 
+      if (action === 'admin_ticket_review') {
+        const { ticketId, status: newStatus } = body;
+        if (!ticketId || !['in_review', 'resolved'].includes(newStatus)) {
+          return res.status(400).json({ success: false, error: 'ticketId y status válidos requeridos' });
+        }
+        const { error: updErr } = await supabase.from('support_tickets').update({ status: newStatus }).eq('id', ticketId);
+        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        return res.status(200).json({ success: true });
+      }
+
       if (action === 'admin_alliance_list') {
         const { data } = await supabase.from('alliance_requests')
           .select('*, profiles!alliance_requests_member_id_fkey(name, email, plan)')
           .order('created_at', { ascending: false });
         return res.status(200).json({ success: true, requests: data || [] });
+      }
+
+      if (action === 'admin_alliance_review') {
+        const { requestId, decision } = body; // decision: 'approved' | 'rejected'
+        if (!requestId || !['approved', 'rejected'].includes(decision)) {
+          return res.status(400).json({ success: false, error: 'requestId y decision válidos requeridos' });
+        }
+        const { data: updated, error: updErr } = await supabase.from('alliance_requests')
+          .update({ status: decision }).eq('id', requestId).eq('status', 'pending').select();
+        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (!updated || updated.length === 0) {
+          return res.status(400).json({ success: false, error: 'Esta solicitud ya fue resuelta.' });
+        }
+        return res.status(200).json({ success: true });
       }
 
       return res.status(400).json({ success: false, error: `Acción admin inválida: ${action}` });
