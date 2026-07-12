@@ -319,6 +319,22 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true });
       }
 
+      if (action === 'admin_membership_list') {
+        const { data } = await supabase.from('membership_requests')
+          .select('*').order('created_at', { ascending: false });
+        return res.status(200).json({ success: true, requests: data || [] });
+      }
+
+      if (action === 'admin_membership_review') {
+        const { requestId, status: newStatus } = body; // newStatus: 'contacted' | 'rejected'
+        if (!requestId || !['contacted', 'rejected'].includes(newStatus)) {
+          return res.status(400).json({ success: false, error: 'requestId y status válidos requeridos' });
+        }
+        const { error: updErr } = await supabase.from('membership_requests').update({ status: newStatus }).eq('id', requestId);
+        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        return res.status(200).json({ success: true });
+      }
+
       return res.status(400).json({ success: false, error: `Acción admin inválida: ${action}` });
     }
 

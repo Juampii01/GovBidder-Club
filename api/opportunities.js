@@ -1,12 +1,26 @@
 // api/opportunities.js
 // Backend para SAM.gov — Oportunidades de contratos gubernamentales
 
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+);
+
 export default async function handler(req, res) {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
+
+  const body = (req.method === 'POST' && req.body) ? req.body : {};
+  const token = body.token;
+  if (!token) return res.status(401).json({ success: false, error: 'Sesión requerida' });
+  const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
+  if (authErr || !user) return res.status(401).json({ success: false, error: 'Sesión expirada' });
 
   const SAM_KEY = process.env.SAM_API_KEY;
 
@@ -22,7 +36,7 @@ export default async function handler(req, res) {
       state = 'NJ',
       naics = '561720',
       limit = 25
-    } = req.query;
+    } = body;
 
     // Fechas: últimos 90 días
     const now = new Date();

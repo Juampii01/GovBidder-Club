@@ -89,6 +89,33 @@ export default async function handler(req, res) {
       });
     }
 
+    // ── REGISTER (solicitud de membresía — no crea cuenta) ──
+    if (action === 'register') {
+      const body = (req.method === 'POST' && req.body) ? req.body : {};
+      const name    = (body.name    || '').trim();
+      const company = (body.company || '').trim();
+      const email   = (body.email   || '').trim().toLowerCase();
+      const phone   = (body.phone   || '').trim();
+      const state   = (body.state   || '').trim();
+      const naics   = (body.naics   || '').trim();
+      const plan    = (body.plan    || '').trim();
+      const message = (body.message || '').trim();
+
+      if (!name || !company || !email) {
+        return res.status(400).json({ success: false, error: 'Nombre, empresa y email son requeridos.' });
+      }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        return res.status(400).json({ success: false, error: 'Email inválido.' });
+      }
+
+      const { error: insErr } = await supabase.from('membership_requests').insert({
+        name, company, email, phone, state, naics, plan_interest: plan, message
+      });
+      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+
+      return res.status(200).json({ success: true, message: 'Solicitud recibida. Te contactaremos en 24-48 horas.' });
+    }
+
     // ── LOGIN (paid members) ────────────────────────────
     if (action === 'login') {
       let email = '', password = '';

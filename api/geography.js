@@ -224,6 +224,43 @@ export default async function handler(req, res) {
       });
     }
 
+    // ── COUNTIES — LIVE SPENDING BY COUNTY (USASpending) ──
+    if (type === 'counties') {
+      const stateInfo = STATES[state];
+      if (!stateInfo) return res.status(404).json({ success: false, error: `State ${state} not found` });
+
+      const geoRes = await fetch('https://api.usaspending.gov/api/v2/search/spending_by_geography/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filters: {
+            time_period: [{ start_date: `${year}-01-01`, end_date: `${year}-12-31` }],
+            naics_codes: [naics],
+            place_of_performance_locations: [{ country: 'USA', state }]
+          },
+          scope: 'place_of_performance',
+          geo_layer: 'county'
+        })
+      });
+
+      const geoData = await geoRes.json();
+      const counties = (geoData.results || [])
+        .map(c => ({
+          code: c.shape_code,
+          name: c.display_name,
+          amount: Number(c.aggregated_amount || 0),
+          population: c.population || null,
+          perCapita: c.per_capita || null
+        }))
+        .sort((a, b) => b.amount - a.amount);
+
+      return res.status(200).json({
+        success: true,
+        state: { code: state, ...stateInfo },
+        counties
+      });
+    }
+
     return res.status(400).json({ success: false, error: 'Invalid type' });
 
   } catch (error) {

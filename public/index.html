@@ -1539,6 +1539,7 @@ tr:hover td{background:var(--line-soft);}
         <div class="geo-tab"        id="tab-admin-applications" onclick="adminTab('applications')">📥 Postulaciones</div>
         <div class="geo-tab"        id="tab-admin-tickets"      onclick="adminTab('tickets')">🎯 Tickets de Soporte</div>
         <div class="geo-tab"        id="tab-admin-alliance"     onclick="adminTab('alliance')">🤝 Solicitudes Alliance</div>
+        <div class="geo-tab"        id="tab-admin-membership"   onclick="adminTab('membership')">📋 Solicitudes de Membresía</div>
       </div>
 
       <!-- TAB: TAREAS -->
@@ -1589,6 +1590,15 @@ tr:hover td{background:var(--line-soft);}
           <tbody id="admin-alliance-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
         </div>
       </div>
+
+      <!-- TAB: SOLICITUDES DE MEMBRESÍA -->
+      <div id="admin-panel-membership" class="geo-panel">
+        <div class="card">
+          <div class="card-title">📋 Solicitudes de Membresía</div>
+          <table><thead><tr><th>NOMBRE</th><th>EMPRESA</th><th>CONTACTO</th><th>PLAN DE INTERÉS</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
+          <tbody id="admin-membership-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+        </div>
+      </div>
     </div>
 
   </div><!-- /#content -->
@@ -1613,7 +1623,7 @@ tr:hover td{background:var(--line-soft);}
 ═══════════════════════════════════════════════════════ -->
 <script>
 const API = '/api';
-let liveOpps = [], liveGrants = [], currentMember = null, allStates = [];
+let liveOpps = [], liveGrants = [], currentMember = null, allStates = [], allCounties = [];
 
 // ── NAVIGATION ────────────────────────────────────────────
 const TITLES = {
@@ -1777,9 +1787,18 @@ async function doLogin() {
   }
 }
 
-function doLogout() {
+async function doLogout() {
   if (!confirm('¿Cerrar sesión?')) return;
   if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
+  const token = localStorage.getItem('gb_token');
+  if (token) {
+    try {
+      await fetch('/api/auth?action=logout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+    } catch(e) { /* best-effort, seguimos igual con el logout local */ }
+  }
   clearSession();
   currentMember = null;
   const emailEl = document.getElementById('login-email');
@@ -2089,7 +2108,10 @@ async function fetchOpps() {
   const nc = document.getElementById('opp-naics')?.value || '561720';
   setLoading('opps-list', 'Buscando en SAM.gov...');
   try {
-    const res  = await fetch(`${API}/opportunities?keyword=${encodeURIComponent(kw)}&state=${st}&naics=${nc}`);
+    const res  = await fetch(`${API}/opportunities`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), keyword: kw, state: st, naics: nc })
+    });
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     liveOpps = data.opportunities || [];
@@ -2099,7 +2121,7 @@ async function fetchOpps() {
     document.getElementById('home-opps-src').textContent = `${liveOpps.length} live • SAM.gov`;
     document.getElementById('opps-list').innerHTML = liveOpps.length
       ? liveOpps.map(o => oppCard(o)).join('')
-      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${kw}" en ${st}.</div>`;
+      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${escapeHtml(kw)}" en ${escapeHtml(st)}.</div>`;
     document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
   } catch(e) {
     const err = e.message.includes('SAM_API_KEY') ? samKeyEmptyState() : `<div class="error-box">${e.message}</div>`;
@@ -2141,7 +2163,7 @@ function oppRow(o) {
   const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
   const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
   return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line-soft);align-items:center;">
-    <span style="font-size:15px;font-weight:700;color:var(--ink);flex:1;margin-right:8px;">${(o.title||'').substring(0,50)}${(o.title||'').length>50?'...':''}</span>
+    <span style="font-size:15px;font-weight:700;color:var(--ink);flex:1;margin-right:8px;">${escapeHtml((o.title||'').substring(0,50))}${(o.title||'').length>50?'...':''}</span>
     <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}</span>
   </div>`;
 }
@@ -2176,7 +2198,7 @@ async function fetchGrants() {
     document.getElementById('home-grants-src').textContent = `${liveGrants.length} live`;
     document.getElementById('grants-list').innerHTML = liveGrants.length
       ? liveGrants.map(g => grantCard(g)).join('')
-      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${kw}".</div>`;
+      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${escapeHtml(kw)}".</div>`;
     document.getElementById('home-grants').innerHTML = liveGrants.slice(0,4).map(g => grantRow(g)).join('');
   } catch(e) {
     const err = `<div class="error-box">${e.message}</div>`;
@@ -2193,13 +2215,14 @@ function catColor(cat) {
 }
 
 function grantRow(g) {
+  const d = JSON.stringify({title:g.title||'',org:g.agency||'—',type:'Grant',deadline:g.closeDate||'N/A',naics:'—',city:'—',state:'—',desc:(g.description||'').replace(/\n/g,' '),link:g.link||'#'});
   return `<div class="grant-row">
     <span class="grant-row-dot" style="background:${catColor(g.category)};"></span>
     <div style="flex:1;min-width:0;">
-      <div class="grant-row-title">${g.title||''}</div>
-      <div class="grant-row-tag">${(g.category||'GRANT').toString().toUpperCase()}</div>
+      <div class="grant-row-title">${escapeHtml(g.title)}</div>
+      <div class="grant-row-tag">${escapeHtml((g.category||'GRANT').toString().toUpperCase())}</div>
     </div>
-    <a href="#" onclick="openModal({title:'${(g.title||'').replace(/'/g,"\\'")}',org:'${(g.agency||'—').replace(/'/g,"\\'")}',type:'Grant',deadline:'${g.closeDate||'N/A'}',naics:'—',city:'—',state:'—',desc:'${(g.description||'').replace(/'/g,"\\'").replace(/\n/g,' ')}',link:'${g.link||'#'}'});return false;" class="grant-row-ver">Ver<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a href="#" onclick='openModal(${escapeHtml(d)});return false;' class="grant-row-ver">Ver<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
   </div>`;
 }
 
@@ -2413,7 +2436,7 @@ async function searchCodes() {
         </div>`;
     } else if (data.results) {
       if (!data.results.length) {
-        el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;">Sin resultados para "${q}"</div></div>`;
+        el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:8px;">🔍</div><div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;">Sin resultados para "${escapeHtml(q)}"</div></div>`;
         return;
       }
       el.innerHTML = `
@@ -2471,7 +2494,7 @@ async function getCodeAI(naics, title) {
     const res  = await fetch(`${API}/ai`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: `Para el código NAICS ${naics} (${title}): ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos. Español, máximo 120 palabras.`, context: 'GovBidder Club member, small business' })
+      body: JSON.stringify({ token: clubToken(), prompt: `Para el código NAICS ${naics} (${title}): ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos. Español, máximo 120 palabras.`, context: 'GovBidder Club member, small business' })
     });
     const data = await res.json();
     el.textContent = data.success ? data.response : 'AI no disponible.';
@@ -2512,6 +2535,7 @@ function geoTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('geo-' + tab).classList.add('active');
   if (tab === 'states' && allStates.length === 0) loadAllStates();
+  if (tab === 'counties' && allCounties.length === 0) loadCounties();
 }
 
 async function loadAllStates() {
@@ -2723,6 +2747,46 @@ async function loadColleges() {
           </div>`).join('')}
       </div>`;
   } catch(e) { el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
+}
+
+async function loadCounties() {
+  const state = document.getElementById('county-state').value;
+  const naics = document.getElementById('county-naics').value;
+  const el    = document.getElementById('counties-container');
+  const countEl = document.getElementById('counties-count');
+  el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando condados de ${escapeHtml(state)}...</div></div>`;
+  try {
+    const res  = await fetch(`${API}/geography?type=counties&state=${state}&naics=${naics}&year=2024`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    allCounties = data.counties || [];
+    if (countEl) countEl.textContent = `${allCounties.length} condados`;
+    renderCounties(allCounties);
+  } catch(e) { el.innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
+}
+
+function renderCounties(counties) {
+  const el = document.getElementById('counties-container');
+  if (!el) return;
+  el.innerHTML = counties.length
+    ? `<table><thead><tr><th>CONDADO</th><th>GASTO TOTAL</th><th>POBLACIÓN</th><th>GASTO PER CÁPITA</th></tr></thead>
+        <tbody>${counties.map(c => `
+          <tr>
+            <td style="color:var(--ink);font-weight:700;">🏛️ ${escapeHtml(c.name)}</td>
+            <td style="color:var(--green);font-weight:700;">$${c.amount.toLocaleString()}</td>
+            <td>${c.population ? Number(c.population).toLocaleString() : '—'}</td>
+            <td>${c.perCapita != null ? '$' + Number(c.perCapita).toLocaleString() : '—'}</td>
+          </tr>`).join('')}</tbody>
+      </table>`
+    : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin datos de gasto por condado para este estado/NAICS en 2024.</div>`;
+}
+
+function filterCounties(q) {
+  const countEl = document.getElementById('counties-count');
+  if (!q) { renderCounties(allCounties); if (countEl) countEl.textContent = `${allCounties.length} condados`; return; }
+  const f = allCounties.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
+  if (countEl) countEl.textContent = `${f.length} resultados`;
+  renderCounties(f);
 }
 
 function searchOppsInState(state, naics) {
@@ -3124,6 +3188,7 @@ async function loadAdminPanel() {
   loadAdminApplications();
   loadAdminTickets();
   loadAdminAlliance();
+  loadAdminMembership();
 }
 
 async function loadAdminCatalog() {
@@ -3259,6 +3324,35 @@ async function reviewAlliance(requestId, decision) {
   const data = await clubAdminFetch('admin_alliance_review', { requestId, decision });
   if (!data.success) { alert(data.error || 'No se pudo procesar la solicitud.'); return; }
   loadAdminAlliance();
+}
+
+async function loadAdminMembership() {
+  const body = document.getElementById('admin-membership-body');
+  if (!body) return;
+  const data = await clubAdminFetch('admin_membership_list');
+  if (!data.success) return;
+  body.innerHTML = data.requests.length ? data.requests.map(r => {
+    const badge = r.status === 'contacted' ? ['bg','Contactada'] : r.status === 'rejected' ? ['br','Rechazada'] : ['by','Pendiente'];
+    const action = r.status === 'pending'
+      ? `<div style="display:flex;gap:4px;margin-top:4px;">
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewMembership('${r.id}','contacted')">Marcar contactada</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewMembership('${r.id}','rejected')">Rechazar</button>
+        </div>` : '';
+    return `<tr>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.company)}</td>
+      <td>${escapeHtml(r.email)}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(r.phone)}</span></td>
+      <td>${escapeHtml(r.plan_interest) || '—'}</td>
+      <td style="max-width:220px;white-space:normal;">${escapeHtml(r.message)}</td>
+      <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
+}
+
+async function reviewMembership(requestId, status) {
+  const data = await clubAdminFetch('admin_membership_review', { requestId, status });
+  if (!data.success) { alert(data.error || 'No se pudo procesar la solicitud.'); return; }
+  loadAdminMembership();
 }
 
 // ── THEME ────────────────────────────────────────────────
