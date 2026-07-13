@@ -153,15 +153,16 @@ Hoy hay **cero** `@media queries` en todo el CSS (`public/index.html`) — sideb
 ### Fase 5 — Code Intelligence y Buyer Geography con datos públicos (ver Decisión 2)
 
 **Objetivo:** ampliar cobertura de datos de referencia sin depender de Santo.
-**Criterio de terminado:** NAICS completo (~1057 códigos en vez de ~715), crosswalk NAICS↔SIC completo, un crosswalk NAICS↔PSC basado en datos empíricos de USASpending, y distritos escolares/universidades en los 52 estados en vez de 5.
 
-- **5.1 NAICS 2022 completo + crosswalk NAICS↔SIC**: descargar y parsear los datasets oficiales de Census.gov/BLS, reestructurar en el formato que ya usa `NAICS_DB` en `api/codes.js` (o migrar a una tabla de Supabase para que sea mantenible sin redeploy) — 6-10h.
-- **5.2 Crosswalk NAICS↔PSC empírico**: consultar USASpending/FPDS por NAICS (reutilizando el patrón de queries que ya existen en `api/spending.js`/`api/geography.js`) y construir una tabla de frecuencia PSC-por-NAICS a partir de adjudicaciones reales, cacheada — 6-8h. Alternativa más barata y de menor cobertura: parsear directamente los crosswalks estáticos que publica GSA (2-4h, pero solo cubre los vehículos de contrato que GSA documenta).
-- **5.3 Distritos escolares y universidades en los 52 estados**: usar el NCES Common Core of Data (API o archivos descargables) para reemplazar `TOP_SCHOOL_DISTRICTS`/`TOP_UNIVERSITIES` (hoy hardcodeados para 5 estados) por datos completos — 6-10h.
+**Estado real (ejecutado y verificado en producción):**
 
-**Esfuerzo total estimado: 18-28h** según qué variante de 5.2 se elija. **Riesgo: bajo-medio** (es trabajo de datos, no de lógica de negocio crítica; el riesgo principal es tiempo de parsing/limpieza de datasets grandes).
+- ✅ **5.1a NAICS 2022 completo — HECHO.** `NAICS_DB` en `api/codes.js` pasó de 626 a 1377 códigos, usando el árbol oficial de USASpending.gov (misma fuente que ya usa el resto de la app) recorriendo sector → grupo → código de 6 dígitos vía su API pública. Título y sector 100% reales, verificado en producción (`GET /api/codes?type=search&query=Berry` devuelve el código nuevo `111334` con su título oficial).
+- ⚠️ **5.1b Crosswalk NAICS↔SIC — NO viable con los recursos investigados.** La única fuente oficial (Census.gov) publica el crosswalk como un manual en PDF de 7MB sin estructura parseable de forma confiable; no existe un CSV/JSON público equivalente al que sí tiene NAICS. Los códigos nuevos agregados en 5.1a quedan con `sic: null` — se corrigieron `getSICTitle()`/`getPSCTitle()`/`getUNSPSCTitle()` y la acción `search` en `api/codes.js` para mostrar "No disponible en esta base todavía" / "N/D" en vez de renderizar "SIC undefined" (bug real que se hubiera introducido de no arreglarlo).
+- ⚠️ **5.2 Crosswalk NAICS↔PSC — NO completado.** GSA solo publica crosswalks parciales atados a vehículos de compra específicos (OASIS, PS-MAS), no una tabla universal. La opción de minarlo empíricamente desde USASpending/FPDS (consultar adjudicaciones reales por NAICS y agregar el PSC más frecuente) sigue siendo viable pero no se ejecutó en esta ronda — queda como tarea concreta de ~6-8h para una próxima sesión.
+- ❌ **5.3 Distritos escolares/universidades a 52 estados — bloqueado.** El único endpoint que no requiere descargar archivos manualmente (Urban Institute Education Data API) está detrás de un desafío de Cloudflare (`Just a moment...` / challenge JS) — **no se intentó sortear por ser exactamente el tipo de detección anti-bot que no se debe bypasear**. La alternativa (NCES Common Core of Data, archivos descargables directos) requiere ubicar las URLs exactas de archivo en su portal de descargas, algo que no se llegó a hacer — queda como tarea pendiente de exploración manual, no de scripting.
+- ❌ **UNSPSC estructurado completo y NIGP completo — confirmado no viables sin pagar.** UNSPSC requiere suscripción + firmar un addendum de uso comercial en unspsc.org. NIGP es propiedad de Periscope Holdings y su redistribución sin licencia está prohibida. Ninguno de los dos es un problema de "más tiempo de scripting" — son bloqueos de presupuesto/licencia, van en la sección de terceros más abajo.
 
-Esta fase queda última porque, según los 4 criterios de priorización del brief, no es "que nada mienta" (Code Intelligence ya se presenta honestamente como dataset de referencia, no como algo roto) ni seguridad ni mobile ni operación del admin — es una mejora de profundidad de producto, valiosa pero no urgente.
+**Commit:** `ca13b45` — desplegado y verificado en producción.
 
 ---
 
