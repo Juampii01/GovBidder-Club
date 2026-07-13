@@ -590,35 +590,6 @@ tr:hover td{background:var(--line-soft);}
     </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
 
-      <!-- Global State filter -->
-      <div class="gf-chip">
-      <svg class="gf-chip-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
-      <select class="gf-select" id="f-state" onchange="onGlobalFilter()">
-        <optgroup label="NORTHEAST"><option value="CT">CT</option><option value="DC">DC</option><option value="DE">DE</option><option value="MA">MA</option><option value="MD">MD</option><option value="ME">ME</option><option value="NH">NH</option><option value="NJ" selected>NJ</option><option value="NY">NY</option><option value="PA">PA</option><option value="RI">RI</option><option value="VT">VT</option></optgroup>
-        <optgroup label="SOUTH"><option value="AL">AL</option><option value="AR">AR</option><option value="FL">FL</option><option value="GA">GA</option><option value="KY">KY</option><option value="LA">LA</option><option value="MS">MS</option><option value="NC">NC</option><option value="OK">OK</option><option value="SC">SC</option><option value="TN">TN</option><option value="TX">TX</option><option value="VA">VA</option><option value="WV">WV</option></optgroup>
-        <optgroup label="MIDWEST"><option value="IA">IA</option><option value="IL">IL</option><option value="IN">IN</option><option value="KS">KS</option><option value="MI">MI</option><option value="MN">MN</option><option value="MO">MO</option><option value="ND">ND</option><option value="NE">NE</option><option value="OH">OH</option><option value="SD">SD</option><option value="WI">WI</option></optgroup>
-        <optgroup label="WEST"><option value="AK">AK</option><option value="AZ">AZ</option><option value="CA">CA</option><option value="CO">CO</option><option value="HI">HI</option><option value="ID">ID</option><option value="MT">MT</option><option value="NM">NM</option><option value="NV">NV</option><option value="OR">OR</option><option value="UT">UT</option><option value="WA">WA</option><option value="WY">WY</option></optgroup>
-        <optgroup label="TERRITORIES"><option value="PR">PR</option></optgroup>
-      </select>
-      <svg class="gf-chip-chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-
-      <!-- Global Year filter -->
-      <div class="gf-chip">
-      <select class="gf-select" id="f-year" style="padding-left:10px;">
-        <option value="2026">2026</option>
-        <option value="2025">2025</option>
-        <option value="2024" selected>2024</option>
-        <option value="2023">2023</option>
-        <option value="2022">2022</option>
-        <option value="2021">2021</option>
-        <option value="2020">2020</option>
-      </select>
-      <svg class="gf-chip-chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-
-      <div class="topbar-sep"></div>
-
       <div class="member-badge plan-legacy" id="plan-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><span id="plan-badge-text">LEGACY</span></div>
 
       <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" class="theme-toggle-btn">
@@ -1876,10 +1847,6 @@ function applyMemberProfile(member) {
   if (menuEmail) menuEmail.textContent = member.email || '—';
   if (menuPlan)  menuPlan.innerHTML    = `<span class="member-badge ${planClass}" style="font-size:13px;padding:3px 10px;">${(member.plan||'').toUpperCase()}</span>`;
 
-  // State filter arranca con el estado real del miembro
-  const stateEl = document.getElementById('f-state');
-  if (stateEl && member.state) stateEl.value = member.state;
-
   // Apply role-based access
   applyRoleAccess();
   onGlobalFilter();
@@ -2108,7 +2075,7 @@ async function doRegister() {
 
 function onGlobalFilter() {
   const naicsVal = (currentMember?.naics || '').trim();
-  const stateVal = document.getElementById('f-state')?.value || 'NJ';
+  const stateVal = currentMember?.state || 'NJ';
 
   // ── Update NAICS KPI card (viene directo del perfil del miembro) ──
   const naicsKpi  = document.getElementById('kpi-naics');
