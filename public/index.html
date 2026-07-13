@@ -226,6 +226,29 @@ tr:hover td{background:var(--line-soft);}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#c3cadd;border-radius:6px;}
 ::-webkit-scrollbar-thumb:hover{background:#9aa5c4;}
+
+/* ── RESPONSIVE / MOBILE ──────────────────────────────────── */
+#hamburger-btn{display:none;background:none;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);flex-shrink:0;}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(10,14,35,.5);z-index:49;}
+#sidebar-backdrop.show{display:block;}
+
+@media (max-width:860px){
+  #hamburger-btn{display:flex;}
+  #sidebar{position:fixed;left:0;top:0;z-index:50;transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 30px rgba(0,0,0,.35);}
+  #sidebar.mobile-open{transform:translateX(0);}
+  #topbar{padding:12px 14px;gap:8px;}
+  .page-subtitle{display:none;}
+  #content{padding:16px 14px;}
+  .kpi-grid,.grid-2,.grid-2b{grid-template-columns:1fr !important;}
+  div[style*="grid-template-columns"]{grid-template-columns:1fr !important;}
+  div:has(> .geo-tab){flex-wrap:wrap;}
+  .geo-tab{flex:1 1 45%;font-size:12px;padding:10px 4px;}
+  table{display:block;overflow-x:auto;white-space:nowrap;}
+  thead,tbody{display:table;width:100%;}
+}
+@media (min-width:861px){
+  #sidebar-backdrop{display:none !important;}
+}
 </style>
 </head>
 <body>
@@ -569,6 +592,8 @@ tr:hover td{background:var(--line-soft);}
   <div class="nav-item" id="nav-admin" style="display:none;" onclick="nav(this,'admin')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1.5a3 3 0 0 1-1.5 2.6L6 10a3 3 0 0 0-1.5 2.6V14a3 3 0 0 0 1.5 2.6l1.5.9a3 3 0 0 1 1.5 2.6V22"/><circle cx="12" cy="12" r="3"/></svg></span>Admin</div>
 </div>
 
+<div id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
 <!-- ═══════════════════════════════════════════════════════
      MAIN
 ═══════════════════════════════════════════════════════ -->
@@ -576,6 +601,9 @@ tr:hover td{background:var(--line-soft);}
 
   <!-- TOPBAR -->
   <div id="topbar">
+    <button id="hamburger-btn" onclick="toggleMobileSidebar()" title="Menú" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/></svg>
+    </button>
     <div class="page-title-wrap">
       <div class="page-title" id="ptitle">Command Center</div>
       <div class="page-subtitle" id="psubtitle">Panorama de tu actividad de contratación pública</div>
@@ -1638,6 +1666,15 @@ const PLAN_LIMITS = {
   Legacy:  { bidSupportPerMonth: 5, alliancePct: 90, shopDiscount: 50 },
 };
 
+function toggleMobileSidebar() {
+  document.getElementById('sidebar')?.classList.toggle('mobile-open');
+  document.getElementById('sidebar-backdrop')?.classList.toggle('show');
+}
+function closeMobileSidebar() {
+  document.getElementById('sidebar')?.classList.remove('mobile-open');
+  document.getElementById('sidebar-backdrop')?.classList.remove('show');
+}
+
 function nav(el, page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
@@ -1647,6 +1684,7 @@ function nav(el, page) {
   document.getElementById('ptitle').textContent = TITLES[page] || page;
   const subEl = document.getElementById('psubtitle');
   if (subEl) subEl.textContent = SUBTITLES[page] || '';
+  if (window.innerWidth <= 860) closeMobileSidebar();
 
   // Check role access
   if (!checkPageAccess(page)) {
