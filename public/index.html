@@ -178,18 +178,25 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
 .bar-fill-blue{background:linear-gradient(90deg,var(--blue),#1e3090);}
 .bar-val{font-size:13px;font-weight:700;color:var(--text);width:56px;text-align:right;}
-.pipeline-board{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
-.pipe-col{background:var(--line-soft);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;border-top:3px solid var(--muted);}
+.pipeline-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+.pipe-col{background:var(--line-soft);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;border-top:3px solid var(--muted);transition:background-color .15s ease,border-color .15s ease;}
 .pipe-col:nth-child(1){border-top-color:#94a3b8;}
 .pipe-col:nth-child(2){border-top-color:#3b82f6;}
 .pipe-col:nth-child(3){border-top-color:#d97706;}
 .pipe-col:nth-child(4){border-top-color:#7c3aed;}
 .pipe-col:nth-child(5){border-top-color:#16a34a;}
-.pipe-col-title{font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;}
-.pipe-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
+.pipe-col.drag-over{background:var(--card);border-color:var(--accent);box-shadow:inset 0 0 0 2px rgba(228,45,44,.18);}
+.pipe-col-title{font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.pipe-col-count{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;color:var(--text);letter-spacing:0;}
+.pipe-col-body{min-height:60px;}
+.pipe-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,opacity .15s ease;}
 .pipe-card:hover{border-color:var(--accent);box-shadow:var(--sh-sm);transform:translateY(-1px);}
+#page-pipeline .pipe-card{cursor:grab;}
+#page-pipeline .pipe-card:active{cursor:grabbing;}
+#page-pipeline .pipe-card.dragging{opacity:.4;transform:scale(.97);}
 .pipe-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
 .pipe-card-entity{font-size:12px;color:var(--muted);}
+.pipe-card-empty{font-size:12px;color:var(--muted);text-align:center;padding:14px 4px;border:1px dashed var(--border);border-radius:var(--r-sm);}
 .ai-panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:var(--sh-card);}
 .ai-badge{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--red);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
 .icon-chip{width:30px;height:30px;border-radius:9px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(20,38,79,.22);}
@@ -618,8 +625,9 @@ tr:hover td{background:var(--line-soft);}
           <div style="height:1px;background:var(--border);"></div>
           <!-- Actions -->
           <div style="padding:6px;">
-            <div style="padding:8px 10px;font-size:14px;color:var(--muted);border-radius:7px;cursor:default;">
-              📊 Command Center
+            <div onclick="toggleAvatarMenu();showMyProfile()" style="padding:8px 10px;font-size:14px;color:var(--ink);border-radius:7px;cursor:pointer;transition:.15s;"
+              onmouseover="this.style.background='var(--line-soft)'" onmouseout="this.style.background='transparent'">
+              👤 Ver Mi Perfil
             </div>
             <div onclick="doLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:14px;font-weight:700;color:var(--red);border-radius:7px;cursor:pointer;transition:.15s;"
               onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background='transparent'">
@@ -1085,24 +1093,46 @@ tr:hover td{background:var(--line-soft);}
 
     <!-- PIPELINE -->
     <div class="page" id="page-pipeline">
-      <div class="pipeline-board">
-        <div class="pipe-col"><div class="pipe-col-title">🔍 DETECTED</div>
-          <div class="pipe-card"><div class="pipe-card-title">Bergen Window Cleaning</div><div class="pipe-card-entity">Bergen County</div><div style="font-size:11.5px;color:var(--muted);margin-top:4px;">Apr 19</div></div>
-          <div class="pipe-card"><div class="pipe-card-title">Custodial — Essex</div><div class="pipe-card-entity">Essex County Schools</div></div>
+      <div style="background:linear-gradient(135deg,#0a0c14,var(--navy));border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
+        <div style="font-size:36px;">🗂️</div>
+        <div>
+          <div style="color:#fff;font-size:17px;font-weight:800;">Bid Pipeline</div>
+          <div style="color:rgba(255,255,255,.55);font-size:14px;margin-top:3px;">Arrastrá cada tarjeta a la columna que corresponda a su estado actual.</div>
         </div>
-        <div class="pipe-col"><div class="pipe-col-title">🔎 ANALYZING</div>
-          <div class="pipe-card"><div class="pipe-card-title">Rutgers Facility Svcs</div><div class="pipe-card-entity">Rutgers University</div></div>
+      </div>
+      <div class="pipeline-board" id="pipeline-board">
+        <div class="pipe-col" id="pipe-col-detected" ondragover="pipelineDragOver(event)" ondragleave="pipelineDragLeave(event)" ondrop="pipelineDrop(event)">
+          <div class="pipe-col-title"><span>🔍 DETECTED</span><span class="pipe-col-count"></span></div>
+          <div class="pipe-col-body">
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)"><div class="pipe-card-title">Bergen Window Cleaning</div><div class="pipe-card-entity">Bergen County</div><div style="font-size:11.5px;color:var(--muted);margin-top:4px;">Apr 19</div></div>
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)"><div class="pipe-card-title">Custodial — Essex</div><div class="pipe-card-entity">Essex County Schools</div></div>
+          </div>
         </div>
-        <div class="pipe-col"><div class="pipe-col-title">📝 PREPARING</div>
-          <div class="pipe-card"><div class="pipe-card-title">NJ DOE Custodial</div><div class="pipe-card-entity">NJ Dept. of Education</div></div>
-          <div class="pipe-card" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Janitorial — Middlesex</div><div class="pipe-card-entity">Middlesex Co. Schools</div><div style="font-size:11.5px;color:var(--accent);margin-top:4px;">⚠️ Apr 14</div></div>
+        <div class="pipe-col" id="pipe-col-analyzing" ondragover="pipelineDragOver(event)" ondragleave="pipelineDragLeave(event)" ondrop="pipelineDrop(event)">
+          <div class="pipe-col-title"><span>🔎 ANALYZING</span><span class="pipe-col-count"></span></div>
+          <div class="pipe-col-body">
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)"><div class="pipe-card-title">Rutgers Facility Svcs</div><div class="pipe-card-entity">Rutgers University</div></div>
+          </div>
         </div>
-        <div class="pipe-col"><div class="pipe-col-title">📤 SUBMITTED</div>
-          <div class="pipe-card"><div class="pipe-card-title">Newark City Cleaning</div><div class="pipe-card-entity">Newark City Hall</div></div>
+        <div class="pipe-col" id="pipe-col-preparing" ondragover="pipelineDragOver(event)" ondragleave="pipelineDragLeave(event)" ondrop="pipelineDrop(event)">
+          <div class="pipe-col-title"><span>📝 PREPARING</span><span class="pipe-col-count"></span></div>
+          <div class="pipe-col-body">
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)"><div class="pipe-card-title">NJ DOE Custodial</div><div class="pipe-card-entity">NJ Dept. of Education</div></div>
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Janitorial — Middlesex</div><div class="pipe-card-entity">Middlesex Co. Schools</div><div style="font-size:11.5px;color:var(--accent);margin-top:4px;">⚠️ Apr 14</div></div>
+          </div>
         </div>
-        <div class="pipe-col"><div class="pipe-col-title">🏆 RESULTS</div>
-          <div class="pipe-card" style="border-left:3px solid var(--green)"><div class="pipe-card-title">Edison Twp Janitorial</div><div class="pipe-card-entity" style="color:var(--green);font-weight:700;">✅ WON $78K</div></div>
-          <div class="pipe-card" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Trenton City Maint.</div><div class="pipe-card-entity" style="color:var(--accent);">❌ Lost</div></div>
+        <div class="pipe-col" id="pipe-col-submitted" ondragover="pipelineDragOver(event)" ondragleave="pipelineDragLeave(event)" ondrop="pipelineDrop(event)">
+          <div class="pipe-col-title"><span>📤 SUBMITTED</span><span class="pipe-col-count"></span></div>
+          <div class="pipe-col-body">
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)"><div class="pipe-card-title">Newark City Cleaning</div><div class="pipe-card-entity">Newark City Hall</div></div>
+          </div>
+        </div>
+        <div class="pipe-col" id="pipe-col-results" ondragover="pipelineDragOver(event)" ondragleave="pipelineDragLeave(event)" ondrop="pipelineDrop(event)">
+          <div class="pipe-col-title"><span>🏆 RESULTS</span><span class="pipe-col-count"></span></div>
+          <div class="pipe-col-body">
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)" style="border-left:3px solid var(--green)"><div class="pipe-card-title">Edison Twp Janitorial</div><div class="pipe-card-entity" style="color:var(--green);font-weight:700;">✅ WON $78K</div></div>
+            <div class="pipe-card" draggable="true" ondragstart="pipelineDragStart(event)" ondragend="pipelineDragEnd(event)" style="border-left:3px solid var(--accent)"><div class="pipe-card-title">Trenton City Maint.</div><div class="pipe-card-entity" style="color:var(--accent);">❌ Lost</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1178,7 +1208,7 @@ tr:hover td{background:var(--line-soft);}
         <div class="card">
           <div class="card-title">🧮 Calculadora Alliance</div>
           <div style="display:flex;flex-direction:column;gap:7px;">
-            <input class="search-input" id="c-po" placeholder="Valor de la PO (ej. 10000)..." style="width:100%;"/>
+            <input class="search-input" id="c-po" placeholder="Valor de la Orden de Compra (PO) (ej. 10000)..." style="width:100%;"/>
             <input class="search-input" id="c-cost" placeholder="Costo de mercancía (ej. 8000)..." style="width:100%;"/>
             <button onclick="calcAlliance()" class="btn-red" style="padding:9px;">Calcular</button>
             <div id="c-result" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:14px;color:var(--muted);line-height:1.8;"></div>
@@ -1230,7 +1260,7 @@ tr:hover td{background:var(--line-soft);}
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div>
-                <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">FECHA DE EMISIÓN DE LA PO</label>
+                <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">FECHA DE EMISIÓN DE LA ORDEN DE COMPRA (PO)</label>
                 <input id="alliance-po-issue-date" type="date" class="search-input" style="width:100%;"/>
               </div>
               <div>
@@ -1240,7 +1270,7 @@ tr:hover td{background:var(--line-soft);}
             </div>
 
             <div>
-              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA PO *</label>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA ORDEN DE COMPRA (PO) *</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
                 <input id="alliance-po" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
@@ -1583,8 +1613,15 @@ tr:hover td{background:var(--line-soft);}
         </div>
         <div class="card">
           <div class="card-title">🤝 Solicitudes Alliance</div>
-          <table><thead><tr><th>MIEMBRO</th><th>PO / COSTO</th><th>MONTO SOLICITADO</th><th>DOCS</th><th>ESTADO</th></tr></thead>
-          <tbody id="admin-alliance-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          <div style="overflow-x:auto;">
+          <table><thead><tr>
+            <th>MIEMBRO</th><th>ORDEN DE COMPRA (PO)</th><th>COSTO</th><th>MONTO SOLICITADO</th>
+            <th title="Orden de Compra">📄 PO</th><th title="Adjudicación o contrato">📝 ADJ.</th>
+            <th title="Cotización del proveedor">🧾 COT.</th><th title="Cronograma de ejecución">📅 CRON.</th>
+            <th title="Estado de cuenta bancaria">🏦 BANCO</th><th>ESTADO</th>
+          </tr></thead>
+          <tbody id="admin-alliance-body"><tr><td colspan="10" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -1680,6 +1717,7 @@ function nav(el, page) {
   if (page === 'alliance') loadAllianceStatus();
   if (page === 'support')  loadSupportTickets();
   if (page === 'admin')    loadAdminPanel();
+  if (page === 'pipeline') updatePipelineCounts();
 }
 
 // ── AUTH ──────────────────────────────────────────────────
@@ -1850,6 +1888,43 @@ function applyMemberProfile(member) {
   // Apply role-based access
   applyRoleAccess();
   onGlobalFilter();
+}
+
+// ── MI PERFIL ────────────────────────────────────────────
+function showMyProfile() {
+  const m = currentMember;
+  if (!m) return;
+  const planClass = 'plan-' + (m.plan || 'elevate').toLowerCase();
+  const memberSince = m.memberSince ? new Date(m.memberSince).toLocaleDateString('es-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+  const daysAsMember = m.memberSince ? Math.floor((Date.now() - new Date(m.memberSince).getTime()) / 86400000) : null;
+  const trialRow = m.isTrial
+    ? `<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted);flex-shrink:0;">Trial</span><span style="font-weight:700;color:var(--accent);text-align:right;word-break:break-word;">${m.daysLeft ?? 0} días restantes</span></div>`
+    : '';
+  const rows = [
+    ['Nombre completo', escapeHtml(m.name || '—')],
+    ['Email', escapeHtml(m.email || '—')],
+    ['Rol', m.role === 'admin' ? 'Administrador' : 'Miembro'],
+    ['Industria', escapeHtml(m.industry || '—')],
+    ['Estado', escapeHtml(m.state || '—')],
+    ['NAICS', escapeHtml(m.naics || '—')],
+    ['Miembro desde', memberSince],
+    ['Antigüedad', daysAsMember !== null ? `${daysAsMember} días` : '—'],
+  ].map(([label, value]) => `
+    <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span style="color:var(--muted);flex-shrink:0;">${label}</span><span style="font-weight:700;color:var(--ink);text-align:right;word-break:break-word;">${value}</span>
+    </div>`).join('');
+
+  showSimpleModal('Mi Perfil', `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div class="top-avatar" style="position:static;">${escapeHtml(m.avatar || '')}</div>
+      <div>
+        <div style="font-size:17px;font-weight:800;color:var(--ink);">${escapeHtml(m.name || '—')}</div>
+        <span class="member-badge ${planClass}" style="font-size:12px;padding:2px 9px;">${escapeHtml((m.plan || '').toUpperCase())}</span>
+      </div>
+    </div>
+    ${trialRow}
+    ${rows}
+  `);
 }
 
 // ── AVATAR DROPDOWN ───────────────────────────────────────
@@ -2859,7 +2934,7 @@ function updateAlliancePreview() {
   const neta     = ganancia - fee;
 
   cont.innerHTML = `
-    💰 Valor PO: <strong>$${po.toLocaleString()}</strong><br>
+    💰 Valor de la Orden de Compra (PO): <strong>$${po.toLocaleString()}</strong><br>
     🏦 GovBidder Alliance aporta (${pct}%): <strong style="color:var(--ink)">$${apoyo.toLocaleString()}</strong>${capNote}<br>
     👤 Tu aporte: <strong>$${tuParte.toLocaleString()}</strong><br>
     📈 Ganancia bruta: <strong>$${ganancia.toLocaleString()}</strong><br>
@@ -3125,6 +3200,63 @@ async function submitTicket() {
   if (btn) btn.disabled = false;
 }
 
+// ── BID PIPELINE (drag & drop) ────────────────────────────
+let pipelineDraggedCard = null;
+
+function pipelineDragStart(ev) {
+  pipelineDraggedCard = ev.currentTarget;
+  ev.currentTarget.classList.add('dragging');
+  ev.dataTransfer.effectAllowed = 'move';
+  try { ev.dataTransfer.setData('text/plain', ''); } catch(e) {}
+}
+
+function pipelineDragEnd(ev) {
+  ev.currentTarget.classList.remove('dragging');
+  pipelineDraggedCard = null;
+  document.querySelectorAll('#pipeline-board .pipe-col.drag-over').forEach(c => c.classList.remove('drag-over'));
+}
+
+function pipelineDragOver(ev) {
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = 'move';
+  ev.currentTarget.classList.add('drag-over');
+}
+
+function pipelineDragLeave(ev) {
+  if (ev.currentTarget === ev.target) ev.currentTarget.classList.remove('drag-over');
+}
+
+function pipelineDrop(ev) {
+  ev.preventDefault();
+  const col = ev.currentTarget;
+  col.classList.remove('drag-over');
+  if (!pipelineDraggedCard) return;
+  const body = col.querySelector('.pipe-col-body');
+  if (body) body.appendChild(pipelineDraggedCard);
+  updatePipelineCounts();
+}
+
+function updatePipelineCounts() {
+  document.querySelectorAll('#pipeline-board .pipe-col').forEach(col => {
+    const body = col.querySelector('.pipe-col-body');
+    const countEl = col.querySelector('.pipe-col-count');
+    const cards = body ? body.querySelectorAll('.pipe-card').length : 0;
+    if (countEl) countEl.textContent = cards;
+    if (!body) return;
+    let empty = body.querySelector('.pipe-card-empty');
+    if (cards === 0) {
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.className = 'pipe-card-empty';
+        empty.textContent = 'Soltá una tarjeta acá';
+        body.appendChild(empty);
+      }
+    } else if (empty) {
+      empty.remove();
+    }
+  });
+}
+
 // ── MISC ─────────────────────────────────────────────────
 function setLoading(id, txt='Cargando...') {
   const el = document.getElementById(id);
@@ -3151,7 +3283,7 @@ function calcAlliance() {
   apoyo = Math.min(apoyo, allianceMaxCap);
   r.innerHTML = `<strong>Alliance — Plan ${plan}</strong><br>
     ✅ GovBidder Alliance aporta (${pct}%): <strong>$${apoyo.toLocaleString()}</strong>${capNote}<br>
-    📈 Ganancia bruta (PO − costo): $${gan.toLocaleString()}<br>
+    📈 Ganancia bruta (Orden de Compra − costo): $${gan.toLocaleString()}<br>
     🤝 GovBidder Alliance Fee (20% ganancia bruta): $${fee.toLocaleString()}<br>
     <strong style="color:var(--green)">💰 Utilidad neta: $${neta.toLocaleString()}</strong><br>
     <span style="font-size:12.5px;color:var(--muted);">Al cobrar del gobierno, le devolvés a GovBidder Alliance el aporte + el fee — tu parte es la utilidad neta.</span>`;
@@ -3482,11 +3614,6 @@ async function viewAdminTicketDocument(ticketId) {
   else alert(data.error || 'No se pudo abrir el documento.');
 }
 
-const ALLIANCE_DOC_LABELS = {
-  po: 'Orden de Compra (PO)', award: 'Adjudicación / contrato', quote: 'Cotización del proveedor',
-  schedule: 'Cronograma de ejecución', bank_statement: 'Estado de cuenta bancaria'
-};
-
 async function loadAdminAlliance() {
   const body = document.getElementById('admin-alliance-body');
   if (!body) return;
@@ -3507,25 +3634,22 @@ async function loadAdminAlliance() {
         </div>` : '';
     const pct = (PLAN_LIMITS[r.profiles?.plan] || PLAN_LIMITS.Elevate).alliancePct;
     const requested = Math.min(Number(r.cost) * (pct / 100), allianceMaxCap);
-    const docCount = ['po_document_path','award_document_path','quote_document_path','schedule_document_path','bank_statement_document_path']
-      .filter(c => r[c]).length;
+    const docCell = (col, type) => r[col]
+      ? `<button class="btn-outline" style="padding:3px 8px;font-size:12.5px;" onclick="viewAllianceDocument('${r.id}','${type}')">Ver</button>`
+      : '<span style="color:var(--muted);">—</span>';
     return `<tr>
       <td>${escapeHtml(r.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(r.profiles?.plan)}</span></td>
-      <td>$${Number(r.po_value).toLocaleString()} / $${Number(r.cost).toLocaleString()}</td>
+      <td>$${Number(r.po_value).toLocaleString()}</td>
+      <td>$${Number(r.cost).toLocaleString()}</td>
       <td>$${requested.toLocaleString()}</td>
-      <td><button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="openAllianceDocsModal('${r.id}')">📎 Ver (${docCount}/5)</button></td>
+      <td>${docCell('po_document_path','po')}</td>
+      <td>${docCell('award_document_path','award')}</td>
+      <td>${docCell('quote_document_path','quote')}</td>
+      <td>${docCell('schedule_document_path','schedule')}</td>
+      <td>${docCell('bank_statement_document_path','bank_statement')}</td>
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
-}
-
-function openAllianceDocsModal(requestId) {
-  const rows = Object.entries(ALLIANCE_DOC_LABELS).map(([type, label]) => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span>${escapeHtml(label)}</span>
-      <button class="btn-outline" style="padding:4px 10px;font-size:13px;" onclick="viewAllianceDocument('${requestId}','${type}')">Ver</button>
-    </div>`).join('');
-  showSimpleModal('Documentos de la solicitud', rows);
+  }).join('') : '<tr><td colspan="10" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
 }
 
 async function viewAllianceDocument(requestId, docType) {
