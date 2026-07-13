@@ -100,6 +100,7 @@ export default async function handler(req, res) {
       const naics   = (body.naics   || '').trim();
       const plan    = (body.plan    || '').trim();
       const message = (body.message || '').trim();
+      const isAcademyAlumni = body.isAcademyAlumni === true;
 
       if (!name || !company || !email) {
         return res.status(400).json({ success: false, error: 'Nombre, empresa y email son requeridos.' });
@@ -109,7 +110,7 @@ export default async function handler(req, res) {
       }
 
       const { error: insErr } = await supabase.from('membership_requests').insert({
-        name, company, email, phone, state, naics, plan_interest: plan, message
+        name, company, email, phone, state, naics, plan_interest: plan, message, is_academy_alumni: isAcademyAlumni
       });
       if (insErr) return res.status(500).json({ success: false, error: insErr.message });
 

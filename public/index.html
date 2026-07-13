@@ -491,6 +491,19 @@ tr:hover td{background:var(--line-soft);}
           </div>
         </div>
 
+        <!-- Elegibilidad Academy -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">¿ERES ALUMNO/A O EGRESADO/A DE "TU PRIMER CONTRATO" O GOVBIDDER ACADEMY? *</label>
+          <div style="display:flex;gap:14px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;">
+              <input type="radio" name="reg-academy" value="yes"/> Sí
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;">
+              <input type="radio" name="reg-academy" value="no"/> No
+            </label>
+          </div>
+        </div>
+
         <!-- Mensaje opcional -->
         <div>
           <label style="color:rgba(255,255,255,.5);font-size:12px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">MENSAJE (OPCIONAL)</label>
@@ -590,56 +603,6 @@ tr:hover td{background:var(--line-soft);}
       <svg class="gf-chip-chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </div>
 
-      <!-- Global NAICS filter (datalist input) -->
-      <div class="gf-chip">
-      <input
-        id="f-naics"
-        class="gf-select mono"
-        style="width:170px;cursor:text;"
-        placeholder="NAICS code o keyword..."
-        value="561720"
-        list="naics-suggestions"
-        onchange="onGlobalFilter()"
-        oninput="onGlobalFilter()"
-      />
-      </div>
-      <datalist id="naics-suggestions">
-        <option value="111110">111110 - Soybean Farming</option>
-        <option value="112111">112111 - Beef Cattle Ranching</option>
-        <option value="221111">221111 - Hydroelectric Power Generation</option>
-        <option value="221114">221114 - Solar Electric Power Generation</option>
-        <option value="236115">236115 - New Single-Family Housing Construction</option>
-        <option value="236220">236220 - Commercial & Institutional Building Construction</option>
-        <option value="237310">237310 - Highway, Street & Bridge Construction</option>
-        <option value="238110">238110 - Poured Concrete Contractors</option>
-        <option value="238210">238210 - Electrical Contractors</option>
-        <option value="238220">238220 - Plumbing, Heating & AC Contractors</option>
-        <option value="484110">484110 - General Freight Trucking Local</option>
-        <option value="511210">511210 - Software Publishers</option>
-        <option value="541330">541330 - Engineering Services</option>
-        <option value="541511">541511 - Custom Computer Programming Services</option>
-        <option value="541512">541512 - Computer Systems Design Services</option>
-        <option value="541519">541519 - Other Computer Related Services</option>
-        <option value="541611">541611 - Administrative Management Consulting</option>
-        <option value="541620">541620 - Environmental Consulting</option>
-        <option value="561110">561110 - Office Administrative Services</option>
-        <option value="561210">561210 - Facilities Support Services</option>
-        <option value="561311">561311 - Employment Placement Agencies</option>
-        <option value="561320">561320 - Temporary Help Services</option>
-        <option value="561612">561612 - Security Guards & Patrol Services</option>
-        <option value="561710">561710 - Exterminating & Pest Control Services</option>
-        <option value="561720">561720 - Janitorial Services</option>
-        <option value="561730">561730 - Landscaping Services</option>
-        <option value="561790">561790 - Other Services to Buildings & Dwellings</option>
-        <option value="562111">562111 - Solid Waste Collection</option>
-        <option value="611110">611110 - Elementary & Secondary Schools</option>
-        <option value="611310">611310 - Colleges, Universities & Professional Schools</option>
-        <option value="621111">621111 - Offices of Physicians</option>
-        <option value="621610">621610 - Home Health Care Services</option>
-        <option value="722310">722310 - Food Service Contractors</option>
-        <option value="722320">722320 - Caterers</option>
-      </datalist>
-
       <!-- Global Year filter -->
       <div class="gf-chip">
       <select class="gf-select" id="f-year" style="padding-left:10px;">
@@ -656,7 +619,6 @@ tr:hover td{background:var(--line-soft);}
 
       <div class="topbar-sep"></div>
 
-      <a href="https://app.govbidder.net/" target="_blank" class="crm-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>GovBidder App</a>
       <div class="member-badge plan-legacy" id="plan-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><span id="plan-badge-text">LEGACY</span></div>
 
       <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" class="theme-toggle-btn">
@@ -1183,16 +1145,22 @@ tr:hover td{background:var(--line-soft);}
             <select class="gf-select" id="support-type" style="width:100%;padding:9px;"><option value="">Tipo de soporte...</option><option>Análisis de Oportunidad</option><option>Revisión de Documentos</option><option>Consulta de Códigos</option><option>Buyer Research</option></select>
             <input class="search-input" id="support-link" placeholder="Link de la oportunidad..." style="width:100%;"/>
             <textarea id="support-message" style="border:1px solid var(--border);border-radius:7px;padding:9px;font-size:14px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);" rows="4" placeholder="Describe en qué necesitas ayuda..."></textarea>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <label style="font-size:12.5px;color:var(--muted);">Adjuntar PDF de la licitación/BID (opcional)</label>
+              <input id="support-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:7px;"/>
+            </div>
             <div id="support-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
             <button onclick="submitTicket()" class="btn-red" id="support-submit-btn" style="padding:10px;">Enviar</button>
           </div>
         </div>
         <div class="card">
           <div class="card-title">📬 Mis Tickets</div>
-          <table><thead><tr><th>#</th><th>TIPO</th><th>ESTADO</th></tr></thead>
+          <div style="max-height:400px;overflow-y:auto;">
+          <table><thead><tr><th>#</th><th>TIPO</th><th>ESTADO</th><th>RESPUESTA</th><th>ACCIÓN</th></tr></thead>
           <tbody id="support-tickets-body">
-            <tr><td colspan="3" style="text-align:center;color:var(--muted);">Cargando...</td></tr>
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr>
           </tbody></table>
+          </div>
         </div>
       </div>
     </div>
@@ -1270,6 +1238,37 @@ tr:hover td{background:var(--line-soft);}
             </div>
 
             <div>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">EIN DE LA EMPRESA</label>
+              <input id="alliance-ein" class="search-input" placeholder="XX-XXXXXXX..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DIRECCIÓN COMERCIAL</label>
+              <input id="alliance-address" class="search-input" placeholder="Dirección de la empresa..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ENTIDAD GUBERNAMENTAL CONTRATANTE</label>
+              <input id="alliance-entity" class="search-input" placeholder="Ej. City of Newark..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">N° DE CONTRATO / REFERENCIA DE ADJUDICACIÓN</label>
+              <input id="alliance-contract-ref" class="search-input" placeholder="Número de contrato o award..." style="width:100%;"/>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">FECHA DE EMISIÓN DE LA PO</label>
+                <input id="alliance-po-issue-date" type="date" class="search-input" style="width:100%;"/>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">FECHA ESTIMADA DE ENTREGA</label>
+                <input id="alliance-delivery-date" type="date" class="search-input" style="width:100%;"/>
+              </div>
+            </div>
+
+            <div>
               <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA PO *</label>
               <div style="position:relative;">
                 <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
@@ -1285,33 +1284,43 @@ tr:hover td{background:var(--line-soft);}
               </div>
             </div>
 
-            <div>
-              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ESTADO DEL CONTRATO *</label>
-              <select id="alliance-status" class="search-input" style="width:100%;cursor:pointer;">
-                <option value="">Selecciona...</option>
-                <option value="Ganado — listo para ejecutar">✅ Ganado — listo para ejecutar</option>
-                <option value="Activo — en ejecución">🔄 Activo — en ejecución</option>
-                <option value="Pendiente — esperando award">⏳ Pendiente — esperando award</option>
-              </select>
-            </div>
-
-            <div>
-              <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ORDEN DE COMPRA (PO) — PDF *</label>
-              <input id="alliance-po-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:7px;"/>
-              <div style="font-size:12px;color:var(--muted);margin-top:3px;">Necesario para verificar los montos — máx. 3MB.</div>
-            </div>
-
           </div>
 
           <!-- Right column -->
           <div style="display:flex;flex-direction:column;gap:10px;">
 
-            <div style="flex:1;">
+            <div>
               <label style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DESCRIPCIÓN DEL CONTRATO *</label>
-              <textarea id="alliance-desc" rows="5"
+              <textarea id="alliance-desc" rows="4"
                 style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:15px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);transition:.2s;"
                 onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
                 placeholder="Describe el contrato: qué servicios/productos, con qué agencia, plazo de ejecución..."></textarea>
+            </div>
+
+            <div style="border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.8px;">DOCUMENTOS ADJUNTOS</div>
+
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Orden de Compra (PO) — PDF *</label>
+                <input id="alliance-po-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Copia de la adjudicación o contrato</label>
+                <input id="alliance-award-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Factura o cotización detallada del proveedor</label>
+                <input id="alliance-quote-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Cronograma de ejecución y entrega</label>
+                <input id="alliance-schedule-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Estado de cuenta bancaria de la empresa</label>
+                <input id="alliance-bank-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
+              </div>
+              <div style="font-size:11.5px;color:var(--muted);">Solo la PO es obligatoria por ahora — el resto ayuda a acelerar la evaluación. Máx. 3MB por archivo.</div>
             </div>
 
             <!-- Preview calc -->
@@ -1319,6 +1328,11 @@ tr:hover td{background:var(--line-soft);}
               <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;">RESUMEN ESTIMADO</div>
               <div id="alliance-preview-content" style="font-size:14px;color:var(--ink);line-height:2;"></div>
             </div>
+
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;">
+              <input id="alliance-tc-accept" type="checkbox" style="margin-top:3px;"/>
+              <span>He leído y acepto los <a href="javascript:void(0)" onclick="event.preventDefault();showAllianceTerms()" style="color:var(--accent);text-decoration:underline;">Términos y Condiciones de GovBidder Alliance</a>.</span>
+            </label>
 
             <!-- Error / Success -->
             <div id="alliance-error" style="display:none;background:var(--red-soft);border:1px solid var(--red-soft);border-radius:8px;padding:10px 14px;color:var(--red);font-size:14px;"></div>
@@ -1340,7 +1354,6 @@ tr:hover td{background:var(--line-soft);}
         <!-- Info pills -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
           <span style="background:#dcfce7;color:#15803d;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">✅ Sin historial crediticio requerido</span>
-          <span style="background:#dbeafe;color:#1d4ed8;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">📋 Solo necesitas la PO</span>
           <span style="background:#fef3c7;color:#92400e;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">⚡ Respuesta en 24-48 hrs</span>
           <span style="background:#f3e8ff;color:#7e22ce;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:20px;">🤝 Fee: 20% de ganancia neta</span>
         </div>
@@ -1548,8 +1561,12 @@ tr:hover td{background:var(--line-soft);}
           <div class="card">
             <div class="card-title">➕ Crear Tarea desde Catálogo</div>
             <div style="display:flex;flex-direction:column;gap:8px;">
-              <select class="gf-select" id="admin-catalog-select" style="width:100%;padding:9px;"><option value="">Cargando catálogo...</option></select>
+              <select class="gf-select" id="admin-catalog-select" onchange="onAdminCatalogPick()" style="width:100%;padding:9px;"><option value="">Cargando catálogo...</option></select>
               <input class="search-input" id="admin-client-ref" placeholder="Referencia de cliente (ej. Cliente #12)..." style="width:100%;"/>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="color:var(--muted);font-size:14px;">$</span>
+                <input class="search-input" id="admin-job-price" type="number" placeholder="Precio (se precarga del catálogo)" style="width:100%;"/>
+              </div>
               <div id="admin-job-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
               <button onclick="createAdminJob()" class="btn-red" style="padding:10px;">Crear tarea</button>
             </div>
@@ -1577,16 +1594,25 @@ tr:hover td{background:var(--line-soft);}
       <div id="admin-panel-tickets" class="geo-panel">
         <div class="card">
           <div class="card-title">🎯 Tickets de Soporte</div>
-          <table><thead><tr><th>MIEMBRO</th><th>TIPO</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
-          <tbody id="admin-tickets-body"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          <table><thead><tr><th>MIEMBRO</th><th>TIPO</th><th>MENSAJE</th><th>DOC</th><th>ESTADO</th><th>RESPUESTA</th></tr></thead>
+          <tbody id="admin-tickets-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
         </div>
       </div>
 
       <!-- TAB: ALLIANCE -->
       <div id="admin-panel-alliance" class="geo-panel">
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">⚙️ Tope máximo por operación</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="color:var(--muted);">$</span>
+            <input id="admin-alliance-cap" type="number" class="search-input" style="width:160px;" placeholder="15000"/>
+            <button class="btn-outline" onclick="saveAllianceMaxCap()">Guardar</button>
+            <span id="admin-alliance-cap-saved" style="display:none;color:var(--green);font-size:13px;">✅ Guardado</span>
+          </div>
+        </div>
         <div class="card">
           <div class="card-title">🤝 Solicitudes Alliance</div>
-          <table><thead><tr><th>MIEMBRO</th><th>EMPRESA</th><th>PO / COSTO</th><th>DOC</th><th>ESTADO</th></tr></thead>
+          <table><thead><tr><th>MIEMBRO</th><th>PO / COSTO</th><th>MONTO SOLICITADO</th><th>DOCS</th><th>ESTADO</th></tr></thead>
           <tbody id="admin-alliance-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
         </div>
       </div>
@@ -1595,8 +1621,8 @@ tr:hover td{background:var(--line-soft);}
       <div id="admin-panel-membership" class="geo-panel">
         <div class="card">
           <div class="card-title">📋 Solicitudes de Membresía</div>
-          <table><thead><tr><th>NOMBRE</th><th>EMPRESA</th><th>CONTACTO</th><th>PLAN DE INTERÉS</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
-          <tbody id="admin-membership-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          <table><thead><tr><th>NOMBRE</th><th>EMPRESA</th><th>CONTACTO</th><th>PLAN DE INTERÉS</th><th>ACADEMY</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
+          <tbody id="admin-membership-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
         </div>
       </div>
     </div>
@@ -1615,6 +1641,15 @@ tr:hover td{background:var(--line-soft);}
       <button class="btn-blue" onclick="alert('Ticket creado')">🎯 Soporte</button>
       <button id="modal-link" class="btn-outline">🔗 Ver en SAM.gov</button>
     </div>
+  </div>
+</div>
+
+<!-- SIMPLE MODAL (reusable: asignar miembro, T&C, ver documentos) -->
+<div class="modal-overlay" id="simple-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSimpleModal()">✕</button>
+    <div class="modal-title" id="simple-modal-title">—</div>
+    <div id="simple-modal-body"></div>
   </div>
 </div>
 
@@ -1841,12 +1876,13 @@ function applyMemberProfile(member) {
   if (menuEmail) menuEmail.textContent = member.email || '—';
   if (menuPlan)  menuPlan.innerHTML    = `<span class="member-badge ${planClass}" style="font-size:13px;padding:3px 10px;">${(member.plan||'').toUpperCase()}</span>`;
 
-  // NAICS filter
-  const naicsEl = document.getElementById('f-naics');
-  if (naicsEl && member.naics) naicsEl.value = member.naics;
+  // State filter arranca con el estado real del miembro
+  const stateEl = document.getElementById('f-state');
+  if (stateEl && member.state) stateEl.value = member.state;
 
   // Apply role-based access
   applyRoleAccess();
+  onGlobalFilter();
 }
 
 // ── AVATAR DROPDOWN ───────────────────────────────────────
@@ -2013,6 +2049,7 @@ async function doRegister() {
   const message = (document.getElementById('reg-message')?.value || '').trim();
   const planEl  = document.querySelector('input[name="reg-plan"]:checked');
   const plan    = planEl ? planEl.value : '';
+  const academyEl = document.querySelector('input[name="reg-academy"]:checked');
 
   const errEl  = document.getElementById('reg-error');
   const succEl = document.getElementById('reg-success');
@@ -2030,6 +2067,11 @@ async function doRegister() {
     if (errEl) { errEl.textContent = 'Ingresa un email válido.'; errEl.style.display = 'block'; }
     return;
   }
+  if (!academyEl) {
+    if (errEl) { errEl.textContent = 'Indicá si sos alumno/a o egresado/a de Tu Primer Contrato o GovBidder Academy.'; errEl.style.display = 'block'; }
+    return;
+  }
+  const isAcademyAlumni = academyEl.value === 'yes';
 
   if (btn)    btn.disabled    = true;
   if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
@@ -2038,7 +2080,7 @@ async function doRegister() {
     const res  = await fetch('/api/auth?action=register', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ name, company, email, phone, state, naics, plan, message })
+      body:    JSON.stringify({ name, company, email, phone, state, naics, plan, message, isAcademyAlumni })
     });
     const data = await res.json();
 
@@ -2051,6 +2093,7 @@ async function doRegister() {
         if (el) el.value = '';
       });
       if (planEl) planEl.checked = false;
+      if (academyEl) academyEl.checked = false;
     } else {
       if (errEl) { errEl.textContent = data.error || 'Error enviando solicitud.'; errEl.style.display = 'block'; }
       if (btn)    btn.disabled    = false;
@@ -2064,23 +2107,14 @@ async function doRegister() {
 }
 
 function onGlobalFilter() {
-  const naicsVal = (document.getElementById('f-naics')?.value || '').trim();
+  const naicsVal = (currentMember?.naics || '').trim();
   const stateVal = document.getElementById('f-state')?.value || 'NJ';
 
-  // ── Update NAICS KPI card ──
+  // ── Update NAICS KPI card (viene directo del perfil del miembro) ──
   const naicsKpi  = document.getElementById('kpi-naics');
   const naicsDesc = document.getElementById('kpi-naics-desc');
   if (naicsKpi) naicsKpi.textContent = naicsVal || '—';
-  if (naicsDesc) {
-    // Try to find a label from the datalist
-    const opt = document.querySelector(`#naics-suggestions option[value="${naicsVal}"]`);
-    if (opt) {
-      const label = opt.value + ' — ' + opt.textContent.replace(naicsVal + ' - ', '').substring(0, 18);
-      naicsDesc.textContent = opt.textContent.replace(naicsVal + ' - ', '').substring(0, 20);
-    } else {
-      naicsDesc.textContent = naicsVal ? 'Código personalizado' : 'Sin selección';
-    }
-  }
+  if (naicsDesc) naicsDesc.textContent = naicsVal ? 'Código de tu perfil' : 'Sin código en tu perfil';
 
   // ── Update STATE KPI card ──
   const stateKpi  = document.getElementById('kpi-state');
@@ -2803,12 +2837,33 @@ function searchCompetitorsInState(state, naics) {
   setTimeout(() => fetchCompetitors(), 300);
 }
 
+const ALLIANCE_TERMS_HTML = `
+<div style="font-size:13.5px;line-height:1.8;color:var(--text);max-height:420px;overflow-y:auto;">
+  <p style="color:var(--muted);font-size:12px;">Última actualización: noviembre 2025</p>
+  <p><strong>1. OBJETO</strong><br>GovBidder Alliance es una iniciativa de apoyo económico privado creada exclusivamente para miembros activos del GovBidder Club, con el objetivo de facilitar la ejecución de contratos gubernamentales sin depender de capital propio. Este programa brinda a los miembros elegibles acceso a un fondo de colaboración interna, destinado a cubrir parcialmente los costos de órdenes de compra (Purchase Orders - PO) emitidas por entidades del gobierno de los Estados Unidos.</p>
+  <p><strong>2. ELEGIBILIDAD</strong><br>Para poder aplicar al apoyo económico de GovBidder Alliance, el solicitante debe cumplir con los siguientes requisitos: ser miembro activo de los planes Prime o Legacy del GovBidder Club; contar con al menos 60 días de membresía continua antes de solicitar apoyo; tener un contrato gubernamental adjudicado con PO válida; presentar los documentos requeridos para evaluación; cumplir con todas las políticas internas del Club y no tener pagos atrasados.</p>
+  <p><strong>3. ALCANCE DEL APOYO</strong><br>El apoyo económico podrá alcanzar hasta 60% del costo de ejecución para miembros Prime, y 90% del costo de ejecución para miembros Legacy. La evaluación del porcentaje exacto dependerá del análisis de riesgo, tipo de contrato, historial del miembro y otras variables internas.</p>
+  <p><strong>4. REINTEGRO AL FONDO</strong><br>El capital entregado bajo este programa deberá ser reintegrado en su totalidad una vez el gobierno haya emitido el pago correspondiente por el contrato ejecutado. La devolución deberá realizarse según los términos acordados en el momento de la aprobación, pudiendo incluir un pequeño costo operativo o margen colaborativo, que será informado de antemano.</p>
+  <p><strong>5. PENALIDADES POR INCUMPLIMIENTO</strong><br>En caso de retrasos en el reintegro: se podrá aplicar una penalidad única y fija del 5%. Si el retraso se extiende por más de 7 días, se sumará 1% semanal adicional sobre el total pactado. El miembro podría ser suspendido temporal o permanentemente del Club o de futuras rondas de apoyo.</p>
+  <p><strong>6. LIMITACIÓN DE RESPONSABILIDAD</strong><br>GovBidder Alliance no garantiza la entrega de apoyo económico a todos los solicitantes. Cada caso es evaluado individualmente. La existencia de un contrato adjudicado no implica aprobación automática del apoyo.</p>
+  <p><strong>7. CONFIDENCIALIDAD Y USO INTERNO</strong><br>Toda información compartida en la aplicación será tratada como confidencial y usada exclusivamente para fines de evaluación interna.</p>
+  <p><strong>8. NATURALEZA NO CREDITICIA</strong><br>Este programa no constituye un préstamo bancario ni un producto financiero bajo normativas federales o estatales. El apoyo económico proviene de un fondo interno de colaboración entre miembros, exclusivo del ecosistema GovBidder.</p>
+  <p><strong>9. ACTUALIZACIONES</strong><br>GovBidder LLC se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados mediante los canales oficiales del Club.</p>
+  <p>Al aplicar a GovBidder Alliance, el miembro declara haber leído, comprendido y aceptado estos Términos y Condiciones.</p>
+</div>`;
+
+function showAllianceTerms() {
+  showSimpleModal('Términos y Condiciones de GovBidder Alliance', ALLIANCE_TERMS_HTML);
+}
+
 // ── ALLIANCE APPLICATION ─────────────────────────────────
 // Live preview when PO or cost changes
 ['alliance-po','alliance-cost'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', updateAlliancePreview);
 });
+
+let allianceMaxCap = 15000;
 
 function updateAlliancePreview() {
   const po   = parseFloat(document.getElementById('alliance-po')?.value)   || 0;
@@ -2826,7 +2881,11 @@ function updateAlliancePreview() {
     return;
   }
 
-  const apoyo    = cost * (pct / 100);
+  let apoyo = cost * (pct / 100);
+  const capNote = apoyo > allianceMaxCap
+    ? `<br><span style="color:var(--accent);">⚠️ Calificás para $${apoyo.toLocaleString()}, pero el máximo por orden es $${allianceMaxCap.toLocaleString()}.</span>`
+    : '';
+  apoyo = Math.min(apoyo, allianceMaxCap);
   const tuParte  = cost - apoyo;
   const ganancia = po - cost;
   const fee      = ganancia * 0.2;
@@ -2834,11 +2893,12 @@ function updateAlliancePreview() {
 
   cont.innerHTML = `
     💰 Valor PO: <strong>$${po.toLocaleString()}</strong><br>
-    🏦 GovBidder aporta (${pct}%): <strong style="color:var(--ink)">$${apoyo.toLocaleString()}</strong><br>
-    👤 Tu aporte (${100 - pct}%): <strong>$${tuParte.toLocaleString()}</strong><br>
+    🏦 GovBidder Alliance aporta (${pct}%): <strong style="color:var(--ink)">$${apoyo.toLocaleString()}</strong>${capNote}<br>
+    👤 Tu aporte: <strong>$${tuParte.toLocaleString()}</strong><br>
     📈 Ganancia bruta: <strong>$${ganancia.toLocaleString()}</strong><br>
-    🤝 Fee Alliance (20%): $${fee.toLocaleString()}<br>
-    <strong style="color:var(--green)">✅ Tu utilidad neta: $${neta.toLocaleString()}</strong>`;
+    🤝 GovBidder Alliance Fee (20% ganancia bruta): $${fee.toLocaleString()}<br>
+    <strong style="color:var(--green)">✅ Tu utilidad neta: $${neta.toLocaleString()}</strong><br>
+    <span style="font-size:12.5px;color:var(--muted);">Al cobrar del gobierno, le devolvés a GovBidder Alliance el aporte + el fee — tu parte es la utilidad neta.</span>`;
 }
 
 function clubToken() { return localStorage.getItem('gb_token') || ''; }
@@ -2866,6 +2926,8 @@ async function loadAllianceStatus() {
     if (lockedEl)  lockedEl.style.display  = 'none';
     if (contentEl) contentEl.style.display = 'block';
 
+    if (data.maxCap) allianceMaxCap = data.maxCap;
+
     document.getElementById('alliance-plan').textContent = data.plan;
     document.getElementById('alliance-days').textContent = data.daysAsMember;
     document.getElementById('alliance-max').textContent  = data.alliancePct + '%';
@@ -2890,13 +2952,24 @@ function readFileAsBase64(file) {
 }
 
 async function submitAllianceApp() {
-  const name    = (document.getElementById('alliance-name')?.value    || '').trim();
-  const company = (document.getElementById('alliance-company')?.value || '').trim();
-  const po      = (document.getElementById('alliance-po')?.value      || '').trim();
-  const cost    = (document.getElementById('alliance-cost')?.value    || '').trim();
-  const status  = (document.getElementById('alliance-status')?.value  || '').trim();
-  const desc    = (document.getElementById('alliance-desc')?.value    || '').trim();
-  const docFile = document.getElementById('alliance-po-doc')?.files?.[0];
+  const name        = (document.getElementById('alliance-name')?.value        || '').trim();
+  const company     = (document.getElementById('alliance-company')?.value     || '').trim();
+  const ein         = (document.getElementById('alliance-ein')?.value         || '').trim();
+  const address     = (document.getElementById('alliance-address')?.value     || '').trim();
+  const entity      = (document.getElementById('alliance-entity')?.value      || '').trim();
+  const contractRef = (document.getElementById('alliance-contract-ref')?.value|| '').trim();
+  const poIssueDate = (document.getElementById('alliance-po-issue-date')?.value || '').trim();
+  const deliveryDate= (document.getElementById('alliance-delivery-date')?.value || '').trim();
+  const po          = (document.getElementById('alliance-po')?.value      || '').trim();
+  const cost        = (document.getElementById('alliance-cost')?.value    || '').trim();
+  const desc        = (document.getElementById('alliance-desc')?.value    || '').trim();
+  const tcAccepted  = document.getElementById('alliance-tc-accept')?.checked || false;
+
+  const docFile         = document.getElementById('alliance-po-doc')?.files?.[0];
+  const awardDocFile    = document.getElementById('alliance-award-doc')?.files?.[0];
+  const quoteDocFile    = document.getElementById('alliance-quote-doc')?.files?.[0];
+  const scheduleDocFile = document.getElementById('alliance-schedule-doc')?.files?.[0];
+  const bankDocFile     = document.getElementById('alliance-bank-doc')?.files?.[0];
 
   const errEl  = document.getElementById('alliance-error');
   const succEl = document.getElementById('alliance-success');
@@ -2906,7 +2979,7 @@ async function submitAllianceApp() {
   if (errEl)  errEl.style.display  = 'none';
   if (succEl) succEl.style.display = 'none';
 
-  if (!name || !company || !po || !cost || !status || !desc) {
+  if (!name || !company || !po || !cost || !desc) {
     if (errEl) { errEl.textContent = 'Por favor completa todos los campos requeridos.'; errEl.style.display = 'block'; }
     return;
   }
@@ -2914,12 +2987,19 @@ async function submitAllianceApp() {
     if (errEl) { errEl.textContent = 'Adjuntá la orden de compra (PDF) para continuar.'; errEl.style.display = 'block'; }
     return;
   }
-  if (docFile.type !== 'application/pdf') {
-    if (errEl) { errEl.textContent = 'El archivo debe ser un PDF.'; errEl.style.display = 'block'; }
-    return;
+  for (const f of [docFile, awardDocFile, quoteDocFile, scheduleDocFile, bankDocFile]) {
+    if (!f) continue;
+    if (f.type !== 'application/pdf') {
+      if (errEl) { errEl.textContent = 'Todos los documentos adjuntos deben ser PDF.'; errEl.style.display = 'block'; }
+      return;
+    }
+    if (f.size > 3 * 1024 * 1024) {
+      if (errEl) { errEl.textContent = 'Ningún PDF puede superar los 3MB.'; errEl.style.display = 'block'; }
+      return;
+    }
   }
-  if (docFile.size > 3 * 1024 * 1024) {
-    if (errEl) { errEl.textContent = 'El PDF no puede superar los 3MB.'; errEl.style.display = 'block'; }
+  if (!tcAccepted) {
+    if (errEl) { errEl.textContent = 'Debés aceptar los Términos y Condiciones de GovBidder Alliance para continuar.'; errEl.style.display = 'block'; }
     return;
   }
 
@@ -2927,16 +3007,24 @@ async function submitAllianceApp() {
   if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
 
   try {
-    const poDocumentBase64 = await readFileAsBase64(docFile);
+    const payload = {
+      token: clubToken(), company,
+      poValue: parseFloat(po) || 0, cost: parseFloat(cost) || 0,
+      description: `${name} — ${desc}`,
+      ein, businessAddress: address, governmentEntity: entity, contractReference: contractRef,
+      poIssueDate: poIssueDate || null, estimatedDeliveryDate: deliveryDate || null,
+      tcAccepted: true,
+      poDocumentBase64: await readFileAsBase64(docFile), poDocumentName: docFile.name
+    };
+    if (awardDocFile)    { payload.awardDocumentBase64 = await readFileAsBase64(awardDocFile); payload.awardDocumentName = awardDocFile.name; }
+    if (quoteDocFile)    { payload.quoteDocumentBase64 = await readFileAsBase64(quoteDocFile); payload.quoteDocumentName = quoteDocFile.name; }
+    if (scheduleDocFile) { payload.scheduleDocumentBase64 = await readFileAsBase64(scheduleDocFile); payload.scheduleDocumentName = scheduleDocFile.name; }
+    if (bankDocFile)     { payload.bankStatementDocumentBase64 = await readFileAsBase64(bankDocFile); payload.bankStatementDocumentName = bankDocFile.name; }
+
     const res  = await fetch('/api/club?action=alliance_request_create', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        token: clubToken(), company,
-        poValue: parseFloat(po) || 0, cost: parseFloat(cost) || 0,
-        contractState: status, description: `${name} — ${desc}`,
-        poDocumentBase64, poDocumentName: docFile.name
-      })
+      body:    JSON.stringify(payload)
     });
     const data = await res.json();
 
@@ -2944,12 +3032,14 @@ async function submitAllianceApp() {
       if (succEl) succEl.style.display = 'block';
       if (btn)    btn.style.display    = 'none';
       // Clear form
-      ['alliance-name','alliance-company','alliance-po','alliance-cost','alliance-desc','alliance-po-doc'].forEach(id => {
+      ['alliance-name','alliance-company','alliance-ein','alliance-address','alliance-entity','alliance-contract-ref',
+       'alliance-po-issue-date','alliance-delivery-date','alliance-po','alliance-cost','alliance-desc',
+       'alliance-po-doc','alliance-award-doc','alliance-quote-doc','alliance-schedule-doc','alliance-bank-doc'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
-      const st = document.getElementById('alliance-status');
-      if (st) st.value = '';
+      const tcEl = document.getElementById('alliance-tc-accept');
+      if (tcEl) tcEl.checked = false;
       const prev = document.getElementById('alliance-preview');
       if (prev) prev.style.display = 'none';
     } else {
@@ -2965,7 +3055,7 @@ async function submitAllianceApp() {
 }
 
 // ── SUPPORT DESK (BID Helps) ──────────────────────────────
-const STATUS_BADGE = { open: ['by','Abierto'], in_review: ['by','En Revisión'], resolved: ['bg','Resuelto'] };
+const STATUS_BADGE = { open: ['by','Abierto'], in_review: ['by','En Revisión'], resolved: ['bg','Completado'] };
 
 async function loadSupportTickets() {
   const body = document.getElementById('support-tickets-body');
@@ -2983,16 +3073,47 @@ async function loadSupportTickets() {
     if (body) {
       body.innerHTML = data.tickets.length ? data.tickets.map(t => {
         const [cls, label] = STATUS_BADGE[t.status] || ['bm', escapeHtml(t.status)];
-        return `<tr><td class="mono">#${t.id.slice(0,6)}</td><td>${escapeHtml(t.type)}</td><td><span class="badge ${cls}">${label}</span></td></tr>`;
-      }).join('') : `<tr><td colspan="3" style="text-align:center;color:var(--muted);">Todavía no enviaste tickets.</td></tr>`;
+        const response = t.admin_response
+          ? `<div style="font-size:12.5px;color:var(--ink);max-width:220px;">${escapeHtml(t.admin_response)}</div>`
+          : `<span style="font-size:12.5px;color:var(--muted);">—</span>`;
+        const canResolve = t.status !== 'resolved' && t.admin_response;
+        const docBtn = t.document_path ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;" onclick="viewMyTicketDocument('${t.id}')">📎 Ver PDF</button>` : '';
+        const resolveBtn = canResolve ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;color:var(--green);" onclick="markTicketResolved('${t.id}')">Marcar como resuelto</button>` : '';
+        return `<tr><td class="mono">#${t.id.slice(0,6)}</td><td>${escapeHtml(t.type)}</td><td><span class="badge ${cls}">${label}</span></td><td>${response}</td><td style="display:flex;gap:6px;flex-wrap:wrap;">${docBtn}${resolveBtn}</td></tr>`;
+      }).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Todavía no enviaste tickets.</td></tr>`;
     }
   } catch(e) { /* silencioso */ }
 }
 
+async function markTicketResolved(ticketId) {
+  try {
+    const res = await fetch('/api/club?action=ticket_mark_resolved', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), ticketId })
+    });
+    const data = await res.json();
+    if (data.success) loadSupportTickets();
+    else alert(data.error || 'No se pudo actualizar el ticket.');
+  } catch(e) { alert('Error de conexión: ' + e.message); }
+}
+
+async function viewMyTicketDocument(ticketId) {
+  try {
+    const res = await fetch('/api/club?action=ticket_get_document', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), ticketId })
+    });
+    const data = await res.json();
+    if (data.success) window.open(data.url, '_blank');
+    else alert(data.error || 'No se pudo abrir el documento.');
+  } catch(e) { alert('Error de conexión: ' + e.message); }
+}
+
 async function submitTicket() {
-  const type  = document.getElementById('support-type')?.value || '';
-  const link  = document.getElementById('support-link')?.value || '';
-  const msg   = document.getElementById('support-message')?.value || '';
+  const type    = document.getElementById('support-type')?.value || '';
+  const link    = document.getElementById('support-link')?.value || '';
+  const msg     = document.getElementById('support-message')?.value || '';
+  const docFile = document.getElementById('support-doc')?.files?.[0];
   const errEl = document.getElementById('support-error');
   const btn   = document.getElementById('support-submit-btn');
 
@@ -3001,18 +3122,32 @@ async function submitTicket() {
     if (errEl) { errEl.textContent = 'Elegí un tipo de soporte y describe tu consulta.'; errEl.style.display = 'block'; }
     return;
   }
+  if (docFile && docFile.type !== 'application/pdf') {
+    if (errEl) { errEl.textContent = 'El archivo adjunto debe ser un PDF.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (docFile && docFile.size > 3 * 1024 * 1024) {
+    if (errEl) { errEl.textContent = 'El PDF no puede superar los 3MB.'; errEl.style.display = 'block'; }
+    return;
+  }
 
   if (btn) btn.disabled = true;
   try {
+    const payload = { token: clubToken(), type, opportunityLink: link, message: msg };
+    if (docFile) {
+      payload.documentBase64 = await readFileAsBase64(docFile);
+      payload.documentName = docFile.name;
+    }
     const res  = await fetch('/api/club?action=ticket_create', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), type, opportunityLink: link, message: msg })
+      body: JSON.stringify(payload)
     });
     const data = await res.json();
     if (data.success) {
       document.getElementById('support-type').value = '';
       document.getElementById('support-link').value = '';
       document.getElementById('support-message').value = '';
+      document.getElementById('support-doc').value = '';
       loadSupportTickets();
     } else if (errEl) {
       errEl.textContent = data.error || 'Error enviando el ticket.'; errEl.style.display = 'block';
@@ -3035,35 +3170,42 @@ function calcAlliance() {
   if (!po || !cost) { alert('Ingresa PO y costo'); return; }
   const plan  = currentMember?.plan || 'Elevate';
   const pct   = (PLAN_LIMITS[plan] || PLAN_LIMITS.Elevate).alliancePct;
-  const apoyo = cost * (pct/100), gan = po - cost, fee = gan * .2, neta = gan - fee;
+  let apoyo = cost * (pct/100);
+  const gan = po - cost, fee = gan * .2, neta = gan - fee;
   const r = document.getElementById('c-result');
   r.style.display = 'block';
   if (pct <= 0) {
     r.innerHTML = `<strong>Plan ${plan}</strong> no incluye acceso a GovBidder Alliance — actualizá a Prime o Legacy para fondear tus POs.`;
     return;
   }
+  const capNote = apoyo > allianceMaxCap
+    ? `<br><span style="color:var(--accent);">⚠️ Calificás para $${apoyo.toLocaleString()}, pero el máximo por orden es $${allianceMaxCap.toLocaleString()}.</span>`
+    : '';
+  apoyo = Math.min(apoyo, allianceMaxCap);
   r.innerHTML = `<strong>Alliance — Plan ${plan}</strong><br>
-    ✅ GovBidder presta (${pct}%): <strong>$${apoyo.toLocaleString()}</strong><br>
+    ✅ GovBidder Alliance aporta (${pct}%): <strong>$${apoyo.toLocaleString()}</strong>${capNote}<br>
     📈 Ganancia bruta (PO − costo): $${gan.toLocaleString()}<br>
-    🤝 Fee (20%): $${fee.toLocaleString()}<br>
-    <strong style="color:var(--green)">💰 Utilidad neta: $${neta.toLocaleString()}</strong>`;
+    🤝 GovBidder Alliance Fee (20% ganancia bruta): $${fee.toLocaleString()}<br>
+    <strong style="color:var(--green)">💰 Utilidad neta: $${neta.toLocaleString()}</strong><br>
+    <span style="font-size:12.5px;color:var(--muted);">Al cobrar del gobierno, le devolvés a GovBidder Alliance el aporte + el fee — tu parte es la utilidad neta.</span>`;
 }
 
 // ── TASK WORK (bolsa de trabajo "Done For You") ───────────
-function renderOpenJob(job, alreadyApplied, myLevel) {
+function renderOpenJob(job, alreadyApplied, myPlan) {
   const c = job.task_catalog;
-  const locked = PLAN_LEVEL[c.required_plan] > myLevel;
+  const price = job.price_override ?? c.price;
+  const locked = c.required_plan !== myPlan;
   return `<div class="pipe-card" style="cursor:default;${locked ? 'opacity:.65;' : ''}">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
       <div>
         <div class="pipe-card-title">${escapeHtml(c.name)}</div>
-        <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')} · <span class="mono">${escapeHtml(c.required_plan)}+</span></div>
+        <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')} · <span class="mono">${escapeHtml(c.required_plan)}</span></div>
       </div>
-      <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
+      <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(price).toLocaleString()}</div>
     </div>
     <div style="margin-top:8px;">
       ${locked
-        ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px;border:1px dashed var(--line);border-radius:8px;">🔒 Requiere plan <strong>${escapeHtml(c.required_plan)}</strong> — actualizá tu membresía para postularte</div>`
+        ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px;border:1px dashed var(--line);border-radius:8px;">🔒 Exclusiva para miembros <strong>${escapeHtml(c.required_plan)}</strong> — no podés postularte con tu plan actual</div>`
         : alreadyApplied
           ? `<span class="badge by">Postulación enviada</span>`
           : `<button class="btn-outline" style="width:100%;padding:6px;" onclick="applyToJob('${job.id}')">Postularme</button>`}
@@ -3080,7 +3222,7 @@ function renderMyJob(job) {
         <div class="pipe-card-title">${escapeHtml(c.name)}</div>
         <div class="pipe-card-entity">${escapeHtml(job.client_ref || 'GovBidder Club')}</div>
       </div>
-      <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(c.price).toLocaleString()}</div>
+      <div style="font-size:16.5px;font-weight:800;color:var(--green);white-space:nowrap;">$${Number(job.price_override ?? c.price).toLocaleString()}</div>
     </div>
     <div style="margin-top:8px;"><span class="badge ${badge[0]}">${badge[1]}</span></div>
   </div>`;
@@ -3108,17 +3250,17 @@ async function loadTaskWork() {
     const data = await res.json();
     if (!data.success) return;
 
-    const myLevel = PLAN_LEVEL[currentMember.plan] || 0;
-    const eligibleCount = data.open.filter(j => PLAN_LEVEL[j.task_catalog?.required_plan] <= myLevel).length;
+    const myPlan = currentMember.plan;
+    const eligibleCount = data.open.filter(j => j.task_catalog?.required_plan === myPlan).length;
 
     document.getElementById('tw-open-count').textContent  = eligibleCount;
     document.getElementById('tw-mine-count').textContent  = data.mine.length;
-    document.getElementById('tw-mine-value').textContent  = '$' + data.mine.reduce((s,j) => s + Number(j.task_catalog?.price||0), 0).toLocaleString();
+    document.getElementById('tw-mine-value').textContent  = '$' + data.mine.reduce((s,j) => s + Number(j.price_override ?? j.task_catalog?.price ?? 0), 0).toLocaleString();
 
     const openEl = document.getElementById('tw-open-container');
     if (openEl) {
       openEl.innerHTML = data.open.length
-        ? data.open.map(j => renderOpenJob(j, data.appliedJobIds.includes(j.id), myLevel)).join('')
+        ? data.open.map(j => renderOpenJob(j, data.appliedJobIds.includes(j.id), myPlan)).join('')
         : `<div style="text-align:center;padding:30px;color:var(--muted);">No hay tareas disponibles en este momento.</div>`;
     }
 
@@ -3170,6 +3312,64 @@ async function clubAdminFetch(action, extra) {
   return res.json();
 }
 
+// ── SIMPLE MODAL (reutilizable) ─────────────────────────────
+function showSimpleModal(title, bodyHtml) {
+  document.getElementById('simple-modal-title').textContent = title;
+  document.getElementById('simple-modal-body').innerHTML = bodyHtml;
+  document.getElementById('simple-modal').classList.add('open');
+}
+function closeSimpleModal() {
+  document.getElementById('simple-modal').classList.remove('open');
+}
+
+let adminCatalogData = [];
+let adminMemberData = [];
+
+function onAdminCatalogPick() {
+  const catalogId = document.getElementById('admin-catalog-select').value;
+  const priceEl = document.getElementById('admin-job-price');
+  const item = adminCatalogData.find(c => String(c.id) === String(catalogId));
+  if (priceEl && item) priceEl.value = item.price;
+}
+
+let assignModalJobId = null;
+
+function renderAssignMemberList(filter) {
+  const f = (filter || '').toLowerCase();
+  const filtered = adminMemberData.filter(m =>
+    !f || m.name?.toLowerCase().includes(f) || m.email?.toLowerCase().includes(f));
+  return filtered.map(m => `
+    <div class="pipe-card" style="cursor:pointer;padding:10px 12px;" onclick="assignJobToMember('${m.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><strong>${escapeHtml(m.name)}</strong><div style="font-size:12.5px;color:var(--muted);">${escapeHtml(m.email)}</div></div>
+        <span class="badge bb">${escapeHtml(m.plan)}</span>
+      </div>
+    </div>`).join('') || '<div style="color:var(--muted);text-align:center;padding:16px;">Sin resultados.</div>';
+}
+
+function filterAssignMemberList(value) {
+  document.getElementById('assign-member-list').innerHTML = renderAssignMemberList(value);
+}
+
+async function openAssignModal(jobId) {
+  assignModalJobId = jobId;
+  if (!adminMemberData.length) {
+    const data = await clubAdminFetch('admin_member_list');
+    if (data.success) adminMemberData = data.members;
+  }
+  showSimpleModal('Asignar tarea a un miembro', `
+    <input class="search-input" id="assign-member-search" placeholder="Buscar por nombre o email..." style="width:100%;margin-bottom:10px;" oninput="filterAssignMemberList(this.value)"/>
+    <div id="assign-member-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;">${renderAssignMemberList('')}</div>
+  `);
+}
+
+async function assignJobToMember(memberId) {
+  const data = await clubAdminFetch('admin_job_assign', { jobId: assignModalJobId, memberId });
+  if (!data.success) { alert(data.error || 'No se pudo asignar la tarea.'); return; }
+  closeSimpleModal();
+  loadAdminJobs();
+}
+
 const JOB_STATUS_BADGE = {
   open: ['bb','Abierto'], applied: ['by','Postulada'], assigned: ['bg','Asignada'], completed: ['bm','Completada']
 };
@@ -3196,20 +3396,23 @@ async function loadAdminCatalog() {
   if (!sel) return;
   const data = await clubAdminFetch('admin_catalog_list');
   if (!data.success) return;
+  adminCatalogData = data.catalog;
   sel.innerHTML = '<option value="">Elegí una tarea del catálogo...</option>' +
-    data.catalog.map(c => `<option value="${c.id}">${c.name} — $${Number(c.price).toLocaleString()} (${c.required_plan}+)</option>`).join('');
+    data.catalog.map(c => `<option value="${c.id}">${c.name} — $${Number(c.price).toLocaleString()} (${c.required_plan})</option>`).join('');
 }
 
 async function createAdminJob() {
   const catalogId = document.getElementById('admin-catalog-select').value;
   const clientRef = document.getElementById('admin-client-ref').value.trim();
+  const price = document.getElementById('admin-job-price').value.trim();
   const errEl = document.getElementById('admin-job-error');
   errEl.style.display = 'none';
   if (!catalogId) { errEl.textContent = 'Elegí una tarea del catálogo.'; errEl.style.display = 'block'; return; }
 
-  const data = await clubAdminFetch('admin_job_create', { catalogId, clientRef });
+  const data = await clubAdminFetch('admin_job_create', { catalogId, clientRef, price });
   if (!data.success) { errEl.textContent = data.error || 'No se pudo crear la tarea.'; errEl.style.display = 'block'; return; }
   document.getElementById('admin-client-ref').value = '';
+  document.getElementById('admin-job-price').value = '';
   loadAdminJobs();
 }
 
@@ -3221,9 +3424,12 @@ async function loadAdminJobs() {
   body.innerHTML = data.jobs.length ? data.jobs.map(j => {
     const badge = JOB_STATUS_BADGE[j.status] || ['bm', escapeHtml(j.status)];
     const assignee = j.profiles ? `${escapeHtml(j.profiles.name)} (${escapeHtml(j.profiles.plan)})` : '—';
-    const action = j.status === 'assigned'
-      ? `<button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="completeJob('${j.id}')">Marcar completada</button>`
-      : '';
+    let action = '';
+    if (j.status === 'assigned') {
+      action = `<button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="completeJob('${j.id}')">Marcar completada</button>`;
+    } else if (j.status === 'open') {
+      action = `<button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="openAssignModal('${j.id}')">Asignar</button>`;
+    }
     return `<tr><td>${escapeHtml(j.task_catalog?.name) || '—'}</td><td>${escapeHtml(j.client_ref) || '—'}</td><td><span class="badge ${badge[0]}">${badge[1]}</span></td><td>${assignee}</td><td>${action}</td></tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">Todavía no creaste ninguna tarea.</td></tr>';
 }
@@ -3274,13 +3480,19 @@ async function loadAdminTickets() {
           ${t.status !== 'in_review' ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewTicket('${t.id}','in_review')">En revisión</button>` : ''}
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewTicket('${t.id}','resolved')">Resolver</button>
         </div>` : '';
+    const docCell = t.document_path ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;" onclick="viewAdminTicketDocument('${t.id}')">📎 Ver</button>` : '—';
     return `<tr>
       <td>${escapeHtml(t.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(t.profiles?.plan)}</span></td>
       <td>${escapeHtml(t.type)}</td>
       <td style="max-width:220px;white-space:normal;">${escapeHtml(t.message)}</td>
+      <td>${docCell}</td>
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
+      <td style="min-width:200px;">
+        <textarea id="ticket-response-${t.id}" rows="2" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:6px;font-size:13px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);" placeholder="Escribir respuesta...">${escapeHtml(t.admin_response || '')}</textarea>
+        <button class="btn-outline" style="padding:3px 8px;font-size:12px;margin-top:4px;" onclick="saveTicketResponse('${t.id}','${t.status}')">Guardar y notificar</button>
+      </td>
     </tr>`;
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No hay tickets.</td></tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">No hay tickets.</td></tr>';
 }
 
 async function reviewTicket(ticketId, status) {
@@ -3289,9 +3501,34 @@ async function reviewTicket(ticketId, status) {
   loadAdminTickets();
 }
 
+async function saveTicketResponse(ticketId, currentStatus) {
+  const response = document.getElementById(`ticket-response-${ticketId}`)?.value.trim() || '';
+  const status = currentStatus === 'resolved' ? 'resolved' : 'in_review';
+  const data = await clubAdminFetch('admin_ticket_review', { ticketId, status, response });
+  if (!data.success) { alert(data.error || 'No se pudo guardar la respuesta.'); return; }
+  loadAdminTickets();
+}
+
+async function viewAdminTicketDocument(ticketId) {
+  const data = await clubAdminFetch('admin_ticket_get_document', { ticketId });
+  if (data.success) window.open(data.url, '_blank');
+  else alert(data.error || 'No se pudo abrir el documento.');
+}
+
+const ALLIANCE_DOC_LABELS = {
+  po: 'Orden de Compra (PO)', award: 'Adjudicación / contrato', quote: 'Cotización del proveedor',
+  schedule: 'Cronograma de ejecución', bank_statement: 'Estado de cuenta bancaria'
+};
+
 async function loadAdminAlliance() {
   const body = document.getElementById('admin-alliance-body');
   if (!body) return;
+  const settings = await clubAdminFetch('admin_get_settings');
+  if (settings.success) {
+    allianceMaxCap = settings.settings.allianceMaxCap;
+    const capEl = document.getElementById('admin-alliance-cap');
+    if (capEl) capEl.value = allianceMaxCap;
+  }
   const data = await clubAdminFetch('admin_alliance_list');
   if (!data.success) return;
   body.innerHTML = data.requests.length ? data.requests.map(r => {
@@ -3301,23 +3538,43 @@ async function loadAdminAlliance() {
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved')">Aprobar</button>
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewAlliance('${r.id}','rejected')">Rechazar</button>
         </div>` : '';
-    const docLink = r.po_document_path
-      ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="viewAllianceDocument('${r.id}')">📄 Ver PO</button>`
-      : '<span style="color:var(--muted);font-size:12.5px;">—</span>';
+    const pct = (PLAN_LIMITS[r.profiles?.plan] || PLAN_LIMITS.Elevate).alliancePct;
+    const requested = Math.min(Number(r.cost) * (pct / 100), allianceMaxCap);
+    const docCount = ['po_document_path','award_document_path','quote_document_path','schedule_document_path','bank_statement_document_path']
+      .filter(c => r[c]).length;
     return `<tr>
       <td>${escapeHtml(r.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(r.profiles?.plan)}</span></td>
-      <td>${escapeHtml(r.company)}</td>
       <td>$${Number(r.po_value).toLocaleString()} / $${Number(r.cost).toLocaleString()}</td>
-      <td>${docLink}</td>
+      <td>$${requested.toLocaleString()}</td>
+      <td><button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="openAllianceDocsModal('${r.id}')">📎 Ver (${docCount}/5)</button></td>
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
 }
 
-async function viewAllianceDocument(requestId) {
-  const data = await clubAdminFetch('admin_alliance_get_document', { requestId });
+function openAllianceDocsModal(requestId) {
+  const rows = Object.entries(ALLIANCE_DOC_LABELS).map(([type, label]) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span>${escapeHtml(label)}</span>
+      <button class="btn-outline" style="padding:4px 10px;font-size:13px;" onclick="viewAllianceDocument('${requestId}','${type}')">Ver</button>
+    </div>`).join('');
+  showSimpleModal('Documentos de la solicitud', rows);
+}
+
+async function viewAllianceDocument(requestId, docType) {
+  const data = await clubAdminFetch('admin_alliance_get_document', { requestId, docType });
   if (!data.success) { alert(data.error || 'No se pudo abrir el documento.'); return; }
   window.open(data.url, '_blank');
+}
+
+async function saveAllianceMaxCap() {
+  const cap = document.getElementById('admin-alliance-cap')?.value;
+  const data = await clubAdminFetch('admin_update_settings', { allianceMaxCap: cap });
+  if (!data.success) { alert(data.error || 'No se pudo guardar el tope.'); return; }
+  allianceMaxCap = Number(cap);
+  const savedEl = document.getElementById('admin-alliance-cap-saved');
+  if (savedEl) { savedEl.style.display = 'inline'; setTimeout(() => savedEl.style.display = 'none', 2000); }
+  loadAdminAlliance();
 }
 
 async function reviewAlliance(requestId, decision) {
@@ -3338,15 +3595,17 @@ async function loadAdminMembership() {
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewMembership('${r.id}','contacted')">Marcar contactada</button>
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewMembership('${r.id}','rejected')">Rechazar</button>
         </div>` : '';
+    const academyBadge = r.is_academy_alumni === true ? '<span class="badge bg">Sí</span>' : r.is_academy_alumni === false ? '<span class="badge br">No</span>' : '—';
     return `<tr>
       <td>${escapeHtml(r.name)}</td>
       <td>${escapeHtml(r.company)}</td>
       <td>${escapeHtml(r.email)}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(r.phone)}</span></td>
       <td>${escapeHtml(r.plan_interest) || '—'}</td>
+      <td>${academyBadge}</td>
       <td style="max-width:220px;white-space:normal;">${escapeHtml(r.message)}</td>
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
 }
 
 async function reviewMembership(requestId, status) {
