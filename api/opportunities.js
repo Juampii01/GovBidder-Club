@@ -2,6 +2,7 @@
 // Backend para SAM.gov — Oportunidades de contratos gubernamentales
 
 import { createClient } from '@supabase/supabase-js';
+import { requireActiveMember } from './_lib/auth.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -17,10 +18,8 @@ export default async function handler(req, res) {
   }
 
   const body = (req.method === 'POST' && req.body) ? req.body : {};
-  const token = body.token;
-  if (!token) return res.status(401).json({ success: false, error: 'Sesión requerida' });
-  const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
-  if (authErr || !user) return res.status(401).json({ success: false, error: 'Sesión expirada' });
+  const { error: authErr, status: authStatus } = await requireActiveMember(supabase, body.token);
+  if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
 
   const SAM_KEY = process.env.SAM_API_KEY;
 

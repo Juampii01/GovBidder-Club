@@ -2,6 +2,7 @@
 // GovBidder Club — Support Desk, Funding Access (Alliance) y Task Work (bolsa de trabajo)
 
 import { createClient } from '@supabase/supabase-js';
+import { requireActiveMember } from './_lib/auth.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -17,17 +18,9 @@ const PLAN_LIMITS = {
 const NO_PLAN_LIMITS = { bidSupportPerMonth: 0, alliancePct: 0, shopDiscount: 0 };
 function planLimits(plan) { return PLAN_LIMITS[plan] || NO_PLAN_LIMITS; }
 const ALLIANCE_FEE_PCT = 20; // fijo, sobre la ganancia — igual para Prime y Legacy
-const PLAN_LEVEL = { Elevate: 1, Prime: 2, Legacy: 3 };
 
 // ── AUTH HELPER ───────────────────────────────────────────
-async function requireMember(token) {
-  if (!token) return { error: 'Token requerido', status: 400 };
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  if (error || !user) return { error: 'Sesión expirada', status: 401 };
-  const { data: profile, error: pErr } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-  if (pErr || !profile || !profile.active) return { error: 'Miembro no encontrado', status: 401 };
-  return { profile };
-}
+function requireMember(token) { return requireActiveMember(supabase, token); }
 
 function monthStart() {
   const d = new Date();
@@ -105,6 +98,12 @@ export default async function handler(req, res) {
     if (action === 'ticket_mark_resolved') {
       const { ticketId } = body;
       if (!ticketId) return res.status(400).json({ success: false, error: 'ticketId requerido' });
+      const { data: ticket } = await supabase.from('support_tickets')
+        .select('admin_response').eq('id', ticketId).eq('member_id', profile.id).single();
+      if (!ticket) return res.status(404).json({ success: false, error: 'Ticket no encontrado.' });
+      if (!ticket.admin_response) {
+        return res.status(400).json({ success: false, error: 'Todavía no tenés una respuesta del equipo para este ticket.' });
+      }
       const { data: updated, error: updErr } = await supabase.from('support_tickets')
         .update({ status: 'resolved' }).eq('id', ticketId).eq('member_id', profile.id).select();
       if (updErr) return res.status(500).json({ success: false, error: updErr.message });
@@ -188,7 +187,9 @@ export default async function handler(req, res) {
       };
       for (const [col, b64, name] of optionalDocs) {
         if (!b64) continue;
-        const { path, error: docErr } = await uploadPdf('alliance-documents', profile.id, b64, name);
+        // Límite más chico que la PO (1.5MB en vez de 3MB): hasta 5 documentos en el mismo
+        // POST pueden superar el límite de 4.5MB por request de Vercel Serverless Functions.
+        const { path, error: docErr } = await uploadPdf('alliance-documents', profile.id, b64, name, 1.5);
         if (docErr) return res.status(400).json({ success: false, error: docErr });
         insert[col] = path;
       }
@@ -196,6 +197,14 @@ export default async function handler(req, res) {
       const { data, error: insErr } = await supabase.from('alliance_requests').insert(insert).select().single();
       if (insErr) return res.status(500).json({ success: false, error: insErr.message });
       return res.status(200).json({ success: true, request: data });
+    }
+
+    if (action === 'alliance_my_requests') {
+      const { data } = await supabase.from('alliance_requests')
+        .select('id, po_value, cost, status, created_at')
+        .eq('member_id', profile.id)
+        .order('created_at', { ascending: false });
+      return res.status(200).json({ success: true, requests: data || [] });
     }
 
     // ── TASK WORK (bolsa de trabajo) ───────────────────

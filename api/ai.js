@@ -2,6 +2,7 @@
 // Backend para Claude AI — análisis inteligente
 
 import { createClient } from '@supabase/supabase-js';
+import { requireActiveMember } from './_lib/auth.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -20,9 +21,8 @@ export default async function handler(req, res) {
   }
 
   const { token } = req.body || {};
-  if (!token) return res.status(401).json({ success: false, error: 'Sesión requerida' });
-  const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
-  if (authErr || !user) return res.status(401).json({ success: false, error: 'Sesión expirada' });
+  const { error: authErr, status: authStatus } = await requireActiveMember(supabase, token);
+  if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
 
   const CLAUDE_KEY = process.env.ANTHROPIC_API_KEY;
 

@@ -53,42 +53,6 @@ export default async function handler(req, res) {
 
   try {
 
-    // ── START FREE TRIAL (anonymous sign-in) ────────────
-    if (action === 'start_trial') {
-      let name = 'Guest User', industry = '', state = 'NJ', naics = '561720';
-
-      if (req.method === 'POST' && req.body) {
-        name     = req.body.name     || 'Guest User';
-        industry = req.body.industry || '';
-        state    = req.body.state    || 'NJ';
-        naics    = req.body.naics    || '561720';
-      }
-
-      const { data, error } = await supabase.auth.signInAnonymously({
-        options: { data: { name } }
-      });
-
-      if (error || !data.session) {
-        return res.status(500).json({ success: false, error: error?.message || 'No se pudo iniciar el trial' });
-      }
-
-      // El trigger on_auth_user_created ya creó el profile con defaults de trial.
-      // Actualizamos con los datos opcionales que mandó el usuario.
-      await supabase.from('profiles')
-        .update({ industry, state, naics })
-        .eq('id', data.user.id);
-
-      const profile = await getProfile(data.user.id);
-
-      return res.status(200).json({
-        success: true,
-        token: data.session.access_token,
-        refreshToken: data.session.refresh_token,
-        member: shapeMember(profile),
-        message: 'Trial de 7 días activado. ¡Bienvenido a GovBidder Command Center!'
-      });
-    }
-
     // ── REGISTER (solicitud de membresía — no crea cuenta) ──
     if (action === 'register') {
       const body = (req.method === 'POST' && req.body) ? req.body : {};
