@@ -211,3 +211,35 @@ Hoy hay **cero** `@media queries` en todo el CSS (`public/index.html`) — sideb
 ## Nota sobre la base de producción
 
 La base tiene 7 perfiles de demo/prueba, 2 de ellos con contraseña reseteada a un valor de prueba durante la sesión de verificación anterior. **Ninguna tarea de este plan borra datos.** Antes de invitar miembros reales, se recomienda desactivar (`profiles.active = false`) o rotar la contraseña de las cuentas de demo — nunca eliminarlas directamente — y **cualquier acción contra la base de producción (incluida esta) requiere confirmación humana explícita antes de ejecutarse**, tal como pide el brief.
+
+---
+
+## 7. Estado consolidado — qué queda pendiente (actualizado 2026-07-13, post-ejecución)
+
+Las Fases 1, 2, 3, 4 y 5.1a de este plan **ya están ejecutadas, deployadas y verificadas en producción** (commits `96b7e5a`, `3c9c66f`, `ca13b45`, `60f8942`). Lo que queda, agrupado por quién tiene que actuar:
+
+### 7.1 Necesita algo de Santo (información o decisión suya)
+1. `SAM_API_KEY` y `ANTHROPIC_API_KEY` — sin fecha.
+2. Confirmar si **Bid Pipeline** debe reconstruirse de verdad (persistido en Supabase, ~10-14h) — hoy ya no existe ni siquiera como maqueta (se eliminó en la Fase 1). Si lo confirma, es la única fase de desarrollo nueva de tamaño considerable que queda abierta.
+3. Documento propio de crosswalk NAICS↔SIC↔PSC↔UNSPSC↔NIGP, para reconciliar con la lista NAICS que ya se completó con fuente pública (USASpending).
+4. Acceso a HigherGov / GovBidder Connect, si se quiere evaluar como fuente de Home en vez de SAM.gov/Grants.gov.
+5. Lista definitiva de tipos de ticket de soporte.
+6. Decisión/herramienta de calendario para agendar llamadas de BID Help.
+
+### 7.2 Necesita una decisión/desembolso de negocio (no es información, es plata o acceso administrativo)
+7. Cambiar los nameservers de `govbidder.net` a Vercel, si se quiere usar el dominio propio en vez de `govbidder-club.vercel.app`.
+8. Pagar suscripción + firmar addendum comercial en unspsc.org, si se quiere el codeset UNSPSC completo y estructurado.
+9. Pagar licencia a Periscope Holdings, si se quiere el codeset NIGP completo.
+
+### 7.3 Trabajo técnico que yo puedo seguir ejecutando cuando me confirmes
+10. **Bucket `support-documents`**: agregar `file_size_limit`/`allowed_mime_types` (Fase 2.4) — bloqueado por el clasificador por tocar configuración de producción; solo necesito que me confirmes "dale, hacelo" en el chat para ejecutarlo (15 min).
+11. Crosswalk NAICS↔PSC empírico minando USASpending/FPDS (Fase 5.2) — diseñado, no ejecutado. ~6-8h.
+12. Terminar de explorar el portal de descargas de NCES (Common Core of Data) para completar distritos escolares/universidades a 52 estados (Fase 5.3) — la vía por API quedó bloqueada por Cloudflare; la vía de archivos directos no se llegó a explorar del todo.
+13. Housekeeping: desactivar o rotar contraseña de las 7 cuentas de demo/prueba antes de invitar miembros reales.
+14. Mejoras menores de deuda técnica (todas de bajo impacto, no urgentes): migrar subida de archivos a Vercel Blob/signed upload; refactor de `byVendor` duplicado entre `spending.js`/`geography.js`; cerrar al 100% la race condition de cuota en `ticket_create`.
+
+### 7.4 Decisiones de producto nuevas (no estaban en el alcance de ningún plan hasta ahora)
+15. Flujo de trial gratuito real conectado a una UI (hoy se eliminó `start_trial` por no tener interfaz — si se quiere ofrecer trial gratis, es una feature nueva a diseñar).
+16. Cualquier integración de cobro/pagos automatizado (hoy el alta sigue siendo 100% manual).
+
+**En síntesis: no queda nada bloqueante ni de honestidad/seguridad/mobile/admin pendiente — esas 4 prioridades del plan están cerradas.** Lo que resta es o bien información/decisiones que solo Santo o el negocio pueden dar (7.1/7.2/7.4), o trabajo técnico de menor prioridad que se puede retomar en cualquier momento (7.3).
