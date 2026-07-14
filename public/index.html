@@ -2456,6 +2456,16 @@ async function searchCodes() {
             </div>
           </div>
           <div style="padding:20px;">
+            ${data.description ? `
+            <div style="margin-bottom:16px;background:var(--line-soft);border-radius:10px;padding:14px 16px;">
+              <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:6px;">DESCRIPCIÓN OFICIAL (NAICS Manual 2022)</div>
+              <div style="font-size:14px;color:var(--ink);line-height:1.6;">${escapeHtml(data.description)}</div>
+              ${data.illustrative_examples ? `
+              <div style="margin-top:10px;font-size:12.5px;color:var(--muted);font-weight:700;">TAMBIÉN CONOCIDO COMO:</div>
+              <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+                ${data.illustrative_examples.map(ex => `<span style="background:var(--card);border:1px solid var(--line);color:var(--ink);padding:3px 10px;border-radius:6px;font-size:12.5px;">${escapeHtml(ex)}</span>`).join('')}
+              </div>` : ''}
+            </div>` : ''}
             <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
@@ -2547,6 +2557,7 @@ async function searchCodes() {
               <span style="font-size:15.5px;font-weight:700;color:var(--ink);">${r.title}</span>
               <span style="margin-left:auto;font-size:12.5px;color:var(--muted);background:var(--line-soft);padding:2px 8px;border-radius:5px;">${r.sector}</span>
             </div>
+            ${r.matchedTerm ? `<div style="font-size:12.5px;color:var(--muted);margin:-4px 0 8px;">Coincide con: <em>${escapeHtml(r.matchedTerm)}</em></div>` : ''}
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:12.5px;font-weight:700;">SIC: ${r.sic}</span>
               <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:12.5px;font-weight:700;">PSC: ${r.psc}</span>
