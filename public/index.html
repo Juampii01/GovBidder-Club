@@ -22,7 +22,7 @@
   --sidebar:#FFFFFF;--sidebar2:#FFFFFF;
   --accent:var(--red);--accent2:#9e2231;--blue:var(--navy);--blue2:#0d1c3d;
   --text:var(--ink);--border:var(--line);--yellow:#b45309;
-  --r-sm:11px;--r-md:16px;--r-lg:18px;
+  --r-sm:11px;--r-md:16px;--r-lg:18px;--r-pill:20px;
   --sh-card:0 1px 2px rgba(12,20,37,.03);
   --sh-xs:0 1px 2px rgba(12,20,37,.03);
   --sh-sm:0 1px 3px rgba(12,20,37,.05),0 1px 2px rgba(12,20,37,.03);
@@ -169,6 +169,8 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .btn-dark:hover{background:#1a2540;transform:translateY(-1px);}
 .btn-dark svg{width:14px;height:14px;stroke:currentColor;transition:transform .5s ease;}
 .btn-dark.spinning svg{animation:spin .9s linear infinite;}
+.btn-red:disabled,.btn-blue:disabled,.btn-outline:disabled,.btn-dark:disabled{opacity:.5;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
+.btn-sm{padding:4px 10px;font-size:13px;border-radius:var(--r-sm);}
 .search-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
 .search-input{flex:1;min-width:140px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-size:15px;outline:none;color:var(--text);background:var(--card);font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
 .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,45,44,.1);}
@@ -209,10 +211,13 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .modal-field p{font-size:14px;color:var(--text);line-height:1.5;}
 .modal-close{float:right;background:none;border:none;font-size:19px;cursor:pointer;color:var(--muted);transition:color .15s ease;}
 .modal-close:hover{color:var(--accent);}
+.table-scroll{width:100%;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
 th{font-size:11.5px;color:var(--muted);font-weight:800;letter-spacing:1.1px;padding:11px 12px;border-bottom:2px solid var(--border);text-align:left;background:var(--line-soft);}
 td{font-size:13.5px;padding:11px 12px;border-bottom:1px solid var(--line-soft);color:var(--muted);}
-tr:hover td{background:var(--line-soft);}
+tbody tr:nth-child(even) td{background:rgba(12,20,37,.025);}
+[data-theme="dark"] tbody tr:nth-child(even) td{background:rgba(255,255,255,.025);}
+tr:hover td{background:var(--line-soft) !important;}
 .geo-tab{flex:1;padding:13px 8px;text-align:center;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
 .geo-tab:last-child{border-right:none;}
 .geo-tab:hover{background:var(--line-soft);color:var(--text);}
@@ -222,6 +227,10 @@ tr:hover td{background:var(--line-soft);}
 .state-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;text-align:center;box-shadow:var(--sh-sm);}
 .state-card:hover{border-color:var(--accent);box-shadow:var(--sh-md);transform:translateY(-3px);}
 .state-card.my-state{border-color:var(--navy);border-width:2px;background:var(--red-soft);}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:10px;max-width:360px;}
+.toast{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:var(--r-sm);padding:12px 16px;box-shadow:var(--sh-lg);font-size:14px;color:var(--ink);line-height:1.5;animation:toastIn .25s ease;}
+.toast.toast-success{border-left-color:var(--green);}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#c3cadd;border-radius:6px;}
@@ -241,8 +250,8 @@ tr:hover td{background:var(--line-soft);}
   #content{padding:16px 14px;}
   .kpi-grid,.grid-2,.grid-2b{grid-template-columns:1fr !important;}
   div[style*="grid-template-columns"]{grid-template-columns:1fr !important;}
-  div:has(> .geo-tab){flex-wrap:wrap;}
-  .geo-tab{flex:1 1 45%;font-size:12px;padding:10px 4px;}
+  div:has(> .geo-tab){flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .geo-tab{flex:0 0 auto;font-size:12px;padding:10px 14px;white-space:nowrap;}
   table{display:block;overflow-x:auto;white-space:nowrap;}
   thead,tbody{display:table;width:100%;}
 }
@@ -750,6 +759,7 @@ tr:hover td{background:var(--line-soft);}
         </select>
         <button class="btn-red" onclick="fetchGrants()">🔍 Buscar en Grants.gov</button>
       </div>
+      <div id="grants-aggregate"></div>
       <div id="grants-list"><div class="loading"><div class="spinner"></div><div class="loading-text">Listo para buscar...</div></div></div>
     </div>
 
@@ -858,7 +868,11 @@ tr:hover td{background:var(--line-soft);}
           <button class="btn-red" onclick="loadSchools()">🏫 Cargar Distritos</button>
         </div>
         <div id="schools-container">
-          <div style="text-align:center;padding:40px;color:var(--muted);">Selecciona un estado y haz clic en "Cargar Distritos"</div>
+          <div class="empty-state">
+            <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg></div>
+            <div class="empty-title">Distritos escolares</div>
+            <div class="empty-body">Elegí un estado y un código NAICS arriba, y hacé clic en "Cargar Distritos" para ver los school districts con contratos activos.</div>
+          </div>
         </div>
       </div>
 
@@ -913,7 +927,11 @@ tr:hover td{background:var(--line-soft);}
           <button class="btn-red" onclick="loadColleges()">🎓 Cargar Universidades</button>
         </div>
         <div id="colleges-container">
-          <div style="text-align:center;padding:40px;color:var(--muted);">Selecciona un estado y haz clic en "Cargar Universidades"</div>
+          <div class="empty-state">
+            <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+            <div class="empty-title">Universidades y colleges</div>
+            <div class="empty-body">Elegí un estado y un código NAICS arriba, y hacé clic en "Cargar Universidades" para ver las instituciones con contratos activos.</div>
+          </div>
         </div>
       </div>
 
@@ -1053,6 +1071,13 @@ tr:hover td{background:var(--line-soft);}
 
     <!-- COMPETITIVE -->
     <div class="page" id="page-compete">
+      <div class="ai-panel">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span><span class="ai-badge">AI COMPETITIVE ADVISOR</span>
+          <button class="btn-dark" style="margin-left:auto;" onclick="runAI('compete', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>Analizar</button>
+        </div>
+        <div class="ai-response" id="ai-compete">Consulta los competidores y haz clic en Analizar.</div>
+      </div>
       <div class="search-bar">
         <select class="gf-select" id="comp-state">
           <option value="NJ" selected>New Jersey</option><option value="NY">New York</option>
@@ -1067,13 +1092,20 @@ tr:hover td{background:var(--line-soft);}
         </select>
         <button class="btn-red" onclick="fetchCompetitors()">🏆 Ver Competidores</button>
       </div>
-      <div id="comp-container"><div style="text-align:center;padding:40px;color:var(--muted);">Selecciona filtros y haz clic en Ver Competidores</div></div>
+      <div id="comp-container"><div class="empty-state">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></div>
+        <div class="empty-title">Analizá a tu competencia</div>
+        <div class="empty-body">Elegí estado, código NAICS y año, y hacé clic en "Ver Competidores" para ver el ranking de vendors y su participación de mercado.</div>
+      </div></div>
     </div>
 
     <!-- CODES -->
     <div class="page" id="page-codes">
-      <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
-        <div style="font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:20px;margin-bottom:16px;box-shadow:var(--sh-sm);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+          <div style="font-size:16px;font-weight:800;color:var(--ink);">GovBidder Code Intelligence</div>
+        </div>
         <div style="font-size:14px;color:var(--muted);margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
           <input class="search-input" id="code-q" placeholder="Ej: 561720  ó  janitorial  ó  cleaning..." style="flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')searchCodes()"/>
@@ -1276,26 +1308,26 @@ tr:hover td{background:var(--line-soft);}
               <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.8px;">DOCUMENTOS ADJUNTOS</div>
 
               <div>
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Orden de Compra (PO) — PDF *</label>
+                <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:3px;">Orden de Compra (PO) — PDF <span class="badge br" style="padding:1px 7px;font-size:10.5px;">OBLIGATORIO</span></label>
                 <input id="alliance-po-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
               </div>
               <div>
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Copia de la adjudicación o contrato</label>
+                <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:3px;">Copia de la adjudicación o contrato <span class="badge bm" style="padding:1px 7px;font-size:10.5px;">OPCIONAL</span></label>
                 <input id="alliance-award-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
               </div>
               <div>
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Factura o cotización detallada del proveedor</label>
+                <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:3px;">Factura o cotización detallada del proveedor <span class="badge bm" style="padding:1px 7px;font-size:10.5px;">OPCIONAL</span></label>
                 <input id="alliance-quote-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
               </div>
               <div>
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Cronograma de ejecución y entrega</label>
+                <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:3px;">Cronograma de ejecución y entrega <span class="badge bm" style="padding:1px 7px;font-size:10.5px;">OPCIONAL</span></label>
                 <input id="alliance-schedule-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
               </div>
               <div>
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:3px;">Estado de cuenta bancaria de la empresa</label>
+                <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:3px;">Estado de cuenta bancaria de la empresa <span class="badge bm" style="padding:1px 7px;font-size:10.5px;">OPCIONAL</span></label>
                 <input id="alliance-bank-doc" type="file" accept="application/pdf" class="search-input" style="width:100%;padding:6px;"/>
               </div>
-              <div style="font-size:11.5px;color:var(--muted);">Solo la PO es obligatoria por ahora — el resto ayuda a acelerar la evaluación. Máx. 3MB por archivo.</div>
+              <div style="font-size:11.5px;color:var(--muted);">Los documentos opcionales ayudan a acelerar la evaluación. Máx. 3MB por archivo.</div>
             </div>
 
             <!-- Preview calc -->
@@ -1548,7 +1580,7 @@ tr:hover td{background:var(--line-soft);}
           </div>
           <div class="card">
             <div class="card-title">🗂️ Trabajos Creados</div>
-            <div style="max-height:400px;overflow-y:auto;">
+            <div class="table-scroll" style="max-height:400px;overflow-y:auto;">
               <table><thead><tr><th>TAREA</th><th>CLIENTE</th><th>ESTADO</th><th>ASIGNADO A</th><th>ACCIÓN</th></tr></thead>
               <tbody id="admin-jobs-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
             </div>
@@ -1560,8 +1592,10 @@ tr:hover td{background:var(--line-soft);}
       <div id="admin-panel-applications" class="geo-panel">
         <div class="card">
           <div class="card-title">📥 Postulaciones Pendientes</div>
+          <div class="table-scroll">
           <table><thead><tr><th>MIEMBRO</th><th>PLAN</th><th>TAREA</th><th>PRECIO</th><th>ACCIÓN</th></tr></thead>
           <tbody id="admin-applications-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -1569,8 +1603,10 @@ tr:hover td{background:var(--line-soft);}
       <div id="admin-panel-tickets" class="geo-panel">
         <div class="card">
           <div class="card-title">🎯 Tickets de Soporte</div>
+          <div class="table-scroll">
           <table><thead><tr><th>MIEMBRO</th><th>TIPO</th><th>MENSAJE</th><th>DOC</th><th>ESTADO</th><th>RESPUESTA</th></tr></thead>
           <tbody id="admin-tickets-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -1587,7 +1623,7 @@ tr:hover td{background:var(--line-soft);}
         </div>
         <div class="card">
           <div class="card-title">🤝 Solicitudes Alliance</div>
-          <div style="overflow-x:auto;">
+          <div class="table-scroll">
           <table><thead><tr>
             <th>MIEMBRO</th><th>ORDEN DE COMPRA (PO)</th><th>COSTO</th><th>MONTO SOLICITADO</th>
             <th title="Orden de Compra">📄 PO</th><th title="Adjudicación o contrato">📝 ADJ.</th>
@@ -1603,8 +1639,10 @@ tr:hover td{background:var(--line-soft);}
       <div id="admin-panel-membership" class="geo-panel">
         <div class="card">
           <div class="card-title">📋 Solicitudes de Membresía</div>
+          <div class="table-scroll">
           <table><thead><tr><th>NOMBRE</th><th>EMPRESA</th><th>CONTACTO</th><th>PLAN DE INTERÉS</th><th>ACADEMY</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
           <tbody id="admin-membership-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
         </div>
       </div>
     </div>
@@ -2179,13 +2217,39 @@ async function fetchOpps() {
     document.getElementById('home-opps-src').textContent = `${liveOpps.length} live • SAM.gov`;
     document.getElementById('opps-list').innerHTML = liveOpps.length
       ? liveOpps.map(o => oppCard(o)).join('')
-      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${escapeHtml(kw)}" en ${escapeHtml(st)}.</div>`;
+      : noResultsState(`Sin resultados para "${escapeHtml(kw)}" en ${escapeHtml(st)}.`);
     document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
   } catch(e) {
     const err = e.message.includes('SAM_API_KEY') ? samKeyEmptyState() : `<div class="error-box">${e.message}</div>`;
     document.getElementById('opps-list').innerHTML  = err;
     document.getElementById('home-opps').innerHTML  = err;
   }
+}
+
+function showToast(msg, type='error') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'success' ? ' toast-success' : '');
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity .3s ease';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 300);
+  }, 4000);
+}
+
+function noResultsState(msg) {
+  return `<div class="empty-state">
+    <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></div>
+    <div class="empty-body" style="margin-bottom:0;">${msg}</div>
+  </div>`;
 }
 
 function samKeyEmptyState() {
@@ -2220,10 +2284,15 @@ function oppCard(o) {
 function oppRow(o) {
   const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
   const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
-  return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line-soft);align-items:center;">
-    <span style="font-size:15px;font-weight:700;color:var(--ink);flex:1;margin-right:8px;">${escapeHtml((o.title||'').substring(0,50))}${(o.title||'').length>50?'...':''}</span>
-    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400}">${dl}</span>
-  </div>`;
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||'—',deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#'});
+  return `<a href="#" onclick='openModal(${escapeHtml(d)});return false;' class="grant-row" style="text-decoration:none;">
+    <span class="grant-row-dot" style="background:${urgent?'var(--red)':'var(--navy)'};"></span>
+    <div style="flex:1;min-width:0;">
+      <div class="grant-row-title">${escapeHtml((o.title||'').substring(0,60))}</div>
+      <div class="grant-row-tag">${escapeHtml((o.organization||'OPORTUNIDAD').substring(0,40))}</div>
+    </div>
+    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400};flex-shrink:0;">${dl}</span>
+  </a>`;
 }
 
 function openModal(o) {
@@ -2264,12 +2333,14 @@ async function fetchGrants() {
     document.getElementById('home-grants-src').textContent = `${liveGrants.length} live`;
     document.getElementById('grants-list').innerHTML = liveGrants.length
       ? liveGrants.map(g => grantCard(g)).join('')
-      : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${escapeHtml(kw)}".</div>`;
+      : noResultsState(`Sin resultados para "${escapeHtml(kw)}".`);
     document.getElementById('home-grants').innerHTML = liveGrants.slice(0,4).map(g => grantRow(g)).join('');
+    grantsAggregate(liveGrants);
   } catch(e) {
     const err = `<div class="error-box">${e.message}</div>`;
     document.getElementById('grants-list').innerHTML  = err;
     document.getElementById('home-grants').innerHTML  = err;
+    grantsAggregate([]);
   }
 }
 
@@ -2320,6 +2391,32 @@ function grantRow(g) {
       <div class="grant-row-tag">${escapeHtml((g.category||'GRANT').toString().toUpperCase())}</div>
     </div>
     <a href="#" onclick='openModal(${escapeHtml(d)});return false;' class="grant-row-ver">Ver<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
+  </div>`;
+}
+
+function grantsAggregate(grants) {
+  const aggEl = document.getElementById('grants-aggregate');
+  if (!aggEl) return;
+  if (!grants.length) { aggEl.innerHTML = ''; return; }
+  const total = grants.reduce((s,g) => s + Number(g.awardCeiling || 0), 0);
+  const byCategory = {};
+  grants.forEach(g => {
+    const cat = (g.category || 'Otros').toString();
+    byCategory[cat] = (byCategory[cat] || 0) + 1;
+  });
+  const catEntries = Object.entries(byCategory).sort((a,b) => b[1]-a[1]).slice(0,6);
+  const maxCount = Math.max(...catEntries.map(c => c[1]), 1);
+  aggEl.innerHTML = `<div class="card" style="margin-bottom:16px;">
+    <div class="card-title">Panorama de fondos disponibles<span class="sub">${grants.length} convocatoria${grants.length!==1?'s':''}</span></div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.5px;">MONTO TOTAL DISPONIBLE (con techo publicado)</div>
+      <div style="font-size:26px;font-weight:900;color:var(--green);">$${total.toLocaleString()}</div>
+    </div>
+    ${catEntries.map(([cat,count]) => `<div class="bar-row">
+      <div class="bar-label">${escapeHtml(cat)}</div>
+      <div class="bar-track"><div class="bar-fill-blue" style="width:${Math.round(count/maxCount*100)}%"></div></div>
+      <div class="bar-val">${count}</div>
+    </div>`).join('')}
   </div>`;
 }
 
@@ -2421,7 +2518,7 @@ async function fetchCompetitors() {
           <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxT*100)}%"></div></div>
           <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
         </div>`).join('')}
-      </div>` : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin vendors encontrados.</div>`;
+      </div>` : noResultsState('Sin vendors encontrados.');
   } catch(e) { document.getElementById('comp-container').innerHTML = `<div class="error-box">❌ ${e.message}</div>`; }
 }
 
@@ -2445,7 +2542,7 @@ async function searchCodes() {
 
     if (type === 'crosswalk' && data.codes) {
       el.innerHTML = `
-        <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);">
           <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));padding:20px 24px;">
             <div style="display:flex;align-items:center;gap:12px;">
               <div style="background:var(--red);color:#fff;padding:6px 14px;border-radius:8px;font-size:19px;font-weight:900;font-family:monospace;">${data.naics}</div>
@@ -2457,7 +2554,7 @@ async function searchCodes() {
           </div>
           <div style="padding:20px;">
             ${data.description ? `
-            <div style="margin-bottom:16px;background:var(--line-soft);border-radius:10px;padding:14px 16px;">
+            <div style="margin-bottom:16px;background:var(--line-soft);border-radius:var(--r-md);padding:14px 16px;">
               <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:6px;">DESCRIPCIÓN OFICIAL (NAICS Manual 2022)</div>
               <div style="font-size:14px;color:var(--ink);line-height:1.6;">${escapeHtml(data.description)}</div>
               ${data.illustrative_examples ? `
@@ -2468,76 +2565,76 @@ async function searchCodes() {
             </div>` : ''}
             <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
+              <div style="background:var(--card);border:2px solid #c7d2fe;border-radius:var(--r-md);padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:var(--navy);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">NAICS</div>
-                  <div style="font-size:12px;color:#6b7a99;">North American Industry Classification</div>
+                  <div style="background:var(--navy);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:var(--r-sm);">NAICS</div>
+                  <div style="font-size:12px;color:var(--muted);">North American Industry Classification</div>
                 </div>
                 <div style="font-size:26px;font-weight:900;color:var(--navy);font-family:monospace;">${data.codes.naics.code}</div>
-                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.naics.title}</div>
+                <div style="font-size:14px;color:var(--ink);margin-top:4px;font-weight:700;">${data.codes.naics.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" class="btn-outline btn-sm">📋 Copiar</button>
                   <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022" target="_blank" style="margin-left:6px;font-size:13px;color:var(--red);font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
                 </div>
               </div>
-              <div style="background:linear-gradient(135deg,#fff7ed,#fff);border:2px solid #fed7aa;border-radius:10px;padding:16px;">
+              <div style="background:var(--card);border:2px solid #fed7aa;border-radius:var(--r-md);padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#c2410c;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">SIC</div>
-                  <div style="font-size:12px;color:#6b7a99;">Standard Industrial Classification</div>
+                  <div style="background:#c2410c;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:var(--r-sm);">SIC</div>
+                  <div style="font-size:12px;color:var(--muted);">Standard Industrial Classification</div>
                 </div>
-                <div style="font-size:26px;font-weight:900;color:#c2410c;font-family:monospace;">${data.codes.sic.code}</div>
-                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.sic.title}</div>
+                <div style="font-size:26px;font-weight:900;color:#c2410c;font-family:monospace;">${data.codes.sic.code || '—'}</div>
+                <div style="font-size:14px;color:var(--ink);margin-top:4px;font-weight:700;">${data.codes.sic.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" style="background:#ffedd5;color:#c2410c;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" class="btn-outline btn-sm">📋 Copiar</button>
                 </div>
               </div>
-              <div style="background:linear-gradient(135deg,#f0fdf4,#fff);border:2px solid #86efac;border-radius:10px;padding:16px;">
+              <div style="background:var(--card);border:2px solid #86efac;border-radius:var(--r-md);padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#15803d;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">PSC</div>
-                  <div style="font-size:12px;color:#6b7a99;">Product Service Code — Federal</div>
+                  <div style="background:#15803d;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:var(--r-sm);">PSC</div>
+                  <div style="font-size:12px;color:var(--muted);">Product Service Code — Federal</div>
                 </div>
-                <div style="font-size:26px;font-weight:900;color:#15803d;font-family:monospace;">${data.codes.psc.code}</div>
-                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.psc.title}</div>
+                <div style="font-size:26px;font-weight:900;color:#15803d;font-family:monospace;">${data.codes.psc.code || '—'}</div>
+                <div style="font-size:14px;color:var(--ink);margin-top:4px;font-weight:700;">${data.codes.psc.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" style="background:#dcfce7;color:#15803d;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" class="btn-outline btn-sm">📋 Copiar</button>
                 </div>
               </div>
-              <div style="background:linear-gradient(135deg,#fdf4ff,#fff);border:2px solid #e9d5ff;border-radius:10px;padding:16px;">
+              <div style="background:var(--card);border:2px solid #e9d5ff;border-radius:var(--r-md);padding:16px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#7e22ce;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">UNSPSC</div>
-                  <div style="font-size:12px;color:#6b7a99;">UN Standard Products & Services Code</div>
+                  <div style="background:#7e22ce;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:var(--r-sm);">UNSPSC</div>
+                  <div style="font-size:12px;color:var(--muted);">UN Standard Products & Services Code</div>
                 </div>
-                <div style="font-size:23px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code}</div>
-                <div style="font-size:14px;color:#1a1f36;margin-top:4px;font-weight:700;">${data.codes.unspsc.title}</div>
+                <div style="font-size:23px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code || '—'}</div>
+                <div style="font-size:14px;color:var(--ink);margin-top:4px;font-weight:700;">${data.codes.unspsc.title}</div>
                 <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" style="background:#f3e8ff;color:#7e22ce;border:none;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" class="btn-outline btn-sm">📋 Copiar</button>
                 </div>
               </div>
             </div>
-            <div style="margin-top:12px;background:linear-gradient(135deg,#fffbeb,#fff);border:2px solid #fde68a;border-radius:10px;padding:16px;">
+            <div style="margin-top:12px;background:var(--card);border:2px solid #fde68a;border-radius:var(--r-md);padding:16px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="background:#92400e;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:5px;">NIGP</div>
-                <div style="font-size:12px;color:#6b7a99;">National Institute of Governmental Purchasing</div>
+                <div style="background:#92400e;color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:var(--r-sm);">NIGP</div>
+                <div style="font-size:12px;color:var(--muted);">National Institute of Governmental Purchasing</div>
               </div>
               <div style="display:flex;align-items:center;gap:16px;">
                 <div style="font-size:26px;font-weight:900;color:#92400e;font-family:monospace;">${data.codes.nigp.code}</div>
                 <div>
-                  <div style="font-size:14px;color:#1a1f36;font-weight:700;">${data.codes.nigp.title}</div>
-                  <div style="font-size:13px;color:#6b7a99;margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
+                  <div style="font-size:14px;color:var(--ink);font-weight:700;">${data.codes.nigp.title}</div>
+                  <div style="font-size:13px;color:var(--muted);margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
                 </div>
               </div>
             </div>
-            <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
+            <div style="margin-top:12px;background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                 <span class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg></span>
-                <span style="background:linear-gradient(135deg,var(--red),#8b1514);color:#fff;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
-                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:var(--red);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:12.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+                <span style="background:linear-gradient(135deg,var(--red),#8b1514);color:#fff;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:var(--r-sm);">AI STRATEGY TIP</span>
+                <button onclick="getCodeAI('${data.naics}','${data.title}')" class="btn-red btn-sm" style="margin-left:auto;">↻ Analizar</button>
               </div>
-              <div id="code-ai-tip" style="font-size:14px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código.</div>
+              <div id="code-ai-tip" style="font-size:14px;color:var(--muted);line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código.</div>
             </div>
             <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades</button>
-              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
+              <button onclick="searchWithCode('${data.naics}')" class="btn-blue">🔍 Buscar Oportunidades</button>
+              <button onclick="searchMarketWithCode('${data.naics}')" class="btn-red">📊 Ver Market Data</button>
             </div>
           </div>
         </div>`;
@@ -2618,7 +2715,8 @@ async function runAI(page, btn) {
     home:    `Soy negocio cleaning/janitorial NJ plan Legacy GovBidder. ${liveOpps.length} opps en SAM.gov, ${liveGrants.length} grants activos. Dame brief estratégico de hoy.`,
     opps:    `Tengo ${liveOpps.length} oportunidades live SAM.gov cleaning NJ. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
     grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy cleaning/janitorial NJ bajo 10 empleados plan Legacy. ¿Cuáles aplican?`,
-    market:  `Analiza mercado contratos gubernamentales cleaning/janitorial NAICS 561720 NJ 2024. Tendencias, top buyers y oportunidades.`
+    market:  `Analiza mercado contratos gubernamentales cleaning/janitorial NAICS 561720 NJ 2024. Tendencias, top buyers y oportunidades.`,
+    compete: `Analiza la competencia de contratistas gubernamentales cleaning/janitorial NAICS 561720 en NJ 2024. ¿Quiénes son los principales competidores, qué participación de mercado tienen y cómo puede diferenciarse un negocio chico plan Legacy?`
   };
   const minDelay = new Promise(r => setTimeout(r, 1400));
   try {
@@ -2683,7 +2781,7 @@ function renderStates(states) {
             <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()" style="background:var(--red);color:#fff;border-radius:5px;padding:3px 8px;font-size:12px;font-weight:700;text-decoration:none;">🔗 Portal</a>
           </div>
         </div>`).join('')
-    : '<div style="text-align:center;padding:30px;color:var(--muted);grid-column:1/-1;">Sin resultados.</div>';
+    : `<div style="grid-column:1/-1;">${noResultsState('Sin resultados.')}</div>`;
 }
 
 function filterStates(q) {
@@ -2810,7 +2908,7 @@ async function loadSchools() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const schools = data.schoolDistricts || [];
-    if (!schools.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">No hay datos de school districts para ${state}.</div>`; return; }
+    if (!schools.length) { el.innerHTML = noResultsState(`No hay datos de school districts para ${state}.`); return; }
     el.innerHTML = `
       <div style="font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
@@ -2839,7 +2937,7 @@ async function loadColleges() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const univs = data.universities || [];
-    if (!univs.length) { el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">No hay datos de universidades para ${state}.</div>`; return; }
+    if (!univs.length) { el.innerHTML = noResultsState(`No hay datos de universidades para ${state}.`); return; }
     el.innerHTML = `
       <div style="font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
@@ -2886,7 +2984,7 @@ function renderCounties(counties) {
             <td>${c.perCapita != null ? '$' + Number(c.perCapita).toLocaleString() : '—'}</td>
           </tr>`).join('')}</tbody>
       </table>`
-    : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin datos de gasto por condado para este estado/NAICS en 2024.</div>`;
+    : noResultsState('Sin datos de gasto por condado para este estado/NAICS en 2024.');
 }
 
 function filterCounties(q) {
@@ -3194,14 +3292,16 @@ async function loadSupportTickets() {
           : `<span style="font-size:12.5px;color:var(--muted);">—</span>`;
         const canResolve = t.status !== 'resolved' && t.admin_response;
         const docBtn = t.document_path ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;" onclick="viewMyTicketDocument('${t.id}')">📎 Ver PDF</button>` : '';
-        const resolveBtn = canResolve ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;color:var(--green);" onclick="markTicketResolved('${t.id}')">Marcar como resuelto</button>` : '';
+        const resolveBtn = canResolve ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;color:var(--green);" onclick="markTicketResolved('${t.id}',this)">Marcar como resuelto</button>` : '';
         return `<tr><td class="mono">#${t.id.slice(0,6)}</td><td>${escapeHtml(t.type)}</td><td><span class="badge ${cls}">${label}</span></td><td>${response}</td><td style="display:flex;gap:6px;flex-wrap:wrap;">${docBtn}${resolveBtn}</td></tr>`;
       }).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Todavía no enviaste tickets.</td></tr>`;
     }
   } catch(e) { /* silencioso */ }
 }
 
-async function markTicketResolved(ticketId) {
+async function markTicketResolved(ticketId, btn) {
+  if (!confirm('¿Marcar este ticket como resuelto? No vas a poder reabrirlo.')) return;
+  if (btn) btn.disabled = true;
   try {
     const res = await fetch('/api/club?action=ticket_mark_resolved', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -3209,8 +3309,8 @@ async function markTicketResolved(ticketId) {
     });
     const data = await res.json();
     if (data.success) loadSupportTickets();
-    else alert(data.error || 'No se pudo actualizar el ticket.');
-  } catch(e) { alert('Error de conexión: ' + e.message); }
+    else { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo actualizar el ticket.'); }
+  } catch(e) { if (btn) btn.disabled = false; showToast('Error de conexión: ' + e.message); }
 }
 
 async function viewMyTicketDocument(ticketId) {
@@ -3221,8 +3321,8 @@ async function viewMyTicketDocument(ticketId) {
     });
     const data = await res.json();
     if (data.success) window.open(data.url, '_blank');
-    else alert(data.error || 'No se pudo abrir el documento.');
-  } catch(e) { alert('Error de conexión: ' + e.message); }
+    else showToast(data.error || 'No se pudo abrir el documento.');
+  } catch(e) { showToast('Error de conexión: ' + e.message); }
 }
 
 async function submitTicket() {
@@ -3283,7 +3383,7 @@ function setLoading(id, txt='Cargando...') {
 function calcAlliance() {
   const po   = parseFloat(document.getElementById('c-po').value)   || 0;
   const cost = parseFloat(document.getElementById('c-cost').value) || 0;
-  if (!po || !cost) { alert('Ingresa PO y costo'); return; }
+  if (!po || !cost) { showToast('Ingresa PO y costo'); return; }
   const plan  = currentMember?.plan || 'Elevate';
   const pct   = (PLAN_LIMITS[plan] || PLAN_LIMITS.Elevate).alliancePct;
   let apoyo = cost * (pct/100);
@@ -3377,14 +3477,14 @@ async function loadTaskWork() {
     if (openEl) {
       openEl.innerHTML = data.open.length
         ? data.open.map(j => renderOpenJob(j, data.appliedJobIds.includes(j.id), myPlan)).join('')
-        : `<div style="text-align:center;padding:30px;color:var(--muted);">No hay tareas disponibles en este momento.</div>`;
+        : noResultsState('No hay tareas disponibles en este momento.');
     }
 
     const mineEl = document.getElementById('tw-mine-container');
     if (mineEl) {
       mineEl.innerHTML = data.mine.length
         ? `<div class="job-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">${data.mine.map(renderMyJob).join('')}</div>`
-        : `<div style="text-align:center;padding:30px;color:var(--muted);">Todavía no tenés tareas asignadas. Postulate a las disponibles arriba.</div>`;
+        : noResultsState('Todavía no tenés tareas asignadas. Postulate a las disponibles arriba.');
     }
   } catch(e) { /* silencioso */ }
 
@@ -3399,8 +3499,8 @@ async function applyToJob(jobId) {
     });
     const data = await res.json();
     if (data.success) loadTaskWork();
-    else alert(data.error || 'No se pudo enviar la postulación.');
-  } catch(e) { alert('Error de conexión: ' + e.message); }
+    else showToast(data.error || 'No se pudo enviar la postulación.');
+  } catch(e) { showToast('Error de conexión: ' + e.message); }
 }
 
 async function loadLeaderboard() {
@@ -3481,7 +3581,7 @@ async function openAssignModal(jobId) {
 
 async function assignJobToMember(memberId) {
   const data = await clubAdminFetch('admin_job_assign', { jobId: assignModalJobId, memberId });
-  if (!data.success) { alert(data.error || 'No se pudo asignar la tarea.'); return; }
+  if (!data.success) { showToast(data.error || 'No se pudo asignar la tarea.'); return; }
   closeSimpleModal();
   loadAdminJobs();
 }
@@ -3542,7 +3642,7 @@ async function loadAdminJobs() {
     const assignee = j.profiles ? `${escapeHtml(j.profiles.name)} (${escapeHtml(j.profiles.plan)})` : '—';
     let action = '';
     if (j.status === 'assigned') {
-      action = `<button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="completeJob('${j.id}')">Marcar completada</button>`;
+      action = `<button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="completeJob('${j.id}',this)">Marcar completada</button>`;
     } else if (j.status === 'open') {
       action = `<button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="openAssignModal('${j.id}')">Asignar</button>`;
     }
@@ -3550,9 +3650,10 @@ async function loadAdminJobs() {
   }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">Todavía no creaste ninguna tarea.</td></tr>';
 }
 
-async function completeJob(jobId) {
+async function completeJob(jobId, btn) {
+  if (btn) btn.disabled = true;
   const data = await clubAdminFetch('admin_job_complete', { jobId });
-  if (!data.success) { alert(data.error || 'No se pudo completar la tarea.'); return; }
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo completar la tarea.'); return; }
   loadAdminJobs();
 }
 
@@ -3570,16 +3671,18 @@ async function loadAdminApplications() {
       <td>${escapeHtml(job?.task_catalog?.name) || '—'}</td>
       <td>$${Number(job?.task_catalog?.price || 0).toLocaleString()}</td>
       <td style="white-space:nowrap;">
-        <button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="reviewApplication('${a.id}','approved')">Aprobar</button>
-        <button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="reviewApplication('${a.id}','rejected')">Rechazar</button>
+        <button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="reviewApplication('${a.id}','approved',this)">Aprobar</button>
+        <button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="reviewApplication('${a.id}','rejected',this)">Rechazar</button>
       </td>
     </tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay postulaciones pendientes.</td></tr>';
 }
 
-async function reviewApplication(applicationId, decision) {
+async function reviewApplication(applicationId, decision, btn) {
+  if (decision === 'rejected' && !confirm('¿Rechazar esta postulación? El miembro no podrá volver a postularse a esta tarea.')) return;
+  if (btn) btn.disabled = true;
   const data = await clubAdminFetch('admin_application_review', { applicationId, decision });
-  if (!data.success) { alert(data.error || 'No se pudo procesar la postulación.'); return; }
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo procesar la postulación.'); return; }
   loadAdminApplications();
   loadAdminJobs();
 }
@@ -3593,8 +3696,8 @@ async function loadAdminTickets() {
     const badge = STATUS_BADGE[t.status] || ['bm', escapeHtml(t.status)];
     const action = t.status !== 'resolved'
       ? `<div style="display:flex;gap:4px;margin-top:4px;">
-          ${t.status !== 'in_review' ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewTicket('${t.id}','in_review')">En revisión</button>` : ''}
-          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewTicket('${t.id}','resolved')">Resolver</button>
+          ${t.status !== 'in_review' ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewTicket('${t.id}','in_review',this)">En revisión</button>` : ''}
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewTicket('${t.id}','resolved',this)">Resolver</button>
         </div>` : '';
     const docCell = t.document_path ? `<button class="btn-outline" style="padding:3px 8px;font-size:12px;" onclick="viewAdminTicketDocument('${t.id}')">📎 Ver</button>` : '—';
     return `<tr>
@@ -3611,9 +3714,10 @@ async function loadAdminTickets() {
   }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">No hay tickets.</td></tr>';
 }
 
-async function reviewTicket(ticketId, status) {
+async function reviewTicket(ticketId, status, btn) {
+  if (btn) btn.disabled = true;
   const data = await clubAdminFetch('admin_ticket_review', { ticketId, status });
-  if (!data.success) { alert(data.error || 'No se pudo actualizar el ticket.'); return; }
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo actualizar el ticket.'); return; }
   loadAdminTickets();
 }
 
@@ -3621,14 +3725,14 @@ async function saveTicketResponse(ticketId, currentStatus) {
   const response = document.getElementById(`ticket-response-${ticketId}`)?.value.trim() || '';
   const status = currentStatus === 'resolved' ? 'resolved' : 'in_review';
   const data = await clubAdminFetch('admin_ticket_review', { ticketId, status, response });
-  if (!data.success) { alert(data.error || 'No se pudo guardar la respuesta.'); return; }
+  if (!data.success) { showToast(data.error || 'No se pudo guardar la respuesta.'); return; }
   loadAdminTickets();
 }
 
 async function viewAdminTicketDocument(ticketId) {
   const data = await clubAdminFetch('admin_ticket_get_document', { ticketId });
   if (data.success) window.open(data.url, '_blank');
-  else alert(data.error || 'No se pudo abrir el documento.');
+  else showToast(data.error || 'No se pudo abrir el documento.');
 }
 
 async function loadAdminAlliance() {
@@ -3647,8 +3751,8 @@ async function loadAdminAlliance() {
     const badge = r.status === 'approved' ? ['bg','Aprobada'] : r.status === 'rejected' ? ['br','Rechazada'] : ['by','Pendiente'];
     const action = r.status === 'pending'
       ? `<div style="display:flex;gap:4px;margin-top:4px;">
-          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved')">Aprobar</button>
-          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewAlliance('${r.id}','rejected')">Rechazar</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewAlliance('${r.id}','approved',this)">Aprobar</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewAlliance('${r.id}','rejected',this)">Rechazar</button>
         </div>` : '';
     const pct = (PLAN_LIMITS[r.profiles?.plan] || PLAN_LIMITS.Elevate).alliancePct;
     const requested = Math.min(Number(r.cost) * (pct / 100), allianceMaxCap);
@@ -3696,23 +3800,25 @@ function openAllianceDetailModal(requestId) {
 
 async function viewAllianceDocument(requestId, docType) {
   const data = await clubAdminFetch('admin_alliance_get_document', { requestId, docType });
-  if (!data.success) { alert(data.error || 'No se pudo abrir el documento.'); return; }
+  if (!data.success) { showToast(data.error || 'No se pudo abrir el documento.'); return; }
   window.open(data.url, '_blank');
 }
 
 async function saveAllianceMaxCap() {
   const cap = document.getElementById('admin-alliance-cap')?.value;
   const data = await clubAdminFetch('admin_update_settings', { allianceMaxCap: cap });
-  if (!data.success) { alert(data.error || 'No se pudo guardar el tope.'); return; }
+  if (!data.success) { showToast(data.error || 'No se pudo guardar el tope.'); return; }
   allianceMaxCap = Number(cap);
   const savedEl = document.getElementById('admin-alliance-cap-saved');
   if (savedEl) { savedEl.style.display = 'inline'; setTimeout(() => savedEl.style.display = 'none', 2000); }
   loadAdminAlliance();
 }
 
-async function reviewAlliance(requestId, decision) {
+async function reviewAlliance(requestId, decision, btn) {
+  if (decision === 'rejected' && !confirm('¿Rechazar esta solicitud de Alliance? El miembro será notificado y no podrá deshacerse.')) return;
+  if (btn) btn.disabled = true;
   const data = await clubAdminFetch('admin_alliance_review', { requestId, decision });
-  if (!data.success) { alert(data.error || 'No se pudo procesar la solicitud.'); return; }
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo procesar la solicitud.'); return; }
   loadAdminAlliance();
 }
 
@@ -3725,8 +3831,8 @@ async function loadAdminMembership() {
     const badge = r.status === 'contacted' ? ['bg','Contactada'] : r.status === 'rejected' ? ['br','Rechazada'] : ['by','Pendiente'];
     const action = r.status === 'pending'
       ? `<div style="display:flex;gap:4px;margin-top:4px;">
-          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewMembership('${r.id}','contacted')">Marcar contactada</button>
-          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewMembership('${r.id}','rejected')">Rechazar</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewMembership('${r.id}','contacted',this)">Marcar contactada</button>
+          <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewMembership('${r.id}','rejected',this)">Rechazar</button>
         </div>` : '';
     const academyBadge = r.is_academy_alumni === true ? '<span class="badge bg">Sí</span>' : r.is_academy_alumni === false ? '<span class="badge br">No</span>' : '—';
     return `<tr>
@@ -3741,9 +3847,11 @@ async function loadAdminMembership() {
   }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
 }
 
-async function reviewMembership(requestId, status) {
+async function reviewMembership(requestId, status, btn) {
+  if (status === 'rejected' && !confirm('¿Rechazar esta solicitud de membresía?')) return;
+  if (btn) btn.disabled = true;
   const data = await clubAdminFetch('admin_membership_review', { requestId, status });
-  if (!data.success) { alert(data.error || 'No se pudo procesar la solicitud.'); return; }
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo procesar la solicitud.'); return; }
   loadAdminMembership();
 }
 
