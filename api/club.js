@@ -48,6 +48,46 @@ async function getAllianceMaxCap() {
   return Number.isFinite(val) && val > 0 ? val : 15000;
 }
 
+// ── INVESTMENT CLUB ───────────────────────────────────────
+// Sube un comprobante de pago (PDF o imagen) a un bucket privado. Devuelve { path } o { error }.
+async function uploadReceipt(bucket, memberId, base64, filename, maxMB = 5) {
+  if (!base64 || !filename) return { error: 'Falta el comprobante.' };
+  const ext = (filename.match(/\.([a-zA-Z0-9]+)$/) || [])[1]?.toLowerCase();
+  const CONTENT_TYPES = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
+  const contentType = CONTENT_TYPES[ext];
+  if (!contentType) return { error: 'El comprobante debe ser PDF, JPG o PNG.' };
+  const buffer = Buffer.from(base64, 'base64');
+  if (buffer.length > maxMB * 1024 * 1024) return { error: `El archivo no puede superar los ${maxMB}MB.` };
+  const path = `${memberId}/${Date.now()}-${filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+  const { error: upErr } = await supabase.storage.from(bucket).upload(path, buffer, { contentType });
+  if (upErr) return { error: 'No se pudo subir el comprobante: ' + upErr.message };
+  return { path };
+}
+
+// Cuántos pagos mensuales corresponden desde start_date hasta hoy (tope term_months).
+// El primer pago vence el día de inicio (mes 1), no un mes después.
+function expectedPaymentsSoFar(startDateStr, termMonths) {
+  const start = new Date(startDateStr);
+  const now = new Date();
+  if (now < start) return 0;
+  let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if (now.getDate() < start.getDate()) months -= 1;
+  return Math.min(termMonths, Math.max(0, months + 1));
+}
+
+function investorSummary(investor, deposits) {
+  const approved = (deposits || []).filter(d => d.status === 'approved');
+  const totalApproved = approved.reduce((s, d) => s + Number(d.amount), 0);
+  const paymentsMade = approved.length;
+  const expectedPayments = expectedPaymentsSoFar(investor.start_date, investor.term_months);
+  const behind = Math.max(0, expectedPayments - paymentsMade);
+  const progressPct = Math.min(100, Math.round((paymentsMade / investor.term_months) * 1000) / 10);
+  const vestedFraction = Math.min(1, paymentsMade / investor.term_months);
+  const accruedProfit = Math.round(investor.fixed_return * vestedFraction * 100) / 100;
+  const projectedTotal = investor.term_months * Number(investor.monthly_amount) + Number(investor.fixed_return);
+  return { totalApproved, paymentsMade, expectedPayments, behind, progressPct, accruedProfit, projectedTotal };
+}
+
 // ── MAIN HANDLER ─────────────────────────────────────────
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -275,6 +315,46 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, ranking });
     }
 
+    // ── INVESTMENT CLUB (solo inversionistas) ───────────
+    if (action === 'investor_status') {
+      if (!profile.is_investor) return res.status(403).json({ success: false, error: 'No sos inversionista en este momento.' });
+      const { data: investor } = await supabase.from('investors').select('*').eq('profile_id', profile.id).single();
+      if (!investor) return res.status(404).json({ success: false, error: 'No se encontró tu registro de inversionista.' });
+      const { data: deposits } = await supabase.from('investor_deposits')
+        .select('*').eq('investor_id', investor.id).order('submitted_at', { ascending: false });
+      const summary = investorSummary(investor, deposits);
+      return res.status(200).json({
+        success: true,
+        investor: {
+          startDate: investor.start_date, monthlyAmount: investor.monthly_amount,
+          termMonths: investor.term_months, fixedReturn: investor.fixed_return, status: investor.status
+        },
+        ...summary,
+        deposits: deposits || []
+      });
+    }
+
+    if (action === 'investor_deposit_submit') {
+      if (!profile.is_investor) return res.status(403).json({ success: false, error: 'No sos inversionista en este momento.' });
+      const { receiptBase64, receiptName } = body;
+      const amount = Number(body.amount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return res.status(400).json({ success: false, error: 'Monto inválido.' });
+      }
+      const { data: investor } = await supabase.from('investors').select('id, status').eq('profile_id', profile.id).single();
+      if (!investor) return res.status(404).json({ success: false, error: 'No se encontró tu registro de inversionista.' });
+      if (investor.status !== 'active') {
+        return res.status(400).json({ success: false, error: 'Tu inversión ya no está activa.' });
+      }
+      const { path, error: upErr } = await uploadReceipt('investor-documents', profile.id, receiptBase64, receiptName);
+      if (upErr) return res.status(400).json({ success: false, error: upErr });
+
+      const { data, error: insErr } = await supabase.from('investor_deposits')
+        .insert({ investor_id: investor.id, amount, receipt_path: path }).select().single();
+      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+      return res.status(200).json({ success: true, deposit: data });
+    }
+
     // ── ADMIN ────────────────────────────────────────────
     if (action.startsWith('admin_')) {
       if (profile.role !== 'admin') return res.status(403).json({ success: false, error: 'Solo administradores' });
@@ -469,6 +549,90 @@ export default async function handler(req, res) {
         }
         const { error: updErr } = await supabase.from('membership_requests').update({ status: newStatus }).eq('id', requestId);
         if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        return res.status(200).json({ success: true });
+      }
+
+      if (action === 'admin_investor_list') {
+        const { data: investors } = await supabase.from('investors')
+          .select('*, profiles!investors_profile_id_fkey(name, email)').order('created_at', { ascending: false });
+        if (!investors || !investors.length) return res.status(200).json({ success: true, investors: [] });
+        const ids = investors.map(i => i.id);
+        const { data: deposits } = await supabase.from('investor_deposits').select('*').in('investor_id', ids);
+        const byInvestor = {};
+        for (const d of deposits || []) (byInvestor[d.investor_id] ||= []).push(d);
+        const result = investors.map(inv => ({
+          id: inv.id, name: inv.profiles?.name, email: inv.profiles?.email,
+          startDate: inv.start_date, monthlyAmount: inv.monthly_amount, termMonths: inv.term_months,
+          fixedReturn: inv.fixed_return, status: inv.status,
+          ...investorSummary(inv, byInvestor[inv.id] || [])
+        }));
+        return res.status(200).json({ success: true, investors: result });
+      }
+
+      if (action === 'admin_investor_create') {
+        const { profileId, startDate } = body;
+        const monthlyAmount = body.monthlyAmount !== undefined ? Number(body.monthlyAmount) : 1000;
+        const termMonths = body.termMonths !== undefined ? Number(body.termMonths) : 24;
+        const fixedReturn = body.fixedReturn !== undefined ? Number(body.fixedReturn) : 6000;
+        if (!profileId || !startDate) {
+          return res.status(400).json({ success: false, error: 'profileId y startDate requeridos' });
+        }
+        const { data: existing } = await supabase.from('investors').select('id').eq('profile_id', profileId).maybeSingle();
+        if (existing) return res.status(400).json({ success: false, error: 'Este miembro ya es inversionista.' });
+
+        const { data, error: insErr } = await supabase.from('investors')
+          .insert({ profile_id: profileId, start_date: startDate, monthly_amount: monthlyAmount, term_months: termMonths, fixed_return: fixedReturn })
+          .select().single();
+        if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+        await supabase.from('profiles').update({ is_investor: true }).eq('id', profileId);
+        return res.status(200).json({ success: true, investor: data });
+      }
+
+      if (action === 'admin_investor_deposit_list') {
+        const { data } = await supabase.from('investor_deposits')
+          .select('*, investors!inner(profile_id, profiles!investors_profile_id_fkey(name, email))')
+          .eq('status', 'pending').order('submitted_at', { ascending: true });
+        return res.status(200).json({ success: true, deposits: data || [] });
+      }
+
+      if (action === 'admin_investor_deposit_review') {
+        const { depositId, decision, notes } = body; // decision: 'approved' | 'rejected'
+        if (!depositId || !['approved', 'rejected'].includes(decision)) {
+          return res.status(400).json({ success: false, error: 'depositId y decision válidos requeridos' });
+        }
+        const update = { status: decision, reviewed_at: new Date().toISOString() };
+        if (notes !== undefined) update.admin_notes = notes;
+        const { data: updated, error: updErr } = await supabase.from('investor_deposits')
+          .update(update).eq('id', depositId).eq('status', 'pending').select();
+        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (!updated || updated.length === 0) {
+          return res.status(400).json({ success: false, error: 'Este comprobante ya fue resuelto.' });
+        }
+        return res.status(200).json({ success: true });
+      }
+
+      if (action === 'admin_investor_deposit_get_document') {
+        const { depositId } = body;
+        if (!depositId) return res.status(400).json({ success: false, error: 'depositId requerido' });
+        const { data: deposit } = await supabase.from('investor_deposits').select('receipt_path').eq('id', depositId).single();
+        if (!deposit || !deposit.receipt_path) return res.status(404).json({ success: false, error: 'Este comprobante no tiene archivo.' });
+        const { data: signed, error: signErr } = await supabase.storage.from('investor-documents').createSignedUrl(deposit.receipt_path, 300);
+        if (signErr) return res.status(500).json({ success: false, error: signErr.message });
+        return res.status(200).json({ success: true, url: signed.signedUrl });
+      }
+
+      if (action === 'admin_investor_set_status') {
+        const { investorId, status: newStatus } = body; // 'active' | 'withdrawn' | 'completed'
+        if (!investorId || !['active', 'withdrawn', 'completed'].includes(newStatus)) {
+          return res.status(400).json({ success: false, error: 'investorId y status válidos requeridos' });
+        }
+        const { data: investor } = await supabase.from('investors').select('profile_id').eq('id', investorId).single();
+        if (!investor) return res.status(404).json({ success: false, error: 'Inversionista no encontrado.' });
+        const update = { status: newStatus };
+        if (newStatus !== 'active') update.withdrawn_at = new Date().toISOString();
+        const { error: updErr } = await supabase.from('investors').update(update).eq('id', investorId);
+        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        await supabase.from('profiles').update({ is_investor: newStatus === 'active' }).eq('id', investor.profile_id);
         return res.status(200).json({ success: true });
       }
 

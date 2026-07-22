@@ -598,6 +598,7 @@ tr:hover td{background:var(--line-soft) !important;}
   <div class="nav-item member-only" onclick="nav(this,'support')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>Support Desk<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
   <div class="nav-item member-only" onclick="nav(this,'alliance')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg></span>Funding Access<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
   <div class="nav-item member-only" onclick="nav(this,'taskwork')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span>Task Work<span class="member-lock" style="display:none;margin-left:auto;font-size:13px;">🔒</span></div>
+  <div class="nav-item" id="nav-investor" style="display:none;" onclick="nav(this,'investor')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>Investor</div>
   <div class="nav-item" id="nav-admin" style="display:none;" onclick="nav(this,'admin')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1.5a3 3 0 0 1-1.5 2.6L6 10a3 3 0 0 0-1.5 2.6V14a3 3 0 0 0 1.5 2.6l1.5.9a3 3 0 0 1 1.5 2.6V22"/><circle cx="12" cy="12" r="3"/></svg></span>Admin</div>
 </div>
 
@@ -1551,6 +1552,64 @@ tr:hover td{background:var(--line-soft) !important;}
 
     </div>
 
+    <!-- INVESTOR -->
+    <div class="page" id="page-investor">
+
+      <!-- Header banner -->
+      <div style="background:linear-gradient(135deg,var(--navy),var(--blue2));border-radius:var(--r-md);padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+        <span class="icon-chip" style="width:40px;height:40px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>
+        <div>
+          <div style="color:#fff;font-size:17px;font-weight:800;">GovBidder Investment Club</div>
+          <div style="color:rgba(255,255,255,.6);font-size:14px;margin-top:2px;" id="inv-header-sub">Tu aporte mensual y el progreso de tu inversión</div>
+        </div>
+        <div style="margin-left:auto;">
+          <span class="badge" id="inv-status-badge" style="font-size:13px;">—</span>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+        <div class="kpi-card"><div class="kpi-label">ACUMULADO APROBADO</div><div class="kpi-value" style="font-size:22px;color:var(--green)" id="inv-total">—</div><div class="kpi-delta" style="color:var(--muted)" id="inv-total-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">PAGOS AL DÍA</div><div class="kpi-value" id="inv-payments">—</div><div class="kpi-delta" id="inv-payments-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">PROFIT ACUMULADO</div><div class="kpi-value" style="font-size:22px;color:var(--gold)" id="inv-profit">—</div><div class="kpi-delta" style="color:var(--muted)">no retirable hasta completar el plazo</div></div>
+        <div class="kpi-card kpi-accent"><div class="kpi-label">PROYECCIÓN FINAL</div><div class="kpi-value" style="font-size:22px;" id="inv-projection">—</div><div class="kpi-delta" style="color:rgba(255,255,255,.6);">al completar el plazo</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">Progreso de tu inversión</div>
+        <div class="bar-row">
+          <div class="bar-label" style="width:auto;margin-right:10px;">Pagos aprobados</div>
+          <div class="bar-track"><div class="bar-fill" id="inv-progress-fill" style="width:0%"></div></div>
+          <div class="bar-val" id="inv-progress-val" style="width:auto;">—</div>
+        </div>
+        <div id="inv-behind-warning" style="display:none;margin-top:10px;background:var(--red-soft);border:1px solid rgba(196,42,61,.25);border-radius:8px;padding:10px 12px;color:var(--red);font-size:13.5px;font-weight:700;"></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">📎 Subir comprobante de pago</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="color:var(--muted);font-size:14px;">$</span>
+              <input class="search-input" id="inv-deposit-amount" type="number" placeholder="Monto depositado (ej. 1000)" style="width:100%;" value="1000"/>
+            </div>
+            <input id="inv-deposit-file" type="file" accept="image/jpeg,image/png,application/pdf" class="search-input" style="width:100%;padding:6px;"/>
+            <div id="inv-deposit-error" style="display:none;color:var(--red);font-size:13.5px;"></div>
+            <button onclick="submitInvestorDeposit(this)" class="btn-red" style="padding:10px;">Enviar comprobante</button>
+            <div style="font-size:12.5px;color:var(--muted);">Subí la captura o PDF de tu transferencia — el equipo lo revisa y confirma en 1-2 días hábiles.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Historial de comprobantes</div>
+          <div class="table-scroll" style="max-height:280px;overflow-y:auto;">
+          <table><thead><tr><th>FECHA</th><th>MONTO</th><th>ESTADO</th></tr></thead>
+          <tbody id="inv-deposits-body"><tr><td colspan="3" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
     <!-- ADMIN -->
     <div class="page" id="page-admin">
       <!-- TABS -->
@@ -1560,6 +1619,7 @@ tr:hover td{background:var(--line-soft) !important;}
         <div class="geo-tab"        id="tab-admin-tickets"      onclick="adminTab('tickets')">🎯 Tickets de Soporte</div>
         <div class="geo-tab"        id="tab-admin-alliance"     onclick="adminTab('alliance')">🤝 Solicitudes Alliance</div>
         <div class="geo-tab"        id="tab-admin-membership"   onclick="adminTab('membership')">📋 Solicitudes de Membresía</div>
+        <div class="geo-tab"        id="tab-admin-investors"    onclick="adminTab('investors')">📈 Inversionistas</div>
       </div>
 
       <!-- TAB: TAREAS -->
@@ -1645,6 +1705,24 @@ tr:hover td{background:var(--line-soft) !important;}
           </div>
         </div>
       </div>
+
+      <!-- TAB: INVERSIONISTAS -->
+      <div id="admin-panel-investors" class="geo-panel">
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">📎 Comprobantes pendientes de revisión</div>
+          <div class="table-scroll">
+          <table><thead><tr><th>INVERSIONISTA</th><th>MONTO</th><th>FECHA</th><th>COMPROBANTE</th><th>ACCIÓN</th></tr></thead>
+          <tbody id="admin-investor-deposits-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📈 Inversionistas<button class="btn-outline btn-sm" style="margin-left:auto;" onclick="openAddInvestorModal()">+ Agregar</button></div>
+          <div class="table-scroll">
+          <table><thead><tr><th>NOMBRE</th><th>INICIO</th><th>PAGOS</th><th>ATRASO</th><th>ACUMULADO</th><th>ESTADO</th><th>ACCIÓN</th></tr></thead>
+          <tbody id="admin-investors-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div><!-- /#content -->
@@ -1686,7 +1764,7 @@ const TITLES = {
   codes:'Code Intelligence', geo:'Buyer Geography',
   compete:'Competitive Intel',
   support:'Support Desk', alliance:'Funding Access', taskwork:'Task Work — Mis Trabajos',
-  admin:'Panel de Administración'
+  investor:'Investor', admin:'Panel de Administración'
 };
 const SUBTITLES = {
   home:'Panorama de tu actividad de contratación pública', tools:'Accesos rápidos y utilidades GovBidder',
@@ -1695,6 +1773,7 @@ const SUBTITLES = {
   geo:'Compradores por estado, distrito escolar y condado', compete:'Quién está ganando en tu mercado',
   support:'Soporte dedicado para miembros',
   alliance:'Apoyo económico para Purchase Orders de miembros', taskwork:'Bolsa de trabajo GovBidder Club',
+  investor:'Tu inversión en GovBidder — aportes, progreso y proyección',
   admin:'Gestión de tareas, postulaciones, tickets y solicitudes'
 };
 
@@ -1737,6 +1816,7 @@ function nav(el, page) {
   if (page === 'taskwork') loadTaskWork();
   if (page === 'alliance') loadAllianceStatus();
   if (page === 'support')  loadSupportTickets();
+  if (page === 'investor') loadInvestorStatus();
   if (page === 'admin')    loadAdminPanel();
 }
 
@@ -2008,6 +2088,10 @@ function isAdmin() {
   return !!currentMember && currentMember.role === 'admin';
 }
 
+function isInvestor() {
+  return !!currentMember && currentMember.isInvestor === true;
+}
+
 function applyRoleAccess() {
   const member = isMember();
 
@@ -2023,11 +2107,15 @@ function applyRoleAccess() {
 
   const adminNav = document.getElementById('nav-admin');
   if (adminNav) adminNav.style.display = isAdmin() ? 'flex' : 'none';
+
+  const investorNav = document.getElementById('nav-investor');
+  if (investorNav) investorNav.style.display = isInvestor() ? 'flex' : 'none';
 }
 
 // Called by nav() to check access before showing page
 function checkPageAccess(page) {
   if (page === 'admin') return isAdmin();
+  if (page === 'investor') return isInvestor();
   if (!MEMBER_PAGES.includes(page)) return true; // free page
   if (isMember()) return true;                   // has access
   return false;                                  // blocked
@@ -3519,6 +3607,88 @@ async function loadLeaderboard() {
   } catch(e) { /* silencioso */ }
 }
 
+// ── INVESTMENT CLUB (miembro) ───────────────────────────────
+const DEPOSIT_STATUS_BADGE = { pending: ['by','Pendiente'], approved: ['bg','Aprobado'], rejected: ['br','Rechazado'] };
+const INVESTOR_STATUS_BADGE = { active: ['bg','Activa'], withdrawn: ['bm','Retirada'], completed: ['bg','Completada'] };
+
+async function loadInvestorStatus() {
+  try {
+    const res = await fetch('/api/club?action=investor_status', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken() })
+    });
+    const data = await res.json();
+    if (!data.success) { showToast(data.error || 'No se pudo cargar tu inversión.'); return; }
+
+    document.getElementById('inv-total').textContent = `$${data.totalApproved.toLocaleString()}`;
+    document.getElementById('inv-total-sub').textContent = `de $${(data.investor.termMonths * Number(data.investor.monthlyAmount)).toLocaleString()} comprometidos`;
+    document.getElementById('inv-payments').textContent = `${data.paymentsMade}/${data.investor.termMonths}`;
+    const paymentsSub = document.getElementById('inv-payments-sub');
+    paymentsSub.textContent = data.behind > 0 ? `${data.behind} atrasado${data.behind !== 1 ? 's' : ''}` : 'al día';
+    paymentsSub.style.color = data.behind > 0 ? 'var(--red)' : 'var(--green)';
+    document.getElementById('inv-profit').textContent = `$${data.accruedProfit.toLocaleString()}`;
+    document.getElementById('inv-projection').textContent = `$${data.projectedTotal.toLocaleString()}`;
+    document.getElementById('inv-progress-fill').style.width = `${data.progressPct}%`;
+    document.getElementById('inv-progress-val').textContent = `${data.progressPct}%`;
+
+    const [cls, label] = INVESTOR_STATUS_BADGE[data.investor.status] || ['bm', data.investor.status];
+    const statusBadge = document.getElementById('inv-status-badge');
+    statusBadge.className = `badge ${cls}`;
+    statusBadge.textContent = label;
+    document.getElementById('inv-header-sub').textContent =
+      `Inicio: ${new Date(data.investor.startDate).toLocaleDateString('es-ES',{month:'long',day:'numeric',year:'numeric'})} · $${Number(data.investor.monthlyAmount).toLocaleString()}/mes × ${data.investor.termMonths} meses`;
+
+    const warnEl = document.getElementById('inv-behind-warning');
+    if (data.behind > 0 && data.investor.status === 'active') {
+      warnEl.style.display = 'block';
+      warnEl.textContent = `Tenés ${data.behind} pago${data.behind !== 1 ? 's' : ''} atrasado${data.behind !== 1 ? 's' : ''}. Subí tu comprobante para ponerte al día.`;
+    } else {
+      warnEl.style.display = 'none';
+    }
+
+    const body = document.getElementById('inv-deposits-body');
+    body.innerHTML = data.deposits.length ? data.deposits.map(d => {
+      const [dCls, dLabel] = DEPOSIT_STATUS_BADGE[d.status] || ['bm', d.status];
+      return `<tr>
+        <td>${new Date(d.submitted_at).toLocaleDateString('es-ES',{month:'short',day:'numeric',year:'numeric'})}</td>
+        <td>$${Number(d.amount).toLocaleString()}</td>
+        <td><span class="badge ${dCls}">${dLabel}</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="3" style="text-align:center;color:var(--muted);">Todavía no subiste comprobantes.</td></tr>';
+  } catch(e) { showToast('Error de conexión: ' + e.message); }
+}
+
+async function submitInvestorDeposit(btn) {
+  const amount = Number(document.getElementById('inv-deposit-amount')?.value);
+  const file = document.getElementById('inv-deposit-file')?.files?.[0];
+  const errEl = document.getElementById('inv-deposit-error');
+  errEl.style.display = 'none';
+  if (!Number.isFinite(amount) || amount <= 0) {
+    errEl.textContent = 'Ingresá un monto válido.'; errEl.style.display = 'block'; return;
+  }
+  if (!file) {
+    errEl.textContent = 'Adjuntá el comprobante (imagen o PDF).'; errEl.style.display = 'block'; return;
+  }
+  btn.disabled = true;
+  try {
+    const receiptBase64 = await readFileAsBase64(file);
+    const res = await fetch('/api/club?action=investor_deposit_submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), amount, receiptBase64, receiptName: file.name })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      errEl.textContent = data.error || 'No se pudo enviar el comprobante.'; errEl.style.display = 'block'; btn.disabled = false; return;
+    }
+    showToast('Comprobante enviado. Te vamos a notificar cuando lo confirmemos.', 'success');
+    document.getElementById('inv-deposit-file').value = '';
+    loadInvestorStatus();
+  } catch(e) {
+    errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block';
+  }
+  btn.disabled = false;
+}
+
 // ── ADMIN PANEL ────────────────────────────────────────────
 async function clubAdminFetch(action, extra) {
   const res = await fetch(`/api/club?action=${action}`, {
@@ -3605,6 +3775,7 @@ async function loadAdminPanel() {
   loadAdminTickets();
   loadAdminAlliance();
   loadAdminMembership();
+  loadAdminInvestors();
 }
 
 async function loadAdminCatalog() {
@@ -3853,6 +4024,133 @@ async function reviewMembership(requestId, status, btn) {
   const data = await clubAdminFetch('admin_membership_review', { requestId, status });
   if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo procesar la solicitud.'); return; }
   loadAdminMembership();
+}
+
+// ── INVESTMENT CLUB (admin) ──────────────────────────────
+const INVESTOR_STATUS_ADMIN_BADGE = { active: ['bg','Activo'], withdrawn: ['bm','Retirado'], completed: ['bg','Completado'] };
+let addInvestorSelectedMemberId = null;
+
+async function loadAdminInvestors() {
+  const depBody = document.getElementById('admin-investor-deposits-body');
+  const invBody = document.getElementById('admin-investors-body');
+  if (!depBody || !invBody) return;
+
+  const depData = await clubAdminFetch('admin_investor_deposit_list');
+  if (depData.success) {
+    depBody.innerHTML = depData.deposits.length ? depData.deposits.map(d => `<tr>
+      <td>${escapeHtml(d.investors?.profiles?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(d.investors?.profiles?.email)}</span></td>
+      <td>$${Number(d.amount).toLocaleString()}</td>
+      <td>${new Date(d.submitted_at).toLocaleDateString('es-ES',{month:'short',day:'numeric',year:'numeric'})}</td>
+      <td><button class="btn-outline btn-sm" onclick="viewInvestorDepositDocument('${d.id}')">Ver</button></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-outline" style="padding:4px 9px;font-size:13px;color:var(--green);" onclick="reviewInvestorDeposit('${d.id}','approved',this)">Aprobar</button>
+        <button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="reviewInvestorDeposit('${d.id}','rejected',this)">Rechazar</button>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay comprobantes pendientes.</td></tr>';
+  }
+
+  const invData = await clubAdminFetch('admin_investor_list');
+  if (invData.success) {
+    invBody.innerHTML = invData.investors.length ? invData.investors.map(inv => {
+      const [cls, label] = INVESTOR_STATUS_ADMIN_BADGE[inv.status] || ['bm', inv.status];
+      const behindBadge = inv.behind > 0
+        ? `<span class="badge br">Atrasado (${inv.behind})</span>`
+        : `<span class="badge bg">Al día</span>`;
+      const action = inv.status === 'active'
+        ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="setInvestorStatus('${inv.id}','withdrawn',this)">Marcar retirado</button>
+           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="setInvestorStatus('${inv.id}','completed',this)">Marcar completado</button>`
+        : '';
+      return `<tr>
+        <td>${escapeHtml(inv.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(inv.email)}</span></td>
+        <td>${new Date(inv.startDate).toLocaleDateString('es-ES',{month:'short',day:'numeric',year:'numeric'})}</td>
+        <td>${inv.paymentsMade}/${inv.termMonths}</td>
+        <td>${behindBadge}</td>
+        <td>$${inv.totalApproved.toLocaleString()}</td>
+        <td><span class="badge ${cls}">${label}</span></td>
+        <td style="white-space:nowrap;">${action}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);">No hay inversionistas todavía.</td></tr>';
+  }
+}
+
+async function viewInvestorDepositDocument(depositId) {
+  const data = await clubAdminFetch('admin_investor_deposit_get_document', { depositId });
+  if (!data.success) { showToast(data.error || 'No se pudo abrir el comprobante.'); return; }
+  window.open(data.url, '_blank');
+}
+
+async function reviewInvestorDeposit(depositId, decision, btn) {
+  if (decision === 'rejected' && !confirm('¿Rechazar este comprobante?')) return;
+  if (btn) btn.disabled = true;
+  const data = await clubAdminFetch('admin_investor_deposit_review', { depositId, decision });
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo procesar el comprobante.'); return; }
+  loadAdminInvestors();
+}
+
+async function setInvestorStatus(investorId, status, btn) {
+  const label = status === 'withdrawn' ? 'retirado' : 'completado';
+  if (!confirm(`¿Marcar este inversionista como ${label}? Esto le quita el acceso al dashboard de inversionista.`)) return;
+  if (btn) btn.disabled = true;
+  const data = await clubAdminFetch('admin_investor_set_status', { investorId, status });
+  if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo actualizar el estado.'); return; }
+  loadAdminInvestors();
+}
+
+function renderInvestorMemberList(filter) {
+  const f = (filter || '').toLowerCase();
+  const filtered = adminMemberData.filter(m =>
+    !f || m.name?.toLowerCase().includes(f) || m.email?.toLowerCase().includes(f));
+  return filtered.map(m => `
+    <div class="pipe-card" style="cursor:pointer;padding:10px 12px;" onclick="pickInvestorMember('${m.id}','${escapeHtml(m.name)}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><strong>${escapeHtml(m.name)}</strong><div style="font-size:12.5px;color:var(--muted);">${escapeHtml(m.email)}</div></div>
+        <span class="badge bb">${escapeHtml(m.plan)}</span>
+      </div>
+    </div>`).join('') || '<div style="color:var(--muted);text-align:center;padding:16px;">Sin resultados.</div>';
+}
+
+function filterInvestorMemberList(value) {
+  document.getElementById('investor-member-list').innerHTML = renderInvestorMemberList(value);
+}
+
+async function openAddInvestorModal() {
+  if (!adminMemberData.length) {
+    const data = await clubAdminFetch('admin_member_list');
+    if (data.success) adminMemberData = data.members;
+  }
+  showSimpleModal('Agregar inversionista — Paso 1: elegí el miembro', `
+    <input class="search-input" id="investor-member-search" placeholder="Buscar por nombre o email..." style="width:100%;margin-bottom:10px;" oninput="filterInvestorMemberList(this.value)"/>
+    <div id="investor-member-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;">${renderInvestorMemberList('')}</div>
+  `);
+}
+
+function pickInvestorMember(memberId, memberName) {
+  addInvestorSelectedMemberId = memberId;
+  const today = new Date().toISOString().slice(0, 10);
+  showSimpleModal(`Agregar inversionista — ${memberName}`, `
+    <div class="modal-field"><label>FECHA DE INICIO</label><input id="investor-start-date" type="date" class="search-input" style="width:100%;" value="${today}"/></div>
+    <div class="modal-field"><label>MONTO MENSUAL (USD)</label><input id="investor-monthly" type="number" class="search-input" style="width:100%;" value="1000"/></div>
+    <div class="modal-field"><label>PLAZO (MESES)</label><input id="investor-term" type="number" class="search-input" style="width:100%;" value="24"/></div>
+    <div class="modal-field"><label>RETORNO FIJO AL COMPLETAR (USD)</label><input id="investor-fixed-return" type="number" class="search-input" style="width:100%;" value="6000"/></div>
+    <div id="investor-create-error" style="display:none;color:var(--red);font-size:13.5px;margin-bottom:8px;"></div>
+    <button class="btn-red" style="width:100%;padding:10px;" onclick="confirmCreateInvestor()">Confirmar</button>
+  `);
+}
+
+async function confirmCreateInvestor() {
+  const startDate = document.getElementById('investor-start-date')?.value;
+  const monthlyAmount = Number(document.getElementById('investor-monthly')?.value);
+  const termMonths = Number(document.getElementById('investor-term')?.value);
+  const fixedReturn = Number(document.getElementById('investor-fixed-return')?.value);
+  const errEl = document.getElementById('investor-create-error');
+  if (!startDate || !Number.isFinite(monthlyAmount) || !Number.isFinite(termMonths) || !Number.isFinite(fixedReturn)) {
+    errEl.textContent = 'Completá todos los campos con valores válidos.'; errEl.style.display = 'block'; return;
+  }
+  const data = await clubAdminFetch('admin_investor_create', { profileId: addInvestorSelectedMemberId, startDate, monthlyAmount, termMonths, fixedReturn });
+  if (!data.success) { errEl.textContent = data.error || 'No se pudo crear el inversionista.'; errEl.style.display = 'block'; return; }
+  closeSimpleModal();
+  showToast('Inversionista agregado.', 'success');
+  loadAdminInvestors();
 }
 
 // ── THEME ────────────────────────────────────────────────
