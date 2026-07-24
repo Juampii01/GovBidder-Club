@@ -1,5 +1,5 @@
 // api/opportunities.js
-// Backend para SAM.gov — Oportunidades de contratos gubernamentales
+// Backend para GovBidder Connect — Oportunidades de contratos gubernamentales
 
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember } from './_lib/auth.js';
@@ -9,6 +9,52 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
+
+const US_STATE_ABBR = {
+  alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA',
+  colorado: 'CO', connecticut: 'CT', delaware: 'DE', florida: 'FL', georgia: 'GA',
+  hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA',
+  kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD',
+  massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO',
+  montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ',
+  'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH',
+  oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT',
+  virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY'
+};
+
+// "Los Angeles, CA" / "Los Angeles, California" → { city, state }
+function parsePlace(place) {
+  if (!place || typeof place !== 'string') return { city: null, state: null };
+  const parts = place.split(',').map(p => p.trim()).filter(Boolean);
+  if (parts.length < 2) return { city: parts[0] || null, state: null };
+  const city = parts.slice(0, -1).join(', ');
+  const rawState = parts[parts.length - 1];
+  const state = rawState.length === 2 ? rawState.toUpperCase() : (US_STATE_ABBR[rawState.toLowerCase()] || rawState);
+  return { city, state };
+}
+
+function mapOpportunity(o) {
+  const { city, state } = parsePlace(o.placeOfPerformance);
+  const description = typeof o.description === 'string' && !/^https?:\/\//i.test(o.description)
+    ? o.description.substring(0, 800)
+    : null;
+  return {
+    id: o.id,
+    title: o.title,
+    organization: o.agency?.name || null,
+    type: o.noticeType,
+    naicsCode: o.naicsCode,
+    naicsDescription: null,
+    deadline: o.dueAt,
+    postedDate: o.postedAt,
+    state,
+    city,
+    setAside: o.setAside,
+    description,
+    link: o.officialUrl
+  };
+}
 
 export default async function handler(req, res) {
   // Handle CORS preflight
@@ -21,11 +67,11 @@ export default async function handler(req, res) {
   const { error: authErr, status: authStatus } = await requireActiveMember(supabase, body.token);
   if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
 
-  const SAM_KEY = process.env.SAM_API_KEY;
+  const GBC_KEY = process.env.GBC_API_KEY;
 
-  if (!SAM_KEY) {
+  if (!GBC_KEY) {
     return res.status(500).json({
-      error: 'SAM_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.'
+      error: 'GBC_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.'
     });
   }
 
@@ -37,58 +83,41 @@ export default async function handler(req, res) {
       limit = 25
     } = body;
 
-    // Fechas: últimos 90 días
-    const now = new Date();
-    const from = new Date(now - 90 * 24 * 60 * 60 * 1000);
-    const fmt = d =>
-      `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+    const filterByState = state && state !== 'ALL';
+    // La API de GovBidder Connect no soporta filtro por estado — traemos un lote más
+    // grande y filtramos placeOfPerformance en memoria cuando se pide un estado puntual.
+    const fetchLimit = filterByState ? 100 : limit;
 
     const params = new URLSearchParams({
-      api_key: SAM_KEY,
-      keyword,
-      naicsCode: naics,
-      postedFrom: fmt(from),
-      postedTo: fmt(now),
-      limit,
-      offset: 0
+      naics,
+      q: keyword,
+      status: 'ACTIVE',
+      limit: String(fetchLimit)
     });
 
-    if (state && state !== 'ALL') {
-      params.set('placeOfPerformanceState', state);
-    }
-
-    const url = `https://api.sam.gov/opportunities/v2/search?${params}`;
-    const response = await fetch(url);
+    const response = await fetch(`https://www.govbidderconnect.com/api/v1/opportunities?${params}`, {
+      headers: { Authorization: `Bearer ${GBC_KEY}` }
+    });
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`SAM.gov error ${response.status}: ${errText.substring(0, 200)}`);
+      throw new Error(`GovBidder Connect error ${response.status}: ${errText.substring(0, 200)}`);
     }
 
     const data = await response.json();
+    let opportunities = (data.items || []).map(mapOpportunity);
+    let total = data.total || opportunities.length;
 
-    return res.status(200).json({
-      success: true,
-      total: data.totalRecords || 0,
-      opportunities: (data.opportunitiesData || []).map(o => ({
-        id: o.noticeId,
-        title: o.title,
-        organization: o.fullParentPathName || o.organizationName,
-        type: o.type || o.baseType,
-        naicsCode: o.naicsCode,
-        naicsDescription: o.naicsDescription,
-        deadline: o.responseDeadLine,
-        postedDate: o.postedDate,
-        state: o.placeOfPerformance?.state?.name || o.placeOfPerformance?.state?.code,
-        city: o.placeOfPerformance?.city?.name,
-        setAside: o.setAside,
-        description: o.description?.substring(0, 800),
-        link: o.uiLink || `https://sam.gov/opp/${o.noticeId}/view`
-      }))
-    });
+    if (filterByState) {
+      opportunities = opportunities.filter(o => o.state === state);
+      total = opportunities.length;
+      opportunities = opportunities.slice(0, limit);
+    }
+
+    return res.status(200).json({ success: true, total, opportunities });
 
   } catch (error) {
-    console.error('SAM.gov error:', error.message);
+    console.error('GovBidder Connect error:', error.message);
     return res.status(500).json({
       success: false,
       error: error.message

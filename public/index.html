@@ -798,7 +798,7 @@ tr:hover td{background:var(--line-soft) !important;}
         <div class="kpi-card">
           <div class="kpi-top"><div class="kpi-label">LIVE OPPS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg></span></div>
           <div class="kpi-value" id="kpi-opps" style="color:var(--faint);">—</div>
-          <div class="kpi-delta"><span class="kpi-dot"></span><span id="kpi-opps-d">SAM.gov</span></div>
+          <div class="kpi-delta"><span class="kpi-dot"></span><span id="kpi-opps-d">GovBidder Connect</span></div>
         </div>
         <div class="kpi-card">
           <div class="kpi-top"><div class="kpi-label">GRANTS</div><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span></div>
@@ -833,8 +833,8 @@ tr:hover td{background:var(--line-soft) !important;}
       </div>
       <div class="grid-2">
         <div class="card">
-          <div class="card-title"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Oportunidades Recientes <span class="sub" id="home-opps-src">SAM.gov</span></div>
-          <div id="home-opps"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando SAM.gov...</div></div></div>
+          <div class="card-title"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Oportunidades Recientes <span class="sub" id="home-opps-src">GovBidder Connect</span></div>
+          <div id="home-opps"><div class="loading"><div class="spinner"></div><div class="loading-text">Cargando GovBidder Connect...</div></div></div>
         </div>
         <div class="card" style="padding:18px 0;">
           <div class="card-title" style="padding-left:18px;padding-right:18px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--gold)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> Grants Recientes <span class="sub" id="home-grants-src">20 live</span></div>
@@ -857,7 +857,7 @@ tr:hover td{background:var(--line-soft) !important;}
         <input class="search-input" id="opp-kw" placeholder="Keyword (ej. janitorial, cleaning...)" value="janitorial"/>
         <select class="gf-select" id="opp-state">
           <option value="NJ" selected>New Jersey</option><option value="NY">New York</option>
-          <option value="FL">Florida</option><option value="TX">Texas</option><option value="">All States</option>
+          <option value="FL">Florida</option><option value="TX">Texas</option><option value="ALL">All States</option>
         </select>
         <select class="gf-select" id="opp-naics">
           <option value="561720" selected>561720 Janitorial</option>
@@ -865,7 +865,7 @@ tr:hover td{background:var(--line-soft) !important;}
           <option value="236220">236220 Construction</option>
           <option value="">All NAICS</option>
         </select>
-        <button class="btn-red" onclick="fetchOpps()">🔍 Buscar en SAM.gov</button>
+        <button class="btn-red" onclick="fetchOpps()">🔍 Buscar oportunidades</button>
       </div>
       <div id="opps-list"><div class="loading"><div class="spinner"></div><div class="loading-text">Listo para buscar...</div></div></div>
     </div>
@@ -1964,7 +1964,7 @@ tr:hover td{background:var(--line-soft) !important;}
     <div id="modal-body"></div>
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
       <button id="modal-support" class="btn-blue">🎯 Soporte</button>
-      <button id="modal-link" class="btn-outline">🔗 Ver en SAM.gov</button>
+      <button id="modal-link" class="btn-outline">🔗 Ver oportunidad</button>
     </div>
   </div>
 </div>
@@ -1996,7 +1996,7 @@ const TITLES = {
 };
 const SUBTITLES = {
   home:'Panorama de tu actividad de contratación pública', tools:'Accesos rápidos y utilidades GovBidder',
-  market:'Datos históricos de contratación por NAICS y estado', opps:'Licitaciones activas en SAM.gov',
+  market:'Datos históricos de contratación por NAICS y estado', opps:'Licitaciones activas vía GovBidder Connect',
   grants:'Subvenciones federales activas en Grants.gov', codes:'NAICS, PSC y NIGP explicados y cruzados',
   geo:'Compradores por estado, distrito escolar y condado', compete:'Quién está ganando en tu mercado',
   support:'Soporte dedicado para miembros',
@@ -2518,7 +2518,7 @@ async function fetchOpps() {
   const kw = document.getElementById('opp-kw')?.value    || 'janitorial';
   const st = document.getElementById('opp-state')?.value || 'NJ';
   const nc = document.getElementById('opp-naics')?.value || '561720';
-  setLoading('opps-list', 'Buscando en SAM.gov...');
+  setLoading('opps-list', 'Buscando oportunidades...');
   try {
     const res  = await fetch(`${API}/opportunities`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2530,13 +2530,13 @@ async function fetchOpps() {
     document.getElementById('kpi-opps').textContent    = data.total || liveOpps.length;
     document.getElementById('kpi-opps-d').textContent  = `${liveOpps.length} resultados live`;
     document.getElementById('nb-opps').textContent     = liveOpps.length;
-    document.getElementById('home-opps-src').textContent = `${liveOpps.length} live • SAM.gov`;
+    document.getElementById('home-opps-src').textContent = `${liveOpps.length} live • GovBidder Connect`;
     document.getElementById('opps-list').innerHTML = liveOpps.length
       ? liveOpps.map(o => oppCard(o)).join('')
       : noResultsState(`Sin resultados para "${escapeHtml(kw)}" en ${escapeHtml(st)}.`);
     document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
   } catch(e) {
-    const err = e.message.includes('SAM_API_KEY') ? samKeyEmptyState() : `<div class="error-box">${e.message}</div>`;
+    const err = e.message.includes('GBC_API_KEY') ? samKeyEmptyState() : `<div class="error-box">${e.message}</div>`;
     document.getElementById('opps-list').innerHTML  = err;
     document.getElementById('home-opps').innerHTML  = err;
   }
@@ -2571,8 +2571,8 @@ function noResultsState(msg) {
 function samKeyEmptyState() {
   return `<div class="empty-state">
     <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
-    <div class="empty-title">Falta configurar tu API key de SAM.gov</div>
-    <div class="empty-body">La variable <span class="chip-mono">SAM_API_KEY</span> no está definida. Agregala en Vercel → Settings → Environment Variables para ver oportunidades en vivo.</div>
+    <div class="empty-title">Falta configurar tu API key de GovBidder Connect</div>
+    <div class="empty-body">La variable <span class="chip-mono">GBC_API_KEY</span> no está definida. Agregala en Vercel → Settings → Environment Variables para ver oportunidades en vivo.</div>
     <a href="https://vercel.com" target="_blank" class="btn-red" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">Configurar ahora<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
   </div>`;
 }
@@ -3028,8 +3028,8 @@ async function runAI(page, btn) {
   el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
   if (btn) { btn.classList.add('spinning'); btn.disabled = true; }
   const prompts = {
-    home:    `Soy negocio cleaning/janitorial NJ plan Legacy GovBidder. ${liveOpps.length} opps en SAM.gov, ${liveGrants.length} grants activos. Dame brief estratégico de hoy.`,
-    opps:    `Tengo ${liveOpps.length} oportunidades live SAM.gov cleaning NJ. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
+    home:    `Soy negocio cleaning/janitorial NJ plan Legacy GovBidder. ${liveOpps.length} opps vía GovBidder Connect, ${liveGrants.length} grants activos. Dame brief estratégico de hoy.`,
+    opps:    `Tengo ${liveOpps.length} oportunidades live vía GovBidder Connect cleaning NJ. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
     grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy cleaning/janitorial NJ bajo 10 empleados plan Legacy. ¿Cuáles aplican?`,
     market:  `Analiza mercado contratos gubernamentales cleaning/janitorial NAICS 561720 NJ 2024. Tendencias, top buyers y oportunidades.`,
     compete: `Analiza la competencia de contratistas gubernamentales cleaning/janitorial NAICS 561720 en NJ 2024. ¿Quiénes son los principales competidores, qué participación de mercado tienen y cómo puede diferenciarse un negocio chico plan Legacy?`
