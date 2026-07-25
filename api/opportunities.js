@@ -81,22 +81,18 @@ export default async function handler(req, res) {
       keyword = '',
       state = 'NJ',
       naics = '561720',
-      limit = 60
+      limit = 100
     } = body;
 
     const filterByState = state && state !== 'ALL';
-    // La API de GovBidder Connect no soporta filtro por estado — traemos un lote más
-    // grande y filtramos placeOfPerformance en memoria cuando se pide un estado puntual.
-    const fetchLimit = filterByState ? Math.max(limit * 4, 100) : limit;
-
-    // GovBidder Connect ignora cualquier parámetro de tamaño de página (limit/perPage/
-    // pageSize probados) y siempre devuelve 20 resultados por página — paginamos en
-    // paralelo para juntar los que hagan falta, con un techo razonable de páginas.
-    const PAGE_SIZE = 20;
-    const pagesNeeded = Math.min(Math.ceil(fetchLimit / PAGE_SIZE), 10);
+    // GovBidder Connect soporta perPage (máximo 100). No filtra por estado — cuando se pide
+    // un estado puntual pedimos 2 páginas de 100 en paralelo para tener margen suficiente
+    // y filtrar placeOfPerformance en memoria.
+    const perPage = Math.min(limit, 100);
+    const pagesNeeded = filterByState ? 2 : 1;
 
     const fetchPage = async (page) => {
-      const params = new URLSearchParams({ naics, status: 'ACTIVE', page: String(page) });
+      const params = new URLSearchParams({ naics, status: 'ACTIVE', perPage: String(filterByState ? 100 : perPage), page: String(page) });
       if (keyword) params.set('q', keyword);
       const response = await fetch(`https://www.govbidderconnect.com/api/v1/opportunities?${params}`, {
         headers: { Authorization: `Bearer ${GBC_KEY}` }
