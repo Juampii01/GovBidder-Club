@@ -78,42 +78,53 @@ export default async function handler(req, res) {
 
   try {
     const {
-      keyword = 'janitorial',
+      keyword = '',
       state = 'NJ',
       naics = '561720',
-      limit = 25
+      limit = 60
     } = body;
 
     const filterByState = state && state !== 'ALL';
     // La API de GovBidder Connect no soporta filtro por estado — traemos un lote más
     // grande y filtramos placeOfPerformance en memoria cuando se pide un estado puntual.
-    const fetchLimit = filterByState ? 100 : limit;
+    const fetchLimit = filterByState ? Math.max(limit * 4, 100) : limit;
 
-    const params = new URLSearchParams({
-      naics,
-      q: keyword,
-      status: 'ACTIVE',
-      limit: String(fetchLimit)
-    });
+    // GovBidder Connect ignora cualquier parámetro de tamaño de página (limit/perPage/
+    // pageSize probados) y siempre devuelve 20 resultados por página — paginamos en
+    // paralelo para juntar los que hagan falta, con un techo razonable de páginas.
+    const PAGE_SIZE = 20;
+    const pagesNeeded = Math.min(Math.ceil(fetchLimit / PAGE_SIZE), 10);
 
-    const response = await fetch(`https://www.govbidderconnect.com/api/v1/opportunities?${params}`, {
-      headers: { Authorization: `Bearer ${GBC_KEY}` }
-    });
+    const fetchPage = async (page) => {
+      const params = new URLSearchParams({ naics, status: 'ACTIVE', page: String(page) });
+      if (keyword) params.set('q', keyword);
+      const response = await fetch(`https://www.govbidderconnect.com/api/v1/opportunities?${params}`, {
+        headers: { Authorization: `Bearer ${GBC_KEY}` }
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`GovBidder Connect error ${response.status}: ${errText.substring(0, 200)}`);
+      }
+      return response.json();
+    };
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`GovBidder Connect error ${response.status}: ${errText.substring(0, 200)}`);
+    const pages = await Promise.all(Array.from({ length: pagesNeeded }, (_, i) => fetchPage(i + 1)));
+    const seen = new Set();
+    let opportunities = [];
+    for (const page of pages) {
+      for (const item of page.items || []) {
+        if (seen.has(item.id)) continue;
+        seen.add(item.id);
+        opportunities.push(mapOpportunity(item));
+      }
     }
-
-    const data = await response.json();
-    let opportunities = (data.items || []).map(mapOpportunity);
-    let total = data.total || opportunities.length;
+    let total = pages[0]?.total || opportunities.length;
 
     if (filterByState) {
       opportunities = opportunities.filter(o => o.state === state);
       total = opportunities.length;
-      opportunities = opportunities.slice(0, limit);
     }
+    opportunities = opportunities.slice(0, limit);
 
     return res.status(200).json({ success: true, total, opportunities });
 
