@@ -3943,7 +3943,11 @@ async function loadInvestorStatus() {
 function renderInvestorSchedule(data) {
   const termMonths = data.investor.termMonths;
   const approvedCount = data.paymentsMade;
-  const pendingCount = data.deposits.filter(d => d.status === 'pending').length;
+  // Igual que los pagos aprobados: se cuenta por monto acumulado, no por cantidad de
+  // comprobantes (un pendiente de $3,000 son 3 cuotas "en revisión", no 1).
+  const monthlyAmount = Number(data.investor.monthlyAmount) || 1;
+  const pendingTotal = data.deposits.filter(d => d.status === 'pending').reduce((s, d) => s + Number(d.amount), 0);
+  const pendingCount = Math.min(termMonths - approvedCount, Math.floor(pendingTotal / monthlyAmount));
   const expectedPayments = data.expectedPayments;
   const row = document.getElementById('inv-sched-row');
   let html = '';

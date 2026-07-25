@@ -79,13 +79,20 @@ function expectedPaymentsSoFar(startDateStr, termMonths) {
 function investorSummary(investor, deposits) {
   const approved = (deposits || []).filter(d => d.status === 'approved');
   const totalApproved = approved.reduce((s, d) => s + Number(d.amount), 0);
-  const paymentsMade = approved.length;
+  const monthlyAmount = Number(investor.monthly_amount) || 1;
+  // Los pagos se cuentan por monto acumulado, no por cantidad de comprobantes: un solo
+  // depósito de $3,000 cuenta como 3 cuotas, no como "1 pago".
+  const paymentsMade = Math.min(investor.term_months, Math.floor(totalApproved / monthlyAmount));
   const expectedPayments = expectedPaymentsSoFar(investor.start_date, investor.term_months);
   const behind = Math.max(0, expectedPayments - paymentsMade);
-  const progressPct = Math.min(100, Math.round((paymentsMade / investor.term_months) * 1000) / 10);
-  const vestedFraction = Math.min(1, paymentsMade / investor.term_months);
+  // El capital y la ganancia maduran con el tiempo real del plazo (24 meses), no con la
+  // velocidad de pago — pagar por adelantado no acelera el desbloqueo. maturedMonths es
+  // el mínimo entre lo efectivamente pagado y los meses que ya transcurrieron.
+  const maturedMonths = Math.min(expectedPayments, paymentsMade);
+  const progressPct = Math.min(100, Math.round((maturedMonths / investor.term_months) * 1000) / 10);
+  const vestedFraction = Math.min(1, maturedMonths / investor.term_months);
   const accruedProfit = Math.round(investor.fixed_return * vestedFraction * 100) / 100;
-  const projectedTotal = investor.term_months * Number(investor.monthly_amount) + Number(investor.fixed_return);
+  const projectedTotal = investor.term_months * monthlyAmount + Number(investor.fixed_return);
   return { totalApproved, paymentsMade, expectedPayments, behind, progressPct, accruedProfit, projectedTotal };
 }
 
