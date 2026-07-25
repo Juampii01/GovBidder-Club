@@ -2519,6 +2519,23 @@ function onGlobalFilter() {
   };
   if (stateKpi)  stateKpi.textContent  = stateVal || '—';
   if (stateDesc) stateDesc.textContent = STATE_NAMES[stateVal] || stateVal;
+
+  // ── Sincronizar los filtros de búsqueda de Opportunities con el perfil real del
+  // miembro (antes quedaban fijos en NJ/561720 para cualquier cuenta) ──
+  const oppState = document.getElementById('opp-state');
+  if (oppState && stateVal && [...oppState.options].some(o => o.value === stateVal)) {
+    oppState.value = stateVal;
+  }
+  const oppNaics = document.getElementById('opp-naics');
+  if (oppNaics && naicsVal) {
+    if (![...oppNaics.options].some(o => o.value === naicsVal)) {
+      const opt = document.createElement('option');
+      opt.value = naicsVal;
+      opt.textContent = `${naicsVal} (tu perfil)`;
+      oppNaics.insertBefore(opt, oppNaics.firstChild);
+    }
+    oppNaics.value = naicsVal;
+  }
 }
 
 // ── SAM.GOV ──────────────────────────────────────────────
