@@ -47,7 +47,7 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 800,
         system: `Eres el AI del GovBidder Command Center, el sistema privado de inteligencia 
 de GovBidder Club fundado por Santo González. Eres experto en contratos gubernamentales 
