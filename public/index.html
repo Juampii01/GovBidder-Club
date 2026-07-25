@@ -2761,27 +2761,36 @@ function fmtAmount(n) {
   return (n == null) ? 'No revelado' : `$${Number(n).toLocaleString('en-US')}`;
 }
 
+// Los montos de adjudicación pueden llegar a los miles de millones (IDVs, techos
+// de contratos plurianuales) — mostrarlos en formato compacto (ej. $51.3B) evita que
+// se corten o se amontonen en las tarjetas; el monto exacto queda en el modal.
+function fmtAmountCompact(n) {
+  if (n == null) return 'No revelado';
+  return '$' + new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
+}
+
 function oppCard(o) {
   const isAwarded = o.resultType === 'awarded';
   const dateVal = isAwarded ? o.awardedDate : o.deadline;
   const dl = dateVal ? new Date(dateVal).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'N/A';
   const urgent = !isAwarded && o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
-  const amountStr = isAwarded ? fmtAmount(o.amount) : null;
+  const amountFull    = isAwarded ? fmtAmount(o.amount) : null;
+  const amountCompact = isAwarded ? fmtAmountCompact(o.amount) : null;
   const typeLabel = OPP_TYPE_LABELS[o.resultType] || o.type || '—';
-  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountStr,vendor:o.vendor||''});
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountFull,vendor:o.vendor||''});
   return `<div class="opp-card" onclick='openModal(${escapeHtml(d)})'>
     <div class="opp-title">${escapeHtml(o.title)||'Sin título'}</div>
     <div class="opp-meta">
       <span><strong>${escapeHtml((o.organization||'—').substring(0,45))}</strong></span>
       <span>${isAwarded ? escapeHtml((o.vendor||'—').substring(0,30)) : (escapeHtml(o.state)||'—')}</span>
-      <span><strong style="color:${urgent?'var(--red)':'var(--ink)'}">${isAwarded && amountStr!=='No revelado' ? amountStr : dl}</strong></span>
+      <span><strong style="color:${urgent?'var(--red)':'var(--ink)'};white-space:nowrap;" title="${isAwarded?escapeHtml(amountFull):''}">${isAwarded && amountCompact!=='No revelado' ? amountCompact : dl}</strong></span>
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
       <span class="badge ${OPP_TYPE_BADGES[o.resultType]||'bb'}">${escapeHtml(typeLabel)}</span>
       ${o.naicsCode?`<span class="badge bm mono">NAICS ${escapeHtml(o.naicsCode)}</span>`:''}
       ${o.setAside?`<span class="badge bg">${escapeHtml(o.setAside)}</span>`:''}
       ${isAwarded
-        ? `<span class="badge bm mono" style="margin-left:auto;">${amountStr}</span>`
+        ? `<span class="badge bm mono" style="margin-left:auto;white-space:nowrap;" title="${escapeHtml(amountFull)}">${amountCompact}</span>`
         : `<span style="margin-left:auto;font-size:13px;color:var(--red);font-weight:700;">Ver detalle →</span>`}
     </div>
   </div>`;
@@ -2792,16 +2801,17 @@ function oppRow(o) {
   const dateVal = isAwarded ? o.awardedDate : o.deadline;
   const dl = dateVal ? new Date(dateVal).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
   const urgent = !isAwarded && o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
-  const amountStr = isAwarded ? fmtAmount(o.amount) : null;
+  const amountFull    = isAwarded ? fmtAmount(o.amount) : null;
+  const amountCompact = isAwarded ? fmtAmountCompact(o.amount) : null;
   const typeLabel = OPP_TYPE_LABELS[o.resultType] || o.type || '—';
-  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountStr,vendor:o.vendor||''});
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountFull,vendor:o.vendor||''});
   return `<a href="#" onclick='openModal(${escapeHtml(d)});return false;' class="grant-row" style="text-decoration:none;">
     <span class="grant-row-dot" style="background:${urgent?'var(--red)':'var(--navy)'};"></span>
     <div style="flex:1;min-width:0;">
       <div class="grant-row-title">${escapeHtml((o.title||'').substring(0,60))}</div>
       <div class="grant-row-tag">${escapeHtml((o.organization||'OPORTUNIDAD').substring(0,40))}</div>
     </div>
-    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400};flex-shrink:0;">${isAwarded?amountStr:dl}</span>
+    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400};flex-shrink:0;" title="${isAwarded?escapeHtml(amountFull):''}">${isAwarded?amountCompact:dl}</span>
   </a>`;
 }
 
