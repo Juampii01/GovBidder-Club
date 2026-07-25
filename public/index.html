@@ -92,6 +92,16 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .gf-chip svg.gf-chip-chevron{position:absolute;right:8px;width:13px;height:13px;stroke:var(--faint);pointer-events:none;}
 .gf-chip select.gf-select{appearance:none;-webkit-appearance:none;padding-left:26px;padding-right:24px;}
 .gf-chip input.gf-select{padding-left:9px;padding-right:9px;}
+.opp-filter-chip{position:relative;display:flex;align-items:center;gap:3px;background:var(--line-soft);border-radius:10px;padding:0 2px 0 0;}
+.opp-filter-chip .gf-select{background:transparent;border-color:transparent;}
+.opp-filter-chip .gf-select:hover,.opp-filter-chip .gf-select:focus{border-color:#d3d7de;}
+.opp-filter-chip .chip-remove{cursor:pointer;background:none;border:none;color:var(--faint);font-size:13px;line-height:1;padding:4px 7px;border-radius:7px;font-family:inherit;}
+.opp-filter-chip .chip-remove:hover{color:var(--red);background:rgba(0,0,0,.05);}
+.opp-add-filter{position:relative;}
+.opp-add-filter-menu{position:absolute;top:calc(100% + 4px);left:0;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);z-index:60;min-width:190px;padding:6px;display:none;}
+.opp-add-filter-menu.open{display:block;}
+.opp-add-filter-menu button{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:7px;font-size:14px;font-family:inherit;color:var(--ink);cursor:pointer;}
+.opp-add-filter-menu button:hover{background:var(--line-soft);}
 .gf-chip input.gf-select.mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
 .topbar-sep{width:1px;height:22px;background:var(--line);flex-shrink:0;}
 .crm-btn{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:15.5px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(196,42,61,.25);transition:transform .15s ease,box-shadow .15s ease;}
@@ -707,7 +717,7 @@ tr:hover td{background:var(--line-soft) !important;}
   <div class="nav-item" onclick="nav(this,'market')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>Market Intelligence</div>
   <div class="nav-item" onclick="nav(this,'tools')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg></span>Herramientas</div>
   <div class="nav-section">FIND</div>
-  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></span>Opportunities<span class="nav-badge" id="nb-opps">—</span></div>
+  <div class="nav-item" onclick="nav(this,'opps')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></span>GovBidder Connect<span class="nav-badge" id="nb-opps">—</span></div>
   <div class="nav-item" onclick="nav(this,'grants')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>Grants Hub<span class="nav-badge" id="nb-grants">—</span></div>
   <div class="nav-item" onclick="nav(this,'codes')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span>Code Intelligence</div>
   <div class="nav-item" onclick="nav(this,'geo')"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg></span>Buyer Geography</div>
@@ -853,27 +863,76 @@ tr:hover td{background:var(--line-soft) !important;}
         </div>
         <div class="ai-response" id="ai-opps">Busca oportunidades y luego haz clic en Analizar.</div>
       </div>
+
+      <!-- TABS: tipo de resultado -->
+      <div style="display:flex;gap:0;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;overflow-y:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);" id="opp-tabs">
+        <div class="geo-tab active" data-rt="all"          onclick="setOppTab('all')">All</div>
+        <div class="geo-tab"        data-rt="active"        onclick="setOppTab('active')">📋 Opportunities</div>
+        <div class="geo-tab"        data-rt="pending_award" onclick="setOppTab('pending_award')">⏳ Pending Award</div>
+        <div class="geo-tab"        data-rt="awarded"       onclick="setOppTab('awarded')">🏆 Awarded</div>
+      </div>
+
       <div class="search-bar">
-        <input class="search-input" id="opp-kw" placeholder="Keyword (ej. janitorial, cleaning...) — opcional"/>
-        <select class="gf-select" id="opp-state"><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Washington DC</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ" selected>New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="PR">Puerto Rico</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option><option value="ALL">All States</option></select>
-        <select class="gf-select" id="opp-naics">
-          <option value="561720" selected>561720 Janitorial</option>
-          <option value="561730">561730 Landscaping</option>
-          <option value="541511">541511 Software Development</option>
-          <option value="541512">541512 IT/Systems Design</option>
-          <option value="541611">541611 Management Consulting</option>
-          <option value="541990">541990 Professional Services</option>
-          <option value="236220">236220 Commercial Construction</option>
-          <option value="238210">238210 Electrical</option>
-          <option value="238220">238220 Plumbing/HVAC</option>
-          <option value="484121">484121 Trucking/Freight</option>
-          <option value="561612">561612 Security Services</option>
-          <option value="722310">722310 Food Service</option>
-          <option value="811310">811310 Equipment Maintenance</option>
-          <option value="337214">337214 Office Furniture</option>
-          <option value="">All NAICS</option>
-        </select>
-        <button class="btn-red" onclick="fetchOpps()">🔍 Buscar oportunidades</button>
+        <input class="search-input" id="opp-kw" placeholder="Keyword (ej. janitorial, cleaning...) — opcional" onkeydown="if(event.key==='Enter')fetchOpps()"/>
+
+        <div class="opp-filter-chip" id="opp-state-wrap">
+          <select class="gf-select" id="opp-state" onchange="fetchOpps()"><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Washington DC</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ" selected>New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="PR">Puerto Rico</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option><option value="ALL">All States</option></select>
+          <button class="chip-remove" onclick="removeOppFilter('state')" title="Quitar filtro">✕</button>
+        </div>
+
+        <div class="opp-filter-chip" id="opp-naics-wrap">
+          <select class="gf-select" id="opp-naics" onchange="fetchOpps()">
+            <option value="561720" selected>561720 Janitorial</option>
+            <option value="561730">561730 Landscaping</option>
+            <option value="541511">541511 Software Development</option>
+            <option value="541512">541512 IT/Systems Design</option>
+            <option value="541611">541611 Management Consulting</option>
+            <option value="541990">541990 Professional Services</option>
+            <option value="236220">236220 Commercial Construction</option>
+            <option value="238210">238210 Electrical</option>
+            <option value="238220">238220 Plumbing/HVAC</option>
+            <option value="484121">484121 Trucking/Freight</option>
+            <option value="561612">561612 Security Services</option>
+            <option value="722310">722310 Food Service</option>
+            <option value="811310">811310 Equipment Maintenance</option>
+            <option value="337214">337214 Office Furniture</option>
+            <option value="">All NAICS</option>
+          </select>
+          <button class="chip-remove" onclick="removeOppFilter('naics')" title="Quitar filtro">✕</button>
+        </div>
+
+        <div class="opp-filter-chip" id="opp-level-wrap" style="display:none;">
+          <select class="gf-select" id="opp-level" onchange="fetchOpps()">
+            <option value="all">Federal + Estatal/Local</option>
+            <option value="federal">Solo Federal</option>
+            <option value="state">Solo Estatal/Local</option>
+          </select>
+          <button class="chip-remove" onclick="removeOppFilter('level')" title="Quitar filtro">✕</button>
+        </div>
+
+        <div class="opp-filter-chip" id="opp-setaside-wrap" style="display:none;">
+          <select class="gf-select" id="opp-setaside" onchange="fetchOpps()">
+            <option value="">Cualquier Set-Aside</option>
+            <option value="8(a)">8(a)</option>
+            <option value="HUBZone">HUBZone</option>
+            <option value="Women-Owned">Women-Owned (WOSB)</option>
+            <option value="Veteran">Veteran-Owned (VOSB)</option>
+            <option value="Small Business">Small Business</option>
+          </select>
+          <button class="chip-remove" onclick="removeOppFilter('setAside')" title="Quitar filtro">✕</button>
+        </div>
+
+        <div class="opp-filter-chip" id="opp-minamount-wrap" style="display:none;">
+          <input class="search-input" style="max-width:130px;" type="number" min="0" step="1000" id="opp-min-amount" placeholder="Monto mín. $" onkeydown="if(event.key==='Enter')fetchOpps()"/>
+          <button class="chip-remove" onclick="removeOppFilter('minAmount')" title="Quitar filtro">✕</button>
+        </div>
+
+        <div class="opp-add-filter" id="opp-add-filter-wrap">
+          <button class="btn-dark" type="button" onclick="toggleOppAddFilterMenu()">+ Agregar filtro</button>
+          <div class="opp-add-filter-menu" id="opp-add-filter-menu"></div>
+        </div>
+
+        <button class="btn-red" onclick="fetchOpps()">🔍 Buscar</button>
       </div>
       <div id="opps-list"><div class="loading"><div class="spinner"></div><div class="loading-text">Listo para buscar...</div></div></div>
     </div>
@@ -1996,7 +2055,7 @@ let liveOpps = [], liveGrants = [], currentMember = null, allStates = [], allCou
 // ── NAVIGATION ────────────────────────────────────────────
 const TITLES = {
   home:'Command Center', tools:'Herramientas GovBidder', market:'Market Intelligence',
-  opps:'Contract Opportunities', grants:'Grant Intelligence',
+  opps:'GovBidder Connect', grants:'Grant Intelligence',
   codes:'Code Intelligence', geo:'Buyer Geography',
   compete:'Competitive Intel',
   support:'Support Desk', alliance:'Funding Access', taskwork:'Task Work — Mis Trabajos',
@@ -2004,7 +2063,7 @@ const TITLES = {
 };
 const SUBTITLES = {
   home:'Panorama de tu actividad de contratación pública', tools:'Accesos rápidos y utilidades GovBidder',
-  market:'Datos históricos de contratación por NAICS y estado', opps:'Licitaciones activas vía GovBidder Connect',
+  market:'Datos históricos de contratación por NAICS y estado', opps:'Oportunidades, pending awards y adjudicaciones vía GovBidder Connect',
   grants:'Subvenciones federales activas en Grants.gov', codes:'NAICS, PSC y NIGP explicados y cruzados',
   geo:'Compradores por estado, distrito escolar y condado', compete:'Quién está ganando en tu mercado',
   support:'Soporte dedicado para miembros',
@@ -2046,6 +2105,7 @@ function nav(el, page) {
   }
 
   if (page === 'home')     loadHomeKpis();
+  if (page === 'opps')     renderOppFilterChips();
   if (page === 'market')   fetchMarket();
   if (page === 'geo')      { geoTab('states'); }
   if (page === 'compete')  fetchCompetitors();
@@ -2538,33 +2598,125 @@ function onGlobalFilter() {
   }
 }
 
-// ── SAM.GOV ──────────────────────────────────────────────
-async function fetchOpps() {
-  const kw = document.getElementById('opp-kw')?.value    || '';
-  const st = document.getElementById('opp-state')?.value || 'NJ';
-  const nc = document.getElementById('opp-naics')?.value || '561720';
-  setLoading('opps-list', 'Buscando oportunidades...');
+// ── GOVBIDDER CONNECT ────────────────────────────────────
+let oppResultType = 'all';
+let oppActiveFilters = ['state', 'naics'];
+const OPP_FILTER_DEFS = {
+  state:     { label: 'Estado' },
+  naics:     { label: 'NAICS' },
+  level:     { label: 'Nivel (Federal/Estatal)' },
+  setAside:  { label: 'Set-Aside' },
+  minAmount: { label: 'Monto mínimo' }
+};
+
+function setOppTab(type) {
+  oppResultType = type;
+  document.querySelectorAll('#opp-tabs .geo-tab').forEach(t => t.classList.toggle('active', t.dataset.rt === type));
+  fetchOpps();
+}
+
+function renderOppFilterChips() {
+  Object.keys(OPP_FILTER_DEFS).forEach(key => {
+    const wrap = document.getElementById(`opp-${key === 'setAside' ? 'setaside' : key === 'minAmount' ? 'minamount' : key}-wrap`);
+    if (wrap) wrap.style.display = oppActiveFilters.includes(key) ? 'flex' : 'none';
+  });
+  renderOppAddFilterMenu();
+}
+
+function addOppFilter(key) {
+  if (!oppActiveFilters.includes(key)) oppActiveFilters.push(key);
+  renderOppFilterChips();
+  toggleOppAddFilterMenu(false);
+}
+
+function removeOppFilter(key) {
+  oppActiveFilters = oppActiveFilters.filter(k => k !== key);
+  const resets = { state: ['opp-state', 'ALL'], naics: ['opp-naics', ''], level: ['opp-level', 'all'], setAside: ['opp-setaside', ''], minAmount: ['opp-min-amount', ''] };
+  const [elId, val] = resets[key] || [];
+  const el = elId && document.getElementById(elId);
+  if (el) el.value = val;
+  renderOppFilterChips();
+  fetchOpps();
+}
+
+function toggleOppAddFilterMenu(force) {
+  const menu = document.getElementById('opp-add-filter-menu');
+  if (!menu) return;
+  const open = force !== undefined ? force : !menu.classList.contains('open');
+  menu.classList.toggle('open', open);
+}
+
+function renderOppAddFilterMenu() {
+  const menu = document.getElementById('opp-add-filter-menu');
+  if (!menu) return;
+  const available = Object.keys(OPP_FILTER_DEFS).filter(k => !oppActiveFilters.includes(k));
+  menu.innerHTML = available.length
+    ? available.map(k => `<button type="button" onclick="addOppFilter('${k}')">+ ${escapeHtml(OPP_FILTER_DEFS[k].label)}</button>`).join('')
+    : `<div style="padding:8px 10px;font-size:13px;color:var(--muted);">Todos los filtros ya están activos</div>`;
+}
+
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('opp-add-filter-wrap');
+  if (wrap && !wrap.contains(e.target)) toggleOppAddFilterMenu(false);
+});
+
+let oppPage = 1, oppHasMore = false, oppTotal = 0;
+
+async function fetchOpps(reset = true) {
+  if (reset) { oppPage = 1; liveOpps = []; }
+  const kw     = document.getElementById('opp-kw')?.value || '';
+  const st     = oppActiveFilters.includes('state')     ? (document.getElementById('opp-state')?.value || 'ALL') : 'ALL';
+  const nc     = oppActiveFilters.includes('naics')      ? (document.getElementById('opp-naics')?.value || '') : '';
+  const lvl    = oppActiveFilters.includes('level')      ? (document.getElementById('opp-level')?.value || 'all') : 'all';
+  const sa     = oppActiveFilters.includes('setAside')   ? (document.getElementById('opp-setaside')?.value || '') : '';
+  const minAmt = oppActiveFilters.includes('minAmount')  ? (Number(document.getElementById('opp-min-amount')?.value) || 0) : 0;
+  if (reset) setLoading('opps-list', 'Buscando oportunidades...');
   try {
     const res  = await fetch(`${API}/opportunities`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), keyword: kw, state: st, naics: nc })
+      body: JSON.stringify({ token: clubToken(), keyword: kw, state: st, naics: nc, resultType: oppResultType, level: lvl, setAside: sa, minAmount: minAmt, page: oppPage })
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
-    liveOpps = data.opportunities || [];
-    document.getElementById('kpi-opps').textContent    = data.total || liveOpps.length;
-    document.getElementById('kpi-opps-d').textContent  = `${liveOpps.length} resultados live`;
-    document.getElementById('nb-opps').textContent     = liveOpps.length;
-    document.getElementById('home-opps-src').textContent = `${liveOpps.length} live • GovBidder Connect`;
-    document.getElementById('opps-list').innerHTML = liveOpps.length
-      ? liveOpps.map(o => oppCard(o)).join('')
-      : noResultsState(kw ? `Sin resultados para "${escapeHtml(kw)}" en ${escapeHtml(st)}.` : `Sin oportunidades activas en ${escapeHtml(st)} para este NAICS por ahora.`);
+    const newItems = data.opportunities || [];
+    liveOpps = reset ? newItems : liveOpps.concat(newItems);
+    oppHasMore = !!data.hasMore;
+    oppTotal   = data.total || liveOpps.length;
+    document.getElementById('kpi-opps').textContent    = oppTotal;
+    document.getElementById('kpi-opps-d').textContent  = `${liveOpps.length} de ${oppTotal.toLocaleString('en-US')} cargados`;
+    document.getElementById('nb-opps').textContent     = oppTotal;
+    document.getElementById('home-opps-src').textContent = `${oppTotal.toLocaleString('en-US')} live • GovBidder Connect`;
+    renderOppsList(kw);
     document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
   } catch(e) {
     const err = e.message.includes('GBC_API_KEY') ? samKeyEmptyState() : `<div class="error-box">${e.message}</div>`;
     document.getElementById('opps-list').innerHTML  = err;
     document.getElementById('home-opps').innerHTML  = err;
   }
+}
+
+function renderOppsList(kw) {
+  const listEl = document.getElementById('opps-list');
+  if (!liveOpps.length) {
+    listEl.innerHTML = noResultsState(kw ? `Sin resultados para "${escapeHtml(kw)}".` : `Sin resultados para este filtro por ahora.`);
+    return;
+  }
+  const shownCount = liveOpps.length.toLocaleString('en-US');
+  const totalCount = oppTotal.toLocaleString('en-US');
+  const footer = oppHasMore
+    ? `<div style="text-align:center;margin-top:16px;">
+         <button class="btn-dark" id="opp-load-more-btn" onclick="loadMoreOpps()">Cargar más resultados</button>
+         <div style="margin-top:8px;font-size:13px;color:var(--muted);">Mostrando ${shownCount} de ${totalCount}</div>
+       </div>`
+    : `<div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">Mostrando ${shownCount} de ${totalCount} — no hay más resultados</div>`;
+  listEl.innerHTML = liveOpps.map(o => oppCard(o)).join('') + footer;
+}
+
+async function loadMoreOpps() {
+  const btn = document.getElementById('opp-load-more-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Cargando...'; }
+  oppPage += 1;
+  await fetchOpps(false);
 }
 
 function showToast(msg, type='error') {
@@ -2602,49 +2754,69 @@ function samKeyEmptyState() {
   </div>`;
 }
 
+const OPP_TYPE_LABELS = { active: 'Activa', pending_award: 'Pending Award', awarded: 'Adjudicado' };
+const OPP_TYPE_BADGES = { active: 'bb', pending_award: 'by', awarded: 'bg' };
+
+function fmtAmount(n) {
+  return (n == null) ? 'No revelado' : `$${Number(n).toLocaleString('en-US')}`;
+}
+
 function oppCard(o) {
-  const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'N/A';
-  const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
-  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||'—',deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#'});
+  const isAwarded = o.resultType === 'awarded';
+  const dateVal = isAwarded ? o.awardedDate : o.deadline;
+  const dl = dateVal ? new Date(dateVal).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'N/A';
+  const urgent = !isAwarded && o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
+  const amountStr = isAwarded ? fmtAmount(o.amount) : null;
+  const typeLabel = OPP_TYPE_LABELS[o.resultType] || o.type || '—';
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountStr,vendor:o.vendor||''});
   return `<div class="opp-card" onclick='openModal(${escapeHtml(d)})'>
     <div class="opp-title">${escapeHtml(o.title)||'Sin título'}</div>
     <div class="opp-meta">
       <span><strong>${escapeHtml((o.organization||'—').substring(0,45))}</strong></span>
-      <span>${escapeHtml(o.state)||'—'}</span>
-      <span><strong style="color:${urgent?'var(--red)':'var(--ink)'}">${dl}</strong></span>
+      <span>${isAwarded ? escapeHtml((o.vendor||'—').substring(0,30)) : (escapeHtml(o.state)||'—')}</span>
+      <span><strong style="color:${urgent?'var(--red)':'var(--ink)'}">${isAwarded && amountStr!=='No revelado' ? amountStr : dl}</strong></span>
     </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;">
-      <span class="badge bb">${escapeHtml(o.type)||'N/A'}</span>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
+      <span class="badge ${OPP_TYPE_BADGES[o.resultType]||'bb'}">${escapeHtml(typeLabel)}</span>
       ${o.naicsCode?`<span class="badge bm mono">NAICS ${escapeHtml(o.naicsCode)}</span>`:''}
       ${o.setAside?`<span class="badge bg">${escapeHtml(o.setAside)}</span>`:''}
-      <span style="margin-left:auto;font-size:13px;color:var(--red);font-weight:700;">Ver detalle →</span>
+      ${isAwarded
+        ? `<span class="badge bm mono" style="margin-left:auto;">${amountStr}</span>`
+        : `<span style="margin-left:auto;font-size:13px;color:var(--red);font-weight:700;">Ver detalle →</span>`}
     </div>
   </div>`;
 }
 
 function oppRow(o) {
-  const dl = o.deadline ? new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
-  const urgent = o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
-  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||'—',deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#'});
+  const isAwarded = o.resultType === 'awarded';
+  const dateVal = isAwarded ? o.awardedDate : o.deadline;
+  const dl = dateVal ? new Date(dateVal).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
+  const urgent = !isAwarded && o.deadline && (new Date(o.deadline) - Date.now()) < 14*864e5;
+  const amountStr = isAwarded ? fmtAmount(o.amount) : null;
+  const typeLabel = OPP_TYPE_LABELS[o.resultType] || o.type || '—';
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountStr,vendor:o.vendor||''});
   return `<a href="#" onclick='openModal(${escapeHtml(d)});return false;' class="grant-row" style="text-decoration:none;">
     <span class="grant-row-dot" style="background:${urgent?'var(--red)':'var(--navy)'};"></span>
     <div style="flex:1;min-width:0;">
       <div class="grant-row-title">${escapeHtml((o.title||'').substring(0,60))}</div>
       <div class="grant-row-tag">${escapeHtml((o.organization||'OPORTUNIDAD').substring(0,40))}</div>
     </div>
-    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400};flex-shrink:0;">${dl}</span>
+    <span class="mono" style="font-size:13.5px;white-space:nowrap;color:${urgent?'var(--red)':'var(--muted)'};font-weight:${urgent?700:400};flex-shrink:0;">${isAwarded?amountStr:dl}</span>
   </a>`;
 }
 
 function openModal(o) {
+  const isAwarded = o.resultType === 'awarded';
   document.getElementById('modal').classList.add('open');
   document.getElementById('modal-title').textContent = o.title || 'Oportunidad';
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-field"><label>ENTIDAD</label><p>${escapeHtml(o.org)}</p></div>
+    ${isAwarded && o.vendor ? `<div class="modal-field"><label>PROVEEDOR ADJUDICADO</label><p>${escapeHtml(o.vendor)}</p></div>` : ''}
+    ${isAwarded ? `<div class="modal-field"><label>MONTO</label><p>${escapeHtml(o.amount)}</p></div>` : ''}
     <div class="modal-field"><label>TIPO</label><p>${escapeHtml(o.type)}</p></div>
-    <div class="modal-field"><label>DEADLINE</label><p>${escapeHtml(o.deadline)}</p></div>
+    <div class="modal-field"><label>${isAwarded?'FECHA DE ADJUDICACIÓN':'DEADLINE'}</label><p>${escapeHtml(o.deadline)}</p></div>
     <div class="modal-field"><label>NAICS</label><p>${escapeHtml(o.naics)}</p></div>
-    <div class="modal-field"><label>UBICACIÓN</label><p>${escapeHtml(o.city)}, ${escapeHtml(o.state)}</p></div>
+    ${!isAwarded ? `<div class="modal-field"><label>UBICACIÓN</label><p>${escapeHtml(o.city)}, ${escapeHtml(o.state)}</p></div>` : ''}
     ${o.setAside?`<div class="modal-field"><label>SET-ASIDE</label><p>${escapeHtml(o.setAside)}</p></div>`:''}
     <div class="modal-field"><label>DESCRIPCIÓN</label><p>${escapeHtml(o.desc)||'No disponible'}</p></div>`;
   document.getElementById('modal-link').onclick = () => window.open(o.link, '_blank');

@@ -35,13 +35,28 @@ function parsePlace(place) {
   return { city, state };
 }
 
-function mapOpportunity(o) {
+// sam.gov y usaspending.gov son federales; cualquier otro dominio (ej. rampla.org)
+// se trata como estatal/local — la API de GovBidder Connect no expone un campo nativo de nivel.
+const FEDERAL_DOMAINS = new Set(['sam.gov', 'www.sam.gov', 'usaspending.gov', 'www.usaspending.gov']);
+
+function levelOf(link) {
+  if (!link) return null;
+  try {
+    const host = new URL(link).hostname.toLowerCase();
+    return FEDERAL_DOMAINS.has(host) ? 'federal' : 'state';
+  } catch {
+    return null;
+  }
+}
+
+function mapOpportunity(o, resultType) {
   const { city, state } = parsePlace(o.placeOfPerformance);
   const description = typeof o.description === 'string' && !/^https?:\/\//i.test(o.description)
     ? o.description.substring(0, 800)
     : null;
   return {
     id: o.id,
+    resultType,
     title: o.title,
     organization: o.agency?.name || null,
     type: o.noticeType,
@@ -53,7 +68,35 @@ function mapOpportunity(o) {
     city,
     setAside: o.setAside,
     description,
-    link: o.officialUrl
+    link: o.officialUrl,
+    level: levelOf(o.officialUrl)
+  };
+}
+
+// La API no expone un "amount" real cuando el monto no fue divulgado — usa un
+// valor centinela en vez de null, hay que tratarlo como no disponible.
+const UNDISCLOSED_AMOUNT = 999999999999;
+
+function mapAward(o) {
+  const amount = (o.amount == null || Number(o.amount) === UNDISCLOSED_AMOUNT) ? null : Number(o.amount);
+  return {
+    id: o.id,
+    resultType: 'awarded',
+    title: o.description ? o.description.substring(0, 150) : o.title,
+    contractNumber: o.title,
+    organization: o.agency?.name || null,
+    vendor: o.vendor?.name || null,
+    type: 'Award',
+    naicsCode: o.naicsCode,
+    naicsDescription: null,
+    amount,
+    awardedDate: o.awardedAt,
+    state: null,
+    city: null,
+    setAside: null,
+    description: o.description ? o.description.substring(0, 800) : null,
+    link: o.officialUrl,
+    level: levelOf(o.officialUrl)
   };
 }
 
@@ -81,48 +124,102 @@ export default async function handler(req, res) {
       keyword = '',
       state = 'NJ',
       naics = '561720',
-      limit = 100
+      resultType = 'active', // 'all' | 'active' | 'pending_award' | 'awarded'
+      level = 'all',         // 'all' | 'federal' | 'state'
+      setAside = '',
+      minAmount = 0,
+      page = 1
     } = body;
 
     const filterByState = state && state !== 'ALL';
-    // GovBidder Connect soporta perPage (máximo 100). No filtra por estado — cuando se pide
-    // un estado puntual pedimos 2 páginas de 100 en paralelo para tener margen suficiente
-    // y filtrar placeOfPerformance en memoria.
-    const perPage = Math.min(limit, 100);
-    const pagesNeeded = filterByState ? 2 : 1;
+    const filterByLevel = level === 'federal' || level === 'state';
+    // Nada queda oculto por un límite artificial: cada request trae una ventana de la
+    // fuente upstream y expone hasMore para que el cliente pueda seguir pidiendo
+    // páginas hasta agotar TODO el dataset. Cuando filtramos por estado/nivel en
+    // memoria (la API upstream no soporta esos filtros) ampliamos la ventana para
+    // compensar la merma que deja el filtrado.
+    const RAW_PAGE_SIZE = 100;
+    const WINDOW = (filterByState || filterByLevel) ? 3 : 1;
+    const pageNum = Math.max(1, Number(page) || 1);
+    const startPage = (pageNum - 1) * WINDOW + 1;
 
-    const fetchPage = async (page) => {
-      const params = new URLSearchParams({ naics, status: 'ACTIVE', perPage: String(filterByState ? 100 : perPage), page: String(page) });
-      if (keyword) params.set('q', keyword);
-      const response = await fetch(`https://www.govbidderconnect.com/api/v1/opportunities?${params}`, {
-        headers: { Authorization: `Bearer ${GBC_KEY}` }
-      });
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`GovBidder Connect error ${response.status}: ${errText.substring(0, 200)}`);
+    const fetchWindow = async (endpoint, extraParams) => {
+      const fetchPage = async (p) => {
+        const params = new URLSearchParams({ naics, perPage: String(RAW_PAGE_SIZE), page: String(p), ...extraParams });
+        if (keyword) params.set('q', keyword);
+        const response = await fetch(`https://www.govbidderconnect.com/api/v1/${endpoint}?${params}`, {
+          headers: { Authorization: `Bearer ${GBC_KEY}` }
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`GovBidder Connect error ${response.status}: ${errText.substring(0, 200)}`);
+        }
+        return response.json();
+      };
+      const pages = await Promise.all(Array.from({ length: WINDOW }, (_, i) => fetchPage(startPage + i)));
+      const seen = new Set();
+      const items = [];
+      for (const pg of pages) {
+        for (const item of pg.items || []) {
+          if (seen.has(item.id)) continue;
+          seen.add(item.id);
+          items.push(item);
+        }
       }
-      return response.json();
+      const total = pages[0]?.total || items.length;
+      const totalRawPages = Math.ceil(total / RAW_PAGE_SIZE);
+      const hasMore = (startPage + WINDOW - 1) < totalRawPages;
+      return { items, total, hasMore };
     };
 
-    const pages = await Promise.all(Array.from({ length: pagesNeeded }, (_, i) => fetchPage(i + 1)));
-    const seen = new Set();
+    const loadActive = async () => {
+      const r = await fetchWindow('opportunities', { status: 'ACTIVE' });
+      return { ...r, items: r.items.map(o => mapOpportunity(o, 'active')) };
+    };
+    const loadPendingAward = async () => {
+      const r = await fetchWindow('opportunities', { status: 'EXPIRED' });
+      return { ...r, items: r.items.map(o => mapOpportunity(o, 'pending_award')) };
+    };
+    const loadAwarded = async () => {
+      const r = await fetchWindow('awards', {});
+      return { ...r, items: r.items.map(mapAward) };
+    };
+
     let opportunities = [];
-    for (const page of pages) {
-      for (const item of page.items || []) {
-        if (seen.has(item.id)) continue;
-        seen.add(item.id);
-        opportunities.push(mapOpportunity(item));
-      }
+    let total = 0;
+    let hasMore = false;
+    if (resultType === 'all') {
+      const results = await Promise.all([loadActive(), loadPendingAward(), loadAwarded()]);
+      for (const r of results) { opportunities.push(...r.items); total += r.total; }
+      hasMore = results.some(r => r.hasMore);
+    } else if (resultType === 'pending_award') {
+      const r = await loadPendingAward();
+      opportunities = r.items; total = r.total; hasMore = r.hasMore;
+    } else if (resultType === 'awarded') {
+      const r = await loadAwarded();
+      opportunities = r.items; total = r.total; hasMore = r.hasMore;
+    } else {
+      const r = await loadActive();
+      opportunities = r.items; total = r.total; hasMore = r.hasMore;
     }
-    let total = pages[0]?.total || opportunities.length;
 
+    // Los awards no traen placeOfPerformance, así que el filtro de estado solo
+    // aplica a oportunidades activas / pending award.
     if (filterByState) {
-      opportunities = opportunities.filter(o => o.state === state);
-      total = opportunities.length;
+      opportunities = opportunities.filter(o => o.resultType === 'awarded' || o.state === state);
     }
-    opportunities = opportunities.slice(0, limit);
+    if (filterByLevel) {
+      opportunities = opportunities.filter(o => o.level === level);
+    }
+    if (setAside) {
+      const needle = setAside.toLowerCase();
+      opportunities = opportunities.filter(o => (o.setAside || '').toLowerCase().includes(needle));
+    }
+    if (minAmount > 0) {
+      opportunities = opportunities.filter(o => o.resultType !== 'awarded' || (o.amount != null && o.amount >= minAmount));
+    }
 
-    return res.status(200).json({ success: true, total, opportunities });
+    return res.status(200).json({ success: true, total, opportunities, hasMore, page: pageNum });
 
   } catch (error) {
         return safeError(res, error, 'GovBidder Connect error');
