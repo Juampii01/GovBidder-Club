@@ -2,7 +2,8 @@
 // Backend para Claude AI — análisis inteligente
 
 import { createClient } from '@supabase/supabase-js';
-import { requireActiveMember } from './_lib/auth.js';
+import { requireActiveMember, checkRateLimit } from './_lib/auth.js';
+import { safeError } from './_lib/errors.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -21,8 +22,11 @@ export default async function handler(req, res) {
   }
 
   const { token } = req.body || {};
-  const { error: authErr, status: authStatus } = await requireActiveMember(supabase, token);
+  const { error: authErr, status: authStatus, profile } = await requireActiveMember(supabase, token);
   if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
+
+  const { error: rlErr, status: rlStatus } = await checkRateLimit(supabase, profile.id, 'ai_prompt', 30, 60);
+  if (rlErr) return res.status(rlStatus).json({ success: false, error: rlErr });
 
   const CLAUDE_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -66,7 +70,6 @@ Contexto del usuario: ${context || 'Plan Legacy, industria Cleaning/Janitorial, 
     return res.status(200).json({ success: true, response: text });
 
   } catch (error) {
-    console.error('AI error:', error.message);
-    return res.status(500).json({ success: false, error: error.message });
+        return safeError(res, error, 'AI error');
   }
 }

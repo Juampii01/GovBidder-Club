@@ -1,6 +1,16 @@
 // api/geography.js
 // Buyer Geography — 50 States + Counties + Cities + School Districts + Colleges
 
+import { createClient } from '@supabase/supabase-js';
+import { requireActiveMember } from './_lib/auth.js';
+import { safeError } from './_lib/errors.js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+);
+
 // ── 50 STATES COMPLETE DATABASE ──────────────────────────
 const STATES = {
   AL: { name: "Alabama",        capital: "Montgomery",    region: "South",     procurement: "https://purchasing.alabama.gov",         samUrl: "AL" },
@@ -150,6 +160,9 @@ const TOP_UNIVERSITIES = {
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
+  const { error: authErr, status: authStatus } = await requireActiveMember(supabase, req.query.token);
+  if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
+
   try {
     const { type = 'states', state = '', naics = '561720', year = '2024' } = req.query;
 
@@ -264,7 +277,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Invalid type' });
 
   } catch (error) {
-    console.error('Geography error:', error.message);
-    return res.status(500).json({ success: false, error: error.message });
+        return safeError(res, error, 'Geography error');
   }
 }

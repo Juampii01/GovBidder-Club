@@ -4,6 +4,8 @@
 // SIC/PSC/UNSPSC/NIGP) y naics_alt_terms (índice alfabético de términos coloquiales).
 
 import { createClient } from '@supabase/supabase-js';
+import { requireActiveMember } from './_lib/auth.js';
+import { safeError } from './_lib/errors.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -28,6 +30,9 @@ function toResult(row, matchedTerm) {
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
+
+  const { error: authErr, status: authStatus } = await requireActiveMember(supabase, req.query.token);
+  if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
 
   try {
     const { query = '', type = 'search' } = req.query;
@@ -131,8 +136,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Invalid type. Use search or crosswalk' });
 
   } catch (error) {
-    console.error('Codes error:', error.message);
-    return res.status(500).json({ success: false, error: error.message });
+        return safeError(res, error, 'Codes error');
   }
 }
 

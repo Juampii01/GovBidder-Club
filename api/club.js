@@ -3,6 +3,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember } from './_lib/auth.js';
+import { safeError } from './_lib/errors.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -38,7 +39,7 @@ async function uploadPdf(bucket, memberId, base64, filename, maxMB = 3) {
   }
   const path = `${memberId}/${Date.now()}-${filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
   const { error: upErr } = await supabase.storage.from(bucket).upload(path, buffer, { contentType: 'application/pdf' });
-  if (upErr) return { error: 'No se pudo subir el documento: ' + upErr.message };
+  if (upErr) { console.error('uploadPdf storage error:', upErr.message); return { error: 'No se pudo subir el documento. Intentá de nuevo.' }; }
   return { path };
 }
 
@@ -60,7 +61,7 @@ async function uploadReceipt(bucket, memberId, base64, filename, maxMB = 5) {
   if (buffer.length > maxMB * 1024 * 1024) return { error: `El archivo no puede superar los ${maxMB}MB.` };
   const path = `${memberId}/${Date.now()}-${filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
   const { error: upErr } = await supabase.storage.from(bucket).upload(path, buffer, { contentType });
-  if (upErr) return { error: 'No se pudo subir el comprobante: ' + upErr.message };
+  if (upErr) { console.error('uploadReceipt storage error:', upErr.message); return { error: 'No se pudo subir el comprobante. Intentá de nuevo.' }; }
   return { path };
 }
 
@@ -108,22 +109,25 @@ export default async function handler(req, res) {
       if (!type || !message) return res.status(400).json({ success: false, error: 'Tipo y mensaje requeridos' });
 
       const limit = planLimits(profile.plan).bidSupportPerMonth;
-      const { count } = await supabase.from('support_tickets').select('*', { count: 'exact', head: true })
-        .eq('member_id', profile.id).gte('created_at', monthStart());
-      if ((count || 0) >= limit) {
-        return res.status(403).json({ success: false, error: `Ya usaste tus ${limit} BID Helps de este mes en tu plan ${profile.plan}.` });
-      }
 
-      const insert = { member_id: profile.id, type, opportunity_link: opportunityLink || '', message };
+      let documentPath = null;
       if (documentBase64) {
         const { path, error: upErr } = await uploadPdf('support-documents', profile.id, documentBase64, documentName);
         if (upErr) return res.status(400).json({ success: false, error: upErr });
-        insert.document_path = path;
+        documentPath = path;
       }
 
-      const { data, error: insErr } = await supabase.from('support_tickets').insert(insert).select().single();
-      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
-      return res.status(200).json({ success: true, ticket: data });
+      // Chequeo de cuota + insert atómicos en una sola función de Postgres (con advisory lock
+      // por miembro) para que dos requests concurrentes no puedan superar el límite mensual.
+      const { data: result, error: rpcErr } = await supabase.rpc('create_ticket_if_under_quota', {
+        p_member_id: profile.id, p_type: type, p_opportunity_link: opportunityLink || '', p_message: message,
+        p_document_path: documentPath, p_limit: limit, p_month_start: monthStart()
+      });
+      if (rpcErr) return safeError(res, rpcErr, 'club.js error');
+      if (result?.error === 'quota_exceeded') {
+        return res.status(403).json({ success: false, error: `Ya usaste tus ${limit} BID Helps de este mes en tu plan ${profile.plan}.` });
+      }
+      return res.status(200).json({ success: true, ticket: result });
     }
 
     if (action === 'ticket_list') {
@@ -146,7 +150,7 @@ export default async function handler(req, res) {
       }
       const { data: updated, error: updErr } = await supabase.from('support_tickets')
         .update({ status: 'resolved' }).eq('id', ticketId).eq('member_id', profile.id).select();
-      if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+      if (updErr) return safeError(res, updErr, 'club.js error');
       if (!updated || updated.length === 0) return res.status(404).json({ success: false, error: 'Ticket no encontrado.' });
       return res.status(200).json({ success: true });
     }
@@ -157,7 +161,7 @@ export default async function handler(req, res) {
       const { data: ticket } = await supabase.from('support_tickets').select('document_path').eq('id', ticketId).eq('member_id', profile.id).single();
       if (!ticket || !ticket.document_path) return res.status(404).json({ success: false, error: 'Este ticket no tiene documento adjunto.' });
       const { data: signed, error: signErr } = await supabase.storage.from('support-documents').createSignedUrl(ticket.document_path, 300);
-      if (signErr) return res.status(500).json({ success: false, error: signErr.message });
+      if (signErr) return safeError(res, signErr, 'club.js error');
       return res.status(200).json({ success: true, url: signed.signedUrl });
     }
 
@@ -208,6 +212,16 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'Debés aceptar los Términos y Condiciones de GovBidder Alliance para continuar.' });
       }
 
+      // Defensa en profundidad: el frontend ya limita la suma de documentos a 3MB, pero
+      // el backend no debe depender solo de esa validación (alguien podría pegarle a la
+      // acción directo). Vercel corta requests de más de 4.5MB antes de que este código
+      // corra, así que rechazamos acá con un mensaje claro en vez de dejar que explote un 413.
+      const allDocsBase64 = [poDocumentBase64, awardDocumentBase64, quoteDocumentBase64, scheduleDocumentBase64, bankStatementDocumentBase64];
+      const totalRawBytes = allDocsBase64.reduce((sum, b64) => sum + (b64 ? Math.floor(b64.length * 3 / 4) : 0), 0);
+      if (totalRawBytes > 3 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: 'La suma de todos los documentos adjuntos no puede superar los 3MB. Achicá alguno antes de reintentar.' });
+      }
+
       const { path: poPath, error: poErr } = await uploadPdf('alliance-documents', profile.id, poDocumentBase64, poDocumentName);
       if (poErr) return res.status(400).json({ success: false, error: poErr });
 
@@ -235,7 +249,7 @@ export default async function handler(req, res) {
       }
 
       const { data, error: insErr } = await supabase.from('alliance_requests').insert(insert).select().single();
-      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+      if (insErr) return safeError(res, insErr, 'club.js error');
       return res.status(200).json({ success: true, request: data });
     }
 
@@ -292,7 +306,7 @@ export default async function handler(req, res) {
       const { error: insErr } = await supabase.from('job_applications').insert({ job_id: jobId, member_id: profile.id });
       if (insErr) {
         await supabase.from('work_pool_jobs').update({ status: 'open' }).eq('id', jobId).eq('status', 'applied');
-        return res.status(500).json({ success: false, error: insErr.message });
+        return safeError(res, insErr, 'club.js error');
       }
       return res.status(200).json({ success: true });
     }
@@ -351,7 +365,7 @@ export default async function handler(req, res) {
 
       const { data, error: insErr } = await supabase.from('investor_deposits')
         .insert({ investor_id: investor.id, amount, receipt_path: path }).select().single();
-      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+      if (insErr) return safeError(res, insErr, 'club.js error');
       return res.status(200).json({ success: true, deposit: data });
     }
 
@@ -377,7 +391,7 @@ export default async function handler(req, res) {
         }
         const { data, error: insErr } = await supabase.from('work_pool_jobs')
           .insert(insert).select().single();
-        if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+        if (insErr) return safeError(res, insErr, 'club.js error');
         return res.status(200).json({ success: true, job: data });
       }
 
@@ -399,7 +413,7 @@ export default async function handler(req, res) {
         if (!jobId || !memberId) return res.status(400).json({ success: false, error: 'jobId y memberId requeridos' });
         const { data: updated, error: updErr } = await supabase.from('work_pool_jobs')
           .update({ status: 'assigned', claimed_by: memberId }).eq('id', jobId).eq('status', 'open').select();
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         if (!updated || updated.length === 0) {
           return res.status(400).json({ success: false, error: 'Esta tarea ya no está disponible para asignar.' });
         }
@@ -447,7 +461,7 @@ export default async function handler(req, res) {
         const { data: updated, error: updErr } = await supabase.from('work_pool_jobs')
           .update({ status: 'completed', completed_at: new Date().toISOString() })
           .eq('id', jobId).eq('status', 'assigned').select();
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         if (!updated || updated.length === 0) {
           return res.status(400).json({ success: false, error: 'Solo se pueden completar tareas asignadas.' });
         }
@@ -469,7 +483,7 @@ export default async function handler(req, res) {
         const update = { status: newStatus };
         if (response !== undefined) update.admin_response = response;
         const { error: updErr } = await supabase.from('support_tickets').update(update).eq('id', ticketId);
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         return res.status(200).json({ success: true });
       }
 
@@ -479,7 +493,7 @@ export default async function handler(req, res) {
         const { data: ticket } = await supabase.from('support_tickets').select('document_path').eq('id', ticketId).single();
         if (!ticket || !ticket.document_path) return res.status(404).json({ success: false, error: 'Este ticket no tiene documento adjunto.' });
         const { data: signed, error: signErr } = await supabase.storage.from('support-documents').createSignedUrl(ticket.document_path, 300);
-        if (signErr) return res.status(500).json({ success: false, error: signErr.message });
+        if (signErr) return safeError(res, signErr, 'club.js error');
         return res.status(200).json({ success: true, url: signed.signedUrl });
       }
 
@@ -502,7 +516,7 @@ export default async function handler(req, res) {
         if (!reqRow || !reqRow[column]) return res.status(404).json({ success: false, error: 'Esta solicitud no tiene ese documento adjunto.' });
         const { data: signed, error: signErr } = await supabase.storage.from('alliance-documents')
           .createSignedUrl(reqRow[column], 300);
-        if (signErr) return res.status(500).json({ success: false, error: signErr.message });
+        if (signErr) return safeError(res, signErr, 'club.js error');
         return res.status(200).json({ success: true, url: signed.signedUrl });
       }
 
@@ -513,7 +527,7 @@ export default async function handler(req, res) {
         }
         const { data: updated, error: updErr } = await supabase.from('alliance_requests')
           .update({ status: decision }).eq('id', requestId).eq('status', 'pending').select();
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         if (!updated || updated.length === 0) {
           return res.status(400).json({ success: false, error: 'Esta solicitud ya fue resuelta.' });
         }
@@ -532,7 +546,7 @@ export default async function handler(req, res) {
         }
         const { error: updErr } = await supabase.from('platform_settings')
           .update({ value: String(cap), updated_at: new Date().toISOString() }).eq('key', 'alliance_max_cap');
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         return res.status(200).json({ success: true });
       }
 
@@ -548,7 +562,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, error: 'requestId y status válidos requeridos' });
         }
         const { error: updErr } = await supabase.from('membership_requests').update({ status: newStatus }).eq('id', requestId);
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         return res.status(200).json({ success: true });
       }
 
@@ -583,7 +597,7 @@ export default async function handler(req, res) {
         const { data, error: insErr } = await supabase.from('investors')
           .insert({ profile_id: profileId, start_date: startDate, monthly_amount: monthlyAmount, term_months: termMonths, fixed_return: fixedReturn })
           .select().single();
-        if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+        if (insErr) return safeError(res, insErr, 'club.js error');
         await supabase.from('profiles').update({ is_investor: true }).eq('id', profileId);
         return res.status(200).json({ success: true, investor: data });
       }
@@ -604,7 +618,7 @@ export default async function handler(req, res) {
         if (notes !== undefined) update.admin_notes = notes;
         const { data: updated, error: updErr } = await supabase.from('investor_deposits')
           .update(update).eq('id', depositId).eq('status', 'pending').select();
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         if (!updated || updated.length === 0) {
           return res.status(400).json({ success: false, error: 'Este comprobante ya fue resuelto.' });
         }
@@ -617,7 +631,7 @@ export default async function handler(req, res) {
         const { data: deposit } = await supabase.from('investor_deposits').select('receipt_path').eq('id', depositId).single();
         if (!deposit || !deposit.receipt_path) return res.status(404).json({ success: false, error: 'Este comprobante no tiene archivo.' });
         const { data: signed, error: signErr } = await supabase.storage.from('investor-documents').createSignedUrl(deposit.receipt_path, 300);
-        if (signErr) return res.status(500).json({ success: false, error: signErr.message });
+        if (signErr) return safeError(res, signErr, 'club.js error');
         return res.status(200).json({ success: true, url: signed.signedUrl });
       }
 
@@ -631,7 +645,7 @@ export default async function handler(req, res) {
         const update = { status: newStatus };
         if (newStatus !== 'active') update.withdrawn_at = new Date().toISOString();
         const { error: updErr } = await supabase.from('investors').update(update).eq('id', investorId);
-        if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+        if (updErr) return safeError(res, updErr, 'club.js error');
         await supabase.from('profiles').update({ is_investor: newStatus === 'active' }).eq('id', investor.profile_id);
         return res.status(200).json({ success: true });
       }
@@ -643,6 +657,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error('Club error:', err);
-    return res.status(500).json({ success: false, error: err.message });
+    return safeError(res, err, 'club.js error');
   }
 }

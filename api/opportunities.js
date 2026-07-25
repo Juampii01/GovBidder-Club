@@ -3,6 +3,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember } from './_lib/auth.js';
+import { safeError } from './_lib/errors.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -117,10 +118,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true, total, opportunities });
 
   } catch (error) {
-    console.error('GovBidder Connect error:', error.message);
-    return res.status(500).json({
-      success: false,
-      error: error.message
-    });
+        return safeError(res, error, 'GovBidder Connect error');
   }
 }

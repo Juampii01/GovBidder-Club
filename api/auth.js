@@ -2,6 +2,7 @@
 // GovBidder Command Center — Auth sobre Supabase (Supabase Auth + tabla profiles)
 
 import { createClient } from '@supabase/supabase-js';
+import { safeError } from './_lib/errors.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -77,7 +78,7 @@ export default async function handler(req, res) {
       const { error: insErr } = await supabase.from('membership_requests').insert({
         name, company, email, phone, state, naics, plan_interest: plan, message, is_academy_alumni: isAcademyAlumni
       });
-      if (insErr) return res.status(500).json({ success: false, error: insErr.message });
+      if (insErr) return safeError(res, insErr, 'Auth error');
 
       return res.status(200).json({ success: true, message: 'Solicitud recibida. Te contactaremos en 24-48 horas.' });
     }
@@ -206,6 +207,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error('Auth error:', err);
-    return res.status(500).json({ success: false, error: err.message });
+    return safeError(res, err, 'Auth error');
   }
 }

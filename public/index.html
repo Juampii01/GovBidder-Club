@@ -218,7 +218,7 @@ td{font-size:13.5px;padding:11px 12px;border-bottom:1px solid var(--line-soft);c
 tbody tr:nth-child(even) td{background:rgba(12,20,37,.025);}
 [data-theme="dark"] tbody tr:nth-child(even) td{background:rgba(255,255,255,.025);}
 tr:hover td{background:var(--line-soft) !important;}
-.geo-tab{flex:1;padding:13px 8px;text-align:center;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
+.geo-tab{flex:1 0 auto;white-space:nowrap;padding:13px 12px;text-align:center;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
 .geo-tab:last-child{border-right:none;}
 .geo-tab:hover{background:var(--line-soft);color:var(--text);}
 .geo-tab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
@@ -918,7 +918,7 @@ tr:hover td{background:var(--line-soft) !important;}
     <!-- GEO -->
     <div class="page" id="page-geo">
       <!-- TABS -->
-      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;overflow-y:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
         <div class="geo-tab active" id="tab-states"   onclick="geoTab('states')">🗺️ 50 States</div>
         <div class="geo-tab"        id="tab-schools"  onclick="geoTab('schools')">🏫 School Districts</div>
         <div class="geo-tab"        id="tab-colleges" onclick="geoTab('colleges')">🎓 Colleges & Universities</div>
@@ -1841,7 +1841,7 @@ tr:hover td{background:var(--line-soft) !important;}
     <!-- ADMIN -->
     <div class="page" id="page-admin">
       <!-- TABS -->
-      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;overflow-y:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
         <div class="geo-tab active" id="tab-admin-jobs"         onclick="adminTab('jobs')">🗂️ Tareas</div>
         <div class="geo-tab"        id="tab-admin-applications" onclick="adminTab('applications')">📥 Postulaciones</div>
         <div class="geo-tab"        id="tab-admin-tickets"      onclick="adminTab('tickets')">🎯 Tickets de Soporte</div>
@@ -2639,7 +2639,7 @@ async function fetchGrants() {
   const st = document.getElementById('grant-status')?.value || 'posted';
   setLoading('grants-list', 'Conectando a Grants.gov...');
   try {
-    const res  = await fetch(`${API}/grants?keyword=${encodeURIComponent(kw)}&status=${st}`);
+    const res  = await fetch(`${API}/grants?keyword=${encodeURIComponent(kw)}&status=${st}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     liveGrants = data.grants || [];
@@ -2760,7 +2760,7 @@ async function fetchMarket() {
   const year  = document.getElementById('mkt-year').value;
   setLoading('market-container', 'Cargando USASpending.gov...');
   try {
-    const res  = await fetch(`${API}/spending?type=market&naics=${naics}&year=${year}`);
+    const res  = await fetch(`${API}/spending?type=market&naics=${naics}&year=${year}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const maxS = data.byState?.[0]?.amount || 1;
@@ -2810,7 +2810,7 @@ async function fetchCompetitors() {
   const year  = document.getElementById('comp-year').value;
   setLoading('comp-container', 'Cargando vendors...');
   try {
-    const res  = await fetch(`${API}/spending?type=competitors&state=${state}&naics=${naics}&year=${year}`);
+    const res  = await fetch(`${API}/spending?type=competitors&state=${state}&naics=${naics}&year=${year}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const vendors = data.vendors || [];
@@ -2852,7 +2852,7 @@ async function searchCodes() {
   if (!q) return;
   el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Buscando en base de datos NAICS 2022...</div></div>`;
   try {
-    const res  = await fetch(`${API}/codes?query=${encodeURIComponent(q)}&type=${type}`);
+    const res  = await fetch(`${API}/codes?query=${encodeURIComponent(q)}&type=${type}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
 
@@ -3064,7 +3064,7 @@ async function loadAllStates() {
   const grid = document.getElementById('states-grid');
   grid.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>`;
   try {
-    const res  = await fetch(`${API}/geography?type=states`);
+    const res  = await fetch(`${API}/geography?type=states&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     allStates = data.states;
@@ -3136,7 +3136,7 @@ async function loadStateDetail() {
   }
   setLoading('detail-container', `Cargando análisis de ${state}...`);
   try {
-    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=${year}`);
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=${year}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const s       = data.state;
@@ -3220,7 +3220,7 @@ async function loadSchools() {
   const el    = document.getElementById('schools-container');
   setLoading('schools-container', `Cargando school districts de ${state}...`);
   try {
-    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const schools = data.schoolDistricts || [];
@@ -3249,7 +3249,7 @@ async function loadColleges() {
   const el    = document.getElementById('colleges-container');
   setLoading('colleges-container', `Cargando universidades de ${state}...`);
   try {
-    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     const univs = data.universities || [];
@@ -3278,7 +3278,7 @@ async function loadCounties() {
   const countEl = document.getElementById('counties-count');
   el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando condados de ${escapeHtml(state)}...</div></div>`;
   try {
-    const res  = await fetch(`${API}/geography?type=counties&state=${state}&naics=${naics}&year=2024`);
+    const res  = await fetch(`${API}/geography?type=counties&state=${state}&naics=${naics}&year=2024&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
     allCounties = data.counties || [];
@@ -4536,7 +4536,7 @@ function renderInvestorMemberList(filter) {
   const filtered = adminMemberData.filter(m =>
     !f || m.name?.toLowerCase().includes(f) || m.email?.toLowerCase().includes(f));
   return filtered.map(m => `
-    <div class="pipe-card" style="cursor:pointer;padding:10px 12px;" onclick="pickInvestorMember('${m.id}','${escapeHtml(m.name)}')">
+    <div class="pipe-card investor-member-row" style="cursor:pointer;padding:10px 12px;" data-member-id="${escapeHtml(m.id)}" data-member-name="${escapeHtml(m.name)}">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><strong>${escapeHtml(m.name)}</strong><div style="font-size:12.5px;color:var(--muted);">${escapeHtml(m.email)}</div></div>
         <span class="badge bb">${escapeHtml(m.plan)}</span>
@@ -4557,6 +4557,11 @@ async function openAddInvestorModal() {
     <input class="search-input" id="investor-member-search" placeholder="Buscar por nombre o email..." style="width:100%;margin-bottom:10px;" oninput="filterInvestorMemberList(this.value)"/>
     <div id="investor-member-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;">${renderInvestorMemberList('')}</div>
   `);
+  const listEl = document.getElementById('investor-member-list');
+  listEl.onclick = (e) => {
+    const row = e.target.closest('.investor-member-row');
+    if (row) pickInvestorMember(row.dataset.memberId, row.dataset.memberName);
+  };
 }
 
 function pickInvestorMember(memberId, memberName) {
