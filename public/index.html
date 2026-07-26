@@ -900,9 +900,9 @@ tr:hover td{background:var(--line-soft) !important;}
 
         <div class="opp-filter-chip" id="opp-level-wrap" style="display:none;">
           <select class="gf-select" id="opp-level" onchange="fetchOpps()">
-            <option value="all">Federal + Estatal/Local</option>
-            <option value="federal">Solo Federal</option>
-            <option value="state">Solo Estatal/Local</option>
+            <option value="" disabled selected>Selecciona un nivel...</option>
+            <option value="federal">FED (Federal)</option>
+            <option value="state">SLED (State/Local/Education/District)</option>
           </select>
           <button class="chip-remove" onclick="removeOppFilter('level')" title="Quitar filtro">✕</button>
         </div>
@@ -2631,7 +2631,7 @@ function addOppFilter(key) {
 
 function removeOppFilter(key) {
   oppActiveFilters = oppActiveFilters.filter(k => k !== key);
-  const resets = { state: ['opp-state', 'ALL'], naics: ['opp-naics', ''], level: ['opp-level', 'all'], setAside: ['opp-setaside', ''], minAmount: ['opp-min-amount', ''] };
+  const resets = { state: ['opp-state', 'ALL'], naics: ['opp-naics', ''], level: ['opp-level', ''], setAside: ['opp-setaside', ''], minAmount: ['opp-min-amount', ''] };
   const [elId, val] = resets[key] || [];
   const el = elId && document.getElementById(elId);
   if (el) el.value = val;
@@ -2660,14 +2660,14 @@ document.addEventListener('click', (e) => {
   if (wrap && !wrap.contains(e.target)) toggleOppAddFilterMenu(false);
 });
 
-let oppPage = 1, oppHasMore = false, oppTotal = 0;
+let oppPage = 1, oppHasMore = false, oppTotal = 0, oppTotalIsExact = true;
 
-async function fetchOpps(reset = true) {
+async function fetchOpps(reset = true, isRetry = false) {
   if (reset) { oppPage = 1; liveOpps = []; }
   const kw     = document.getElementById('opp-kw')?.value || '';
   const st     = oppActiveFilters.includes('state')     ? (document.getElementById('opp-state')?.value || 'ALL') : 'ALL';
   const nc     = oppActiveFilters.includes('naics')      ? (document.getElementById('opp-naics')?.value || '') : '';
-  const lvl    = oppActiveFilters.includes('level')      ? (document.getElementById('opp-level')?.value || 'all') : 'all';
+  const lvl    = oppActiveFilters.includes('level')      ? (document.getElementById('opp-level')?.value || '') : '';
   const sa     = oppActiveFilters.includes('setAside')   ? (document.getElementById('opp-setaside')?.value || '') : '';
   const minAmt = oppActiveFilters.includes('minAmount')  ? (Number(document.getElementById('opp-min-amount')?.value) || 0) : 0;
   if (reset) setLoading('opps-list', 'Buscando oportunidades...');
@@ -2677,15 +2677,23 @@ async function fetchOpps(reset = true) {
       body: JSON.stringify({ token: clubToken(), keyword: kw, state: st, naics: nc, resultType: oppResultType, level: lvl, setAside: sa, minAmount: minAmt, page: oppPage })
     });
     const data = await res.json();
-    if (!data.success) throw new Error(data.error);
+    if (!data.success) {
+      if (data.error === 'Sesión expirada' && !isRetry) {
+        const refreshed = await refreshSession();
+        if (refreshed) return fetchOpps(reset, true);
+      }
+      throw new Error(data.error);
+    }
     const newItems = data.opportunities || [];
     liveOpps = reset ? newItems : liveOpps.concat(newItems);
     oppHasMore = !!data.hasMore;
     oppTotal   = data.total || liveOpps.length;
-    document.getElementById('kpi-opps').textContent    = oppTotal;
-    document.getElementById('kpi-opps-d').textContent  = `${liveOpps.length} de ${oppTotal.toLocaleString('en-US')} cargados`;
-    document.getElementById('nb-opps').textContent     = oppTotal;
-    document.getElementById('home-opps-src').textContent = `${oppTotal.toLocaleString('en-US')} live • GovBidder Connect`;
+    oppTotalIsExact = data.totalIsExact !== false;
+    const oppCountLabel = oppTotalIsExact ? oppTotal.toLocaleString('en-US') : `${liveOpps.length.toLocaleString('en-US')}+`;
+    document.getElementById('kpi-opps').textContent    = oppCountLabel;
+    document.getElementById('kpi-opps-d').textContent  = oppTotalIsExact ? `${liveOpps.length} de ${oppTotal.toLocaleString('en-US')} cargados` : `${liveOpps.length} cargados (puede haber más)`;
+    document.getElementById('nb-opps').textContent     = oppCountLabel;
+    document.getElementById('home-opps-src').textContent = `${oppCountLabel} live • GovBidder Connect`;
     renderOppsList(kw);
     document.getElementById('home-opps').innerHTML = liveOpps.slice(0,5).map(o => oppRow(o)).join('');
   } catch(e) {
@@ -2703,13 +2711,16 @@ function renderOppsList(kw) {
   }
   const shownCount = liveOpps.length.toLocaleString('en-US');
   const totalCount = oppTotal.toLocaleString('en-US');
+  const resultsLine = oppTotalIsExact
+    ? `<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">Resultados: ${totalCount}</div>`
+    : `<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">Resultados: ${shownCount} cargados <span style="font-weight:400;color:var(--muted);font-size:13px;">(puede haber más — Cargar más)</span></div>`;
   const footer = oppHasMore
     ? `<div style="text-align:center;margin-top:16px;">
          <button class="btn-dark" id="opp-load-more-btn" onclick="loadMoreOpps()">Cargar más resultados</button>
-         <div style="margin-top:8px;font-size:13px;color:var(--muted);">Mostrando ${shownCount} de ${totalCount}</div>
+         <div style="margin-top:8px;font-size:13px;color:var(--muted);">${oppTotalIsExact ? `Mostrando ${shownCount} de ${totalCount}` : `Mostrando ${shownCount} cargados`}</div>
        </div>`
-    : `<div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">Mostrando ${shownCount} de ${totalCount} — no hay más resultados</div>`;
-  listEl.innerHTML = liveOpps.map(o => oppCard(o)).join('') + footer;
+    : `<div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">${oppTotalIsExact ? `Mostrando ${shownCount} de ${totalCount}` : `Mostrando ${shownCount} cargados`} — no hay más resultados</div>`;
+  listEl.innerHTML = resultsLine + liveOpps.map(o => oppCard(o)).join('') + footer;
 }
 
 async function loadMoreOpps() {
