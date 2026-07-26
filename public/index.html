@@ -4711,8 +4711,12 @@ async function loadAdminInvestors() {
       const behindBadge = inv.behind > 0
         ? `<span class="badge br">Atrasado (${inv.behind})</span>`
         : `<span class="badge bg">Al día</span>`;
+      const reminderBtn = (inv.status === 'active' && inv.behind > 0)
+        ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="sendInvestorReminderEmail('${inv.id}',this)">✉️ Enviar recordatorio</button>`
+        : '';
       const action = inv.status === 'active'
-        ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="setInvestorStatus('${inv.id}','withdrawn',this)">Marcar retirado</button>
+        ? `${reminderBtn}
+           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="setInvestorStatus('${inv.id}','withdrawn',this)">Marcar retirado</button>
            <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="setInvestorStatus('${inv.id}','completed',this)">Marcar completado</button>`
         : '';
       return `<tr>
@@ -4740,6 +4744,14 @@ async function reviewInvestorDeposit(depositId, decision, btn) {
   const data = await clubAdminFetch('admin_investor_deposit_review', { depositId, decision });
   if (!data.success) { if (btn) btn.disabled = false; showToast(data.error || 'No se pudo procesar el comprobante.'); return; }
   loadAdminInvestors();
+}
+
+async function sendInvestorReminderEmail(investorId, btn) {
+  if (btn) btn.disabled = true;
+  const data = await clubAdminFetch('admin_investor_send_reminder_email', { investorId });
+  if (btn) btn.disabled = false;
+  if (!data.success) { showToast(data.error || 'No se pudo enviar el recordatorio.'); return; }
+  showToast('Recordatorio enviado.', 'success');
 }
 
 async function setInvestorStatus(investorId, status, btn) {

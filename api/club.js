@@ -711,6 +711,35 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true });
       }
 
+      if (action === 'admin_investor_send_reminder_email') {
+        const { investorId } = body;
+        if (!investorId) return res.status(400).json({ success: false, error: 'investorId requerido' });
+        const RESEND_KEY = process.env.RESEND_API_KEY;
+        if (!RESEND_KEY) {
+          return res.status(500).json({ success: false, error: 'RESEND_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' });
+        }
+        const { data: investor } = await supabase.from('investors')
+          .select('profiles!investors_profile_id_fkey(name, email)').eq('id', investorId).single();
+        const investorEmail = investor?.profiles?.email;
+        if (!investorEmail) return res.status(404).json({ success: false, error: 'Inversionista no encontrado o sin email registrado.' });
+
+        const from = process.env.RESEND_FROM_EMAIL || 'GovBidder Club <onboarding@resend.dev>';
+        const emailRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_KEY}` },
+          body: JSON.stringify({
+            from, to: investorEmail, subject: 'Recordatorio de aporte — GovBidder Club',
+            html: `<p>Hola ${investor.profiles?.name || ''},</p>
+              <p>Hemos notado que estás atrasado con tu aporte en GovBidder Club. Si ya hiciste tu aporte, subí la captura en la sección Investor para actualizar el sistema.</p>`
+          })
+        });
+        if (!emailRes.ok) {
+          const errText = await emailRes.text();
+          return res.status(502).json({ success: false, error: `No se pudo enviar el email: ${errText.substring(0, 200)}` });
+        }
+        return res.status(200).json({ success: true });
+      }
+
       return res.status(400).json({ success: false, error: `Acción admin inválida: ${action}` });
     }
 
