@@ -1881,6 +1881,7 @@ tr:hover td{background:var(--line-soft) !important;}
         <div class="geo-tab"        id="tab-admin-alliance"     onclick="adminTab('alliance')">🤝 Solicitudes Alliance</div>
         <div class="geo-tab"        id="tab-admin-membership"   onclick="adminTab('membership')">📋 Solicitudes de Membresía</div>
         <div class="geo-tab"        id="tab-admin-investors"    onclick="adminTab('investors')">📈 Inversionistas</div>
+        <div class="geo-tab"        id="tab-admin-members"      onclick="adminTab('members')">👥 Miembros</div>
       </div>
 
       <!-- TAB: TAREAS -->
@@ -1913,6 +1914,15 @@ tr:hover td{background:var(--line-soft) !important;}
       <div id="admin-panel-applications" class="geo-panel">
         <div class="card">
           <div class="card-title">📥 Postulaciones Pendientes</div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <input class="search-input" id="admin-app-search" placeholder="🔍 Buscar por nombre..." style="max-width:240px;" oninput="renderAdminApplications()"/>
+            <select class="gf-select" id="admin-app-sort" onchange="renderAdminApplications()">
+              <option value="name">Ordenar por Nombre</option>
+              <option value="plan">Ordenar por Plan</option>
+              <option value="task">Ordenar por Tarea</option>
+              <option value="price">Ordenar por Precio</option>
+            </select>
+          </div>
           <div class="table-scroll">
           <table><thead><tr><th>MIEMBRO</th><th>PLAN</th><th>TAREA</th><th>PRECIO</th><th>ACCIÓN</th></tr></thead>
           <tbody id="admin-applications-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
@@ -1981,6 +1991,18 @@ tr:hover td{background:var(--line-soft) !important;}
           <div class="table-scroll">
           <table><thead><tr><th>NOMBRE</th><th>INICIO</th><th>PAGOS</th><th>ATRASO</th><th>ACUMULADO</th><th>ESTADO</th><th>ACCIÓN</th></tr></thead>
           <tbody id="admin-investors-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: MIEMBROS -->
+      <div id="admin-panel-members" class="geo-panel">
+        <div class="card">
+          <div class="card-title">👥 Miembros</div>
+          <input class="search-input" id="admin-members-search" placeholder="🔍 Buscar por nombre o email..." style="width:100%;max-width:320px;margin-bottom:12px;" oninput="renderAdminMembers()"/>
+          <div class="table-scroll">
+          <table><thead><tr><th>NOMBRE</th><th>EMAIL</th><th>PLAN</th><th>INVERSIONISTA</th><th>ACCIÓN</th></tr></thead>
+          <tbody id="admin-members-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
           </div>
         </div>
       </div>
@@ -4472,7 +4494,11 @@ async function loadAdminPanel() {
   loadAdminAlliance();
   loadAdminMembership();
   loadAdminInvestors();
+  loadAdminMembers();
 }
+
+// Legacy=oro, Prime=azul, Elevate=rojo — mismos colores que ya usa el chip de plan del topbar.
+const PLAN_BADGE_CLASS = { Legacy: 'by', Prime: 'bb', Elevate: 'br' };
 
 async function loadAdminCatalog() {
   const sel = document.getElementById('admin-catalog-select');
@@ -4524,17 +4550,42 @@ async function completeJob(jobId, btn) {
   loadAdminJobs();
 }
 
+let adminApplicationsData = [];
+
 async function loadAdminApplications() {
   const body = document.getElementById('admin-applications-body');
   if (!body) return;
   const data = await clubAdminFetch('admin_application_list');
   if (!data.success) return;
-  body.innerHTML = data.applications.length ? data.applications.map(a => {
+  adminApplicationsData = data.applications || [];
+  renderAdminApplications();
+}
+
+function renderAdminApplications() {
+  const body = document.getElementById('admin-applications-body');
+  if (!body) return;
+  const q = (document.getElementById('admin-app-search')?.value || '').toLowerCase();
+  const sortBy = document.getElementById('admin-app-sort')?.value || 'name';
+
+  let rows = adminApplicationsData.filter(a => !q || (a.profiles?.name || '').toLowerCase().includes(q));
+  const sortKey = {
+    name: a => a.profiles?.name || '',
+    plan: a => a.profiles?.plan || '',
+    task: a => a.work_pool_jobs?.task_catalog?.name || '',
+    price: a => Number(a.work_pool_jobs?.task_catalog?.price || 0)
+  }[sortBy];
+  rows = [...rows].sort((x, y) => {
+    const kx = sortKey(x), ky = sortKey(y);
+    return typeof kx === 'number' ? ky - kx : String(kx).localeCompare(String(ky));
+  });
+
+  body.innerHTML = rows.length ? rows.map(a => {
     const job = a.work_pool_jobs;
     const member = a.profiles;
+    const planBadge = PLAN_BADGE_CLASS[member?.plan] || 'bm';
     return `<tr>
       <td>${escapeHtml(member?.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(member?.email)}</span></td>
-      <td><span class="badge bb">${escapeHtml(member?.plan) || '—'}</span></td>
+      <td><span class="badge ${planBadge}">${escapeHtml(member?.plan) || '—'}</span></td>
       <td>${escapeHtml(job?.task_catalog?.name) || '—'}</td>
       <td>$${Number(job?.task_catalog?.price || 0).toLocaleString()}</td>
       <td style="white-space:nowrap;">
@@ -4542,7 +4593,7 @@ async function loadAdminApplications() {
         <button class="btn-outline" style="padding:4px 9px;font-size:13px;" onclick="reviewApplication('${a.id}','rejected',this)">Rechazar</button>
       </td>
     </tr>`;
-  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No hay postulaciones pendientes.</td></tr>';
+  }).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);">${q ? 'Sin resultados.' : 'No hay postulaciones pendientes.'}</td></tr>`;
 }
 
 async function reviewApplication(applicationId, decision, btn) {
@@ -4852,6 +4903,40 @@ async function confirmCreateInvestor() {
   closeSimpleModal();
   showToast('Inversionista agregado.', 'success');
   loadAdminInvestors();
+  loadAdminMembers();
+}
+
+async function loadAdminMembers() {
+  const body = document.getElementById('admin-members-body');
+  if (!body) return;
+  const data = await clubAdminFetch('admin_member_list');
+  if (!data.success) return;
+  adminMemberData = data.members || [];
+  renderAdminMembers();
+}
+
+function renderAdminMembers() {
+  const body = document.getElementById('admin-members-body');
+  if (!body) return;
+  const q = (document.getElementById('admin-members-search')?.value || '').toLowerCase();
+  const rows = adminMemberData.filter(m => !q || m.name?.toLowerCase().includes(q) || m.email?.toLowerCase().includes(q));
+  body.innerHTML = rows.length ? rows.map(m => {
+    const planBadge = PLAN_BADGE_CLASS[m.plan] || 'bm';
+    const investorCell = m.is_investor
+      ? '<span class="badge bg">Sí</span>'
+      : `<span class="badge bm">No</span> <button class="btn-outline admin-mark-investor-btn" style="padding:3px 8px;font-size:12.5px;margin-left:6px;" data-member-id="${escapeHtml(m.id)}" data-member-name="${escapeHtml(m.name)}">Marcar como inversionista</button>`;
+    return `<tr>
+      <td>${escapeHtml(m.name) || '—'}</td>
+      <td style="color:var(--muted);">${escapeHtml(m.email) || '—'}</td>
+      <td><span class="badge ${planBadge}">${escapeHtml(m.plan) || '—'}</span></td>
+      <td>${investorCell}</td>
+      <td>—</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);">${q ? 'Sin resultados.' : 'No hay miembros.'}</td></tr>`;
+  body.onclick = (e) => {
+    const btn = e.target.closest('.admin-mark-investor-btn');
+    if (btn) pickInvestorMember(btn.dataset.memberId, btn.dataset.memberName);
+  };
 }
 
 // ── THEME ────────────────────────────────────────────────

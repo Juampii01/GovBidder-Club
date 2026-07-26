@@ -411,7 +411,7 @@ export default async function handler(req, res) {
 
       if (action === 'admin_member_list') {
         const { data } = await supabase.from('profiles')
-          .select('id, name, email, plan').eq('active', true).order('name');
+          .select('id, name, email, plan, is_investor').eq('active', true).order('name');
         return res.status(200).json({ success: true, members: data || [] });
       }
 
