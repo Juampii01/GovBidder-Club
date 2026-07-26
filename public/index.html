@@ -4868,6 +4868,7 @@ async function openAddInvestorModal() {
   showSimpleModal('Agregar inversionista — Paso 1: elegí el miembro', `
     <input class="search-input" id="investor-member-search" placeholder="Buscar por nombre o email..." style="width:100%;margin-bottom:10px;" oninput="filterInvestorMemberList(this.value)"/>
     <div id="investor-member-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;">${renderInvestorMemberList('')}</div>
+    <button class="btn-outline" style="width:100%;margin-top:10px;" type="button" onclick="showNewInvestorMemberForm()">+ Es una persona nueva (todavía no tiene cuenta)</button>
   `);
   const listEl = document.getElementById('investor-member-list');
   listEl.onclick = (e) => {
@@ -4876,14 +4877,39 @@ async function openAddInvestorModal() {
   };
 }
 
-function pickInvestorMember(memberId, memberName) {
-  addInvestorSelectedMemberId = memberId;
+function investorTermsFieldsHtml() {
   const today = new Date().toISOString().slice(0, 10);
-  showSimpleModal(`Agregar inversionista — ${memberName}`, `
+  return `
     <div class="modal-field"><label>FECHA DE INICIO</label><input id="investor-start-date" type="date" class="search-input" style="width:100%;" value="${today}"/></div>
     <div class="modal-field"><label>MONTO MENSUAL (USD)</label><input id="investor-monthly" type="number" class="search-input" style="width:100%;" value="1000"/></div>
     <div class="modal-field"><label>PLAZO (MESES)</label><input id="investor-term" type="number" class="search-input" style="width:100%;" value="24"/></div>
     <div class="modal-field"><label>RETORNO FIJO AL COMPLETAR (USD)</label><input id="investor-fixed-return" type="number" class="search-input" style="width:100%;" value="6000"/></div>
+    <div class="modal-field"><label>MONTO YA PAGADO HASTA HOY (USD, opcional)</label><input id="investor-paid-amount" type="number" class="search-input" style="width:100%;" placeholder="Dejar vacío si todavía no pagó nada"/></div>`;
+}
+
+function pickInvestorMember(memberId, memberName) {
+  addInvestorSelectedMemberId = memberId;
+  showSimpleModal(`Agregar inversionista — ${memberName}`, `
+    ${investorTermsFieldsHtml()}
+    <div id="investor-create-error" style="display:none;color:var(--red);font-size:13.5px;margin-bottom:8px;"></div>
+    <button class="btn-red" style="width:100%;padding:10px;" onclick="confirmCreateInvestor()">Confirmar</button>
+  `);
+}
+
+function showNewInvestorMemberForm() {
+  addInvestorSelectedMemberId = null;
+  showSimpleModal('Agregar inversionista — persona nueva', `
+    <div class="modal-field"><label>NOMBRE</label><input id="investor-new-name" class="search-input" style="width:100%;"/></div>
+    <div class="modal-field"><label>EMAIL</label><input id="investor-new-email" type="email" class="search-input" style="width:100%;"/></div>
+    <div class="modal-field"><label>PLAN</label>
+      <select id="investor-new-plan" class="search-input" style="width:100%;">
+        <option value="Legacy">Legacy</option>
+        <option value="Prime">Prime</option>
+        <option value="Elevate">Elevate</option>
+      </select>
+    </div>
+    ${investorTermsFieldsHtml()}
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;">Se le va a enviar un email de invitación para que cree su contraseña.</div>
     <div id="investor-create-error" style="display:none;color:var(--red);font-size:13.5px;margin-bottom:8px;"></div>
     <button class="btn-red" style="width:100%;padding:10px;" onclick="confirmCreateInvestor()">Confirmar</button>
   `);
@@ -4894,11 +4920,32 @@ async function confirmCreateInvestor() {
   const monthlyAmount = Number(document.getElementById('investor-monthly')?.value);
   const termMonths = Number(document.getElementById('investor-term')?.value);
   const fixedReturn = Number(document.getElementById('investor-fixed-return')?.value);
+  const paidAmountRaw = document.getElementById('investor-paid-amount')?.value;
   const errEl = document.getElementById('investor-create-error');
   if (!startDate || !Number.isFinite(monthlyAmount) || !Number.isFinite(termMonths) || !Number.isFinite(fixedReturn)) {
     errEl.textContent = 'Completá todos los campos con valores válidos.'; errEl.style.display = 'block'; return;
   }
-  const data = await clubAdminFetch('admin_investor_create', { profileId: addInvestorSelectedMemberId, startDate, monthlyAmount, termMonths, fixedReturn });
+  const payload = { startDate, monthlyAmount, termMonths, fixedReturn };
+  if (paidAmountRaw) {
+    const initialPaidAmount = Number(paidAmountRaw);
+    if (!Number.isFinite(initialPaidAmount) || initialPaidAmount < 0) {
+      errEl.textContent = 'El monto ya pagado no es válido.'; errEl.style.display = 'block'; return;
+    }
+    payload.initialPaidAmount = initialPaidAmount;
+  }
+  if (addInvestorSelectedMemberId) {
+    payload.profileId = addInvestorSelectedMemberId;
+  } else {
+    const name = document.getElementById('investor-new-name')?.value?.trim();
+    const email = document.getElementById('investor-new-email')?.value?.trim();
+    if (!name || !email) {
+      errEl.textContent = 'Completá nombre y email de la persona nueva.'; errEl.style.display = 'block'; return;
+    }
+    payload.newMemberName = name;
+    payload.newMemberEmail = email;
+    payload.newMemberPlan = document.getElementById('investor-new-plan')?.value;
+  }
+  const data = await clubAdminFetch('admin_investor_create', payload);
   if (!data.success) { errEl.textContent = data.error || 'No se pudo crear el inversionista.'; errEl.style.display = 'block'; return; }
   closeSimpleModal();
   showToast('Inversionista agregado.', 'success');

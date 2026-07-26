@@ -591,21 +591,66 @@ export default async function handler(req, res) {
       }
 
       if (action === 'admin_investor_create') {
-        const { profileId, startDate } = body;
+        let { profileId, startDate, newMemberName, newMemberEmail, newMemberPlan } = body;
         const monthlyAmount = body.monthlyAmount !== undefined ? Number(body.monthlyAmount) : 1000;
         const termMonths = body.termMonths !== undefined ? Number(body.termMonths) : 24;
         const fixedReturn = body.fixedReturn !== undefined ? Number(body.fixedReturn) : 6000;
-        if (!profileId || !startDate) {
-          return res.status(400).json({ success: false, error: 'profileId y startDate requeridos' });
+        const initialPaidAmount = (body.initialPaidAmount !== undefined && body.initialPaidAmount !== '' && body.initialPaidAmount !== null)
+          ? Number(body.initialPaidAmount) : null;
+        if (!startDate) {
+          return res.status(400).json({ success: false, error: 'startDate requerido' });
         }
-        const { data: existing } = await supabase.from('investors').select('id').eq('profile_id', profileId).maybeSingle();
-        if (existing) return res.status(400).json({ success: false, error: 'Este miembro ya es inversionista.' });
+        if (!profileId && !newMemberEmail) {
+          return res.status(400).json({ success: false, error: 'profileId o los datos de un miembro nuevo son requeridos' });
+        }
+
+        if (!profileId) {
+          // Miembro nuevo (no existía en profiles) — se crea la cuenta desde cero.
+          const email = String(newMemberEmail || '').trim().toLowerCase();
+          const name = String(newMemberName || '').trim();
+          if (!/\S+@\S+\.\S+/.test(email)) {
+            return res.status(400).json({ success: false, error: 'Email inválido para el miembro nuevo.' });
+          }
+          if (!name) {
+            return res.status(400).json({ success: false, error: 'Nombre requerido para el miembro nuevo.' });
+          }
+          const { data: existingProfile } = await supabase.from('profiles').select('id').eq('email', email).maybeSingle();
+          if (existingProfile) {
+            return res.status(400).json({ success: false, error: 'Ya existe un miembro con ese email — buscalo en el Paso 1.' });
+          }
+          const plan = ['Legacy', 'Prime', 'Elevate'].includes(newMemberPlan) ? newMemberPlan : 'Legacy';
+          const { data: invited, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(email);
+          if (inviteErr) return safeError(res, inviteErr, 'club.js error');
+          const expiry = new Date(startDate);
+          expiry.setFullYear(expiry.getFullYear() + 1);
+          // upsert (no insert): invitar al usuario dispara un trigger que ya crea una fila
+          // trial en profiles para ese id — hay que sobrescribirla, no chocar con ella.
+          const { error: profErr } = await supabase.from('profiles').upsert({
+            id: invited.user.id, name, email, role: 'member', plan,
+            plan_expiry: expiry.toISOString().slice(0, 10),
+            member_since: startDate, active: true, is_investor: true, is_trial: false
+          }, { onConflict: 'id' });
+          if (profErr) return safeError(res, profErr, 'club.js error');
+          profileId = invited.user.id;
+        } else {
+          const { data: existing } = await supabase.from('investors').select('id').eq('profile_id', profileId).maybeSingle();
+          if (existing) return res.status(400).json({ success: false, error: 'Este miembro ya es inversionista.' });
+        }
 
         const { data, error: insErr } = await supabase.from('investors')
           .insert({ profile_id: profileId, start_date: startDate, monthly_amount: monthlyAmount, term_months: termMonths, fixed_return: fixedReturn })
           .select().single();
         if (insErr) return safeError(res, insErr, 'club.js error');
         await supabase.from('profiles').update({ is_investor: true }).eq('id', profileId);
+
+        if (initialPaidAmount && initialPaidAmount > 0) {
+          await supabase.from('investor_deposits').insert({
+            investor_id: data.id, amount: initialPaidAmount, status: 'approved',
+            receipt_path: 'backfill:admin', reviewed_at: new Date().toISOString(),
+            admin_notes: 'Carga inicial retroactiva cargada por admin'
+          });
+        }
+
         return res.status(200).json({ success: true, investor: data });
       }
 
