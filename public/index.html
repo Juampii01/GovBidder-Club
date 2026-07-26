@@ -102,6 +102,10 @@ body{font-family:'Manrope',system-ui,-apple-system,sans-serif;-webkit-font-smoot
 .opp-add-filter-menu.open{display:block;}
 .opp-add-filter-menu button{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:7px;font-size:14px;font-family:inherit;color:var(--ink);cursor:pointer;}
 .opp-add-filter-menu button:hover{background:var(--line-soft);}
+.naics-suggest{position:absolute;top:calc(100% + 4px);left:0;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);z-index:70;min-width:240px;max-height:280px;overflow-y:auto;padding:6px;display:none;}
+.naics-suggest.open{display:block;}
+.naics-suggest button{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:7px;font-size:13.5px;font-family:inherit;color:var(--ink);cursor:pointer;}
+.naics-suggest button:hover{background:var(--line-soft);}
 .gf-chip input.gf-select.mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
 .topbar-sep{width:1px;height:22px;background:var(--line);flex-shrink:0;}
 .crm-btn{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:15.5px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(196,42,61,.25);transition:transform .15s ease,box-shadow .15s ease;}
@@ -877,25 +881,15 @@ tr:hover td{background:var(--line-soft) !important;}
           <button class="chip-remove" onclick="removeOppFilter('state')" title="Quitar filtro">✕</button>
         </div>
 
-        <div class="opp-filter-chip" id="opp-naics-wrap">
-          <select class="gf-select" id="opp-naics" onchange="fetchOpps()">
-            <option value="561720" selected>561720 Janitorial</option>
-            <option value="561730">561730 Landscaping</option>
-            <option value="541511">541511 Software Development</option>
-            <option value="541512">541512 IT/Systems Design</option>
-            <option value="541611">541611 Management Consulting</option>
-            <option value="541990">541990 Professional Services</option>
-            <option value="236220">236220 Commercial Construction</option>
-            <option value="238210">238210 Electrical</option>
-            <option value="238220">238220 Plumbing/HVAC</option>
-            <option value="484121">484121 Trucking/Freight</option>
-            <option value="561612">561612 Security Services</option>
-            <option value="722310">722310 Food Service</option>
-            <option value="811310">811310 Equipment Maintenance</option>
-            <option value="337214">337214 Office Furniture</option>
-            <option value="">All NAICS</option>
-          </select>
+        <div class="opp-filter-chip" id="opp-naics-wrap" style="position:relative;">
+          <input class="search-input" id="opp-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:170px;" onkeydown="if(event.key==='Enter')fetchOpps()"/>
+          <div class="naics-suggest" id="opp-naics-suggest"></div>
           <button class="chip-remove" onclick="removeOppFilter('naics')" title="Quitar filtro">✕</button>
+        </div>
+
+        <div class="opp-filter-chip" id="opp-psc-wrap" style="display:none;">
+          <input class="search-input" id="opp-psc" placeholder="PSC/FSC Code..." style="width:150px;" onkeydown="if(event.key==='Enter')fetchOpps()"/>
+          <button class="chip-remove" onclick="removeOppFilter('psc')" title="Quitar filtro">✕</button>
         </div>
 
         <div class="opp-filter-chip" id="opp-level-wrap" style="display:none;">
@@ -2587,15 +2581,7 @@ function onGlobalFilter() {
     oppState.value = stateVal;
   }
   const oppNaics = document.getElementById('opp-naics');
-  if (oppNaics && naicsVal) {
-    if (![...oppNaics.options].some(o => o.value === naicsVal)) {
-      const opt = document.createElement('option');
-      opt.value = naicsVal;
-      opt.textContent = `${naicsVal} (tu perfil)`;
-      oppNaics.insertBefore(opt, oppNaics.firstChild);
-    }
-    oppNaics.value = naicsVal;
-  }
+  if (oppNaics && naicsVal) oppNaics.value = naicsVal;
 }
 
 // ── GOVBIDDER CONNECT ────────────────────────────────────
@@ -2604,6 +2590,7 @@ let oppActiveFilters = ['state', 'naics'];
 const OPP_FILTER_DEFS = {
   state:     { label: 'Estado' },
   naics:     { label: 'NAICS' },
+  psc:       { label: 'PSC/FSC Code' },
   level:     { label: 'Nivel (Federal/Estatal)' },
   setAside:  { label: 'Set-Aside' },
   minAmount: { label: 'Monto mínimo' }
@@ -2631,12 +2618,49 @@ function addOppFilter(key) {
 
 function removeOppFilter(key) {
   oppActiveFilters = oppActiveFilters.filter(k => k !== key);
-  const resets = { state: ['opp-state', 'ALL'], naics: ['opp-naics', ''], level: ['opp-level', ''], setAside: ['opp-setaside', ''], minAmount: ['opp-min-amount', ''] };
+  const resets = { state: ['opp-state', 'ALL'], naics: ['opp-naics', ''], psc: ['opp-psc', ''], level: ['opp-level', ''], setAside: ['opp-setaside', ''], minAmount: ['opp-min-amount', ''] };
   const [elId, val] = resets[key] || [];
   const el = elId && document.getElementById(elId);
   if (el) el.value = val;
   renderOppFilterChips();
   fetchOpps();
+}
+
+// Buscador de NAICS en vivo (widget reusable) — pega contra /api/codes?type=search,
+// que ya consulta el catálogo completo de 1,378 códigos en Supabase.
+function renderNaicsAutocomplete(inputId, dropdownId, onSelect) {
+  const input = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!input || !dropdown) return;
+  let timer = null;
+  const closeDropdown = () => dropdown.classList.remove('open');
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (!q) { closeDropdown(); return; }
+    timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/codes?type=search&query=${encodeURIComponent(q)}&token=${encodeURIComponent(clubToken())}`);
+        const data = await res.json();
+        dropdown.innerHTML = '';
+        if (!data.success || !data.results?.length) {
+          dropdown.innerHTML = '<div style="padding:8px 10px;font-size:13px;color:var(--muted);">Sin resultados</div>';
+        } else {
+          data.results.slice(0, 10).forEach(r => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = `${r.naics} — ${(r.title || '').substring(0, 45)}`;
+            btn.onclick = () => { input.value = r.naics; closeDropdown(); onSelect(r.naics); };
+            dropdown.appendChild(btn);
+          });
+        }
+        dropdown.classList.add('open');
+      } catch (e) { closeDropdown(); }
+    }, 250);
+  });
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) closeDropdown();
+  });
 }
 
 function toggleOppAddFilterMenu(force) {
@@ -2667,6 +2691,7 @@ async function fetchOpps(reset = true, isRetry = false) {
   const kw     = document.getElementById('opp-kw')?.value || '';
   const st     = oppActiveFilters.includes('state')     ? (document.getElementById('opp-state')?.value || 'ALL') : 'ALL';
   const nc     = oppActiveFilters.includes('naics')      ? (document.getElementById('opp-naics')?.value || '') : '';
+  const psc    = oppActiveFilters.includes('psc')        ? (document.getElementById('opp-psc')?.value || '') : '';
   const lvl    = oppActiveFilters.includes('level')      ? (document.getElementById('opp-level')?.value || '') : '';
   const sa     = oppActiveFilters.includes('setAside')   ? (document.getElementById('opp-setaside')?.value || '') : '';
   const minAmt = oppActiveFilters.includes('minAmount')  ? (Number(document.getElementById('opp-min-amount')?.value) || 0) : 0;
@@ -2674,7 +2699,7 @@ async function fetchOpps(reset = true, isRetry = false) {
   try {
     const res  = await fetch(`${API}/opportunities`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), keyword: kw, state: st, naics: nc, resultType: oppResultType, level: lvl, setAside: sa, minAmount: minAmt, page: oppPage })
+      body: JSON.stringify({ token: clubToken(), keyword: kw, state: st, naics: nc, resultType: oppResultType, level: lvl, psc, setAside: sa, minAmount: minAmt, page: oppPage })
     });
     const data = await res.json();
     if (!data.success) {
@@ -4832,6 +4857,7 @@ window.onload = () => {
   checkSession();
   syncThemeIcon();
   setTimeout(() => loadAllStates(), 1000);
+  renderNaicsAutocomplete('opp-naics', 'opp-naics-suggest', () => fetchOpps());
 };
 </script>
 </body>

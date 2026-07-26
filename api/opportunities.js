@@ -61,6 +61,7 @@ function mapOpportunity(o, resultType) {
     organization: o.agency?.name || null,
     type: o.noticeType,
     naicsCode: o.naicsCode,
+    pscCode: o.pscCode || null,
     naicsDescription: null,
     deadline: o.dueAt,
     postedDate: o.postedAt,
@@ -88,6 +89,7 @@ function mapAward(o) {
     vendor: o.vendor?.name || null,
     type: 'Award',
     naicsCode: o.naicsCode,
+    pscCode: o.pscCode || null,
     naicsDescription: null,
     amount,
     awardedDate: o.awardedAt,
@@ -126,6 +128,7 @@ export default async function handler(req, res) {
       naics = '561720',
       resultType = 'active', // 'all' | 'active' | 'pending_award' | 'awarded'
       level = 'all',         // 'all' | 'federal' | 'state'
+      psc = '',
       setAside = '',
       minAmount = 0,
       page = 1
@@ -211,6 +214,10 @@ export default async function handler(req, res) {
     if (filterByLevel) {
       opportunities = opportunities.filter(o => o.level === level);
     }
+    if (psc) {
+      const needle = psc.trim().toLowerCase();
+      opportunities = opportunities.filter(o => (o.pscCode || '').toLowerCase().includes(needle));
+    }
     if (setAside) {
       const needle = setAside.toLowerCase();
       opportunities = opportunities.filter(o => (o.setAside || '').toLowerCase().includes(needle));
@@ -219,12 +226,12 @@ export default async function handler(req, res) {
       opportunities = opportunities.filter(o => o.resultType !== 'awarded' || (o.amount != null && o.amount >= minAmount));
     }
 
-    // El filtro de estado (para awarded) y el de nivel se aplican en memoria porque GovBidder
+    // El filtro de estado (para awarded), nivel y PSC se aplican en memoria porque GovBidder
     // Connect no los soporta como parámetro nativo — con cualquiera de esos activos, `total`
     // ya no representa un conteo exacto de todo lo que matchea (solo lo que ya bajamos y filtramos
     // en esta ventana). setAside/minAmount sí son exactos sobre lo bajado, pero mismo problema:
     // no hay forma honesta de saber cuántos hay en TODO el dataset sin escanearlo entero.
-    const totalIsExact = !(filterByState || filterByLevel || setAside || minAmount > 0);
+    const totalIsExact = !(filterByState || filterByLevel || psc || setAside || minAmount > 0);
 
     return res.status(200).json({ success: true, total, opportunities, hasMore, page: pageNum, totalIsExact });
 
