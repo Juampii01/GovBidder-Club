@@ -959,13 +959,14 @@ tr:hover td{background:var(--line-soft) !important;}
         <div class="ai-response" id="ai-market">Haz clic en Cargar para ver datos live de USASpending.gov</div>
       </div>
       <div class="search-bar">
-        <select class="gf-select" id="mkt-naics">
-          <option value="561720" selected>561720 Janitorial</option>
-          <option value="541519">541519 IT</option>
-          <option value="236220">236220 Construction</option>
-        </select>
+        <div style="position:relative;">
+          <input class="gf-select" id="mkt-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:170px;"/>
+          <div class="naics-suggest" id="mkt-naics-suggest"></div>
+        </div>
         <select class="gf-select" id="mkt-year">
-          <option value="2024" selected>2024</option>
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
           <option value="2023">2023</option>
         </select>
         <button class="btn-red" onclick="fetchMarket()">📊 Cargar Market Data</button>
@@ -1043,13 +1044,10 @@ tr:hover td{background:var(--line-soft) !important;}
               <option value="PR">Puerto Rico (PR)</option>
             </optgroup>
           </select>
-          <select class="gf-select" id="school-naics" style="width:220px;">
-            <option value="561720" selected>561720 - Janitorial</option>
-            <option value="722310">722310 - Food Service</option>
-            <option value="541519">541519 - IT Services</option>
-            <option value="561730">561730 - Landscaping</option>
-            <option value="236220">236220 - Construction</option>
-          </select>
+          <div style="position:relative;">
+            <input class="gf-select" id="school-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:220px;"/>
+            <div class="naics-suggest" id="school-naics-suggest"></div>
+          </div>
           <button class="btn-red" onclick="loadSchools()">🏫 Cargar Distritos</button>
         </div>
         <div id="schools-container">
@@ -1103,12 +1101,10 @@ tr:hover td{background:var(--line-soft) !important;}
               <option value="PR">Puerto Rico (PR)</option>
             </optgroup>
           </select>
-          <select class="gf-select" id="college-naics" style="width:220px;">
-            <option value="561720" selected>561720 - Janitorial</option>
-            <option value="722310">722310 - Food Service</option>
-            <option value="541519">541519 - IT Services</option>
-            <option value="561730">561730 - Landscaping</option>
-          </select>
+          <div style="position:relative;">
+            <input class="gf-select" id="college-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:220px;"/>
+            <div class="naics-suggest" id="college-naics-suggest"></div>
+          </div>
           <button class="btn-red" onclick="loadColleges()">🎓 Cargar Universidades</button>
         </div>
         <div id="colleges-container">
@@ -1160,17 +1156,10 @@ tr:hover td{background:var(--line-soft) !important;}
             </optgroup>
             <optgroup label="TERRITORIES"><option value="PR">Puerto Rico (PR)</option></optgroup>
           </select>
-          <select class="gf-select" id="county-naics" style="width:220px;">
-            <option value="561720" selected>561720 - Janitorial</option>
-            <option value="722310">722310 - Food Service</option>
-            <option value="541519">541519 - IT Services</option>
-            <option value="561730">561730 - Landscaping</option>
-            <option value="236220">236220 - Construction</option>
-            <option value="561612">561612 - Security</option>
-            <option value="484110">484110 - Trucking</option>
-            <option value="561710">561710 - Pest Control</option>
-            <option value="562111">562111 - Waste Collection</option>
-          </select>
+          <div style="position:relative;">
+            <input class="gf-select" id="county-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:220px;"/>
+            <div class="naics-suggest" id="county-naics-suggest"></div>
+          </div>
           <input id="county-search" class="search-input" placeholder="🔍 Filtrar condado..." oninput="filterCounties(this.value)" style="max-width:200px;"/>
           <div style="margin-left:auto;font-size:13px;color:var(--muted);" id="counties-count"></div>
         </div>
@@ -1227,19 +1216,14 @@ tr:hover td{background:var(--line-soft) !important;}
               <option value="PR">Puerto Rico (PR)</option>
             </optgroup>
           </select>
-          <select class="gf-select" id="detail-naics" style="width:220px;">
-            <option value="561720" selected>561720 - Janitorial</option>
-            <option value="722310">722310 - Food Service</option>
-            <option value="541519">541519 - IT Services</option>
-            <option value="561730">561730 - Landscaping</option>
-            <option value="236220">236220 - Construction</option>
-            <option value="561612">561612 - Security</option>
-            <option value="484110">484110 - Trucking</option>
-            <option value="561710">561710 - Pest Control</option>
-            <option value="562111">562111 - Waste Collection</option>
-          </select>
+          <div style="position:relative;">
+            <input class="gf-select" id="detail-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:220px;"/>
+            <div class="naics-suggest" id="detail-naics-suggest"></div>
+          </div>
           <select class="gf-select" id="detail-year">
-            <option value="2024" selected>2024</option>
+            <option value="2026" selected>2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
             <option value="2023">2023</option>
           </select>
           <button class="btn-red" onclick="loadStateDetail()">📊 Ver Análisis</button>
@@ -1268,12 +1252,15 @@ tr:hover td{background:var(--line-soft) !important;}
           <option value="NJ" selected>New Jersey</option><option value="NY">New York</option>
           <option value="FL">Florida</option>
         </select>
-        <select class="gf-select" id="comp-naics">
-          <option value="561720" selected>561720 Janitorial</option>
-          <option value="541519">541519 IT</option>
-        </select>
+        <div style="position:relative;">
+          <input class="gf-select" id="comp-naics" value="561720" placeholder="NAICS code..." autocomplete="off" style="width:170px;"/>
+          <div class="naics-suggest" id="comp-naics-suggest"></div>
+        </div>
         <select class="gf-select" id="comp-year">
-          <option value="2024" selected>2024</option><option value="2023">2023</option>
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
         </select>
         <button class="btn-red" onclick="fetchCompetitors()">🏆 Ver Competidores</button>
       </div>
@@ -2574,14 +2561,16 @@ function onGlobalFilter() {
   if (stateKpi)  stateKpi.textContent  = stateVal || '—';
   if (stateDesc) stateDesc.textContent = STATE_NAMES[stateVal] || stateVal;
 
-  // ── Sincronizar los filtros de búsqueda de Opportunities con el perfil real del
-  // miembro (antes quedaban fijos en NJ/561720 para cualquier cuenta) ──
-  const oppState = document.getElementById('opp-state');
-  if (oppState && stateVal && [...oppState.options].some(o => o.value === stateVal)) {
-    oppState.value = stateVal;
-  }
-  const oppNaics = document.getElementById('opp-naics');
-  if (oppNaics && naicsVal) oppNaics.value = naicsVal;
+  // ── Sincronizar los filtros de búsqueda con el perfil real del miembro (antes
+  // quedaban fijos en NJ/561720 para cualquier cuenta, en todas las páginas) ──
+  ['opp-state', 'detail-state', 'school-state', 'college-state', 'county-state', 'comp-state'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && stateVal && [...el.options].some(o => o.value === stateVal)) el.value = stateVal;
+  });
+  ['opp-naics', 'mkt-naics', 'detail-naics', 'comp-naics', 'school-naics', 'college-naics', 'county-naics'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && naicsVal) el.value = naicsVal;
+  });
 }
 
 // ── GOVBIDDER CONNECT ────────────────────────────────────
@@ -4858,6 +4847,12 @@ window.onload = () => {
   syncThemeIcon();
   setTimeout(() => loadAllStates(), 1000);
   renderNaicsAutocomplete('opp-naics', 'opp-naics-suggest', () => fetchOpps());
+  renderNaicsAutocomplete('mkt-naics', 'mkt-naics-suggest', () => fetchMarket());
+  renderNaicsAutocomplete('detail-naics', 'detail-naics-suggest', () => loadStateDetail());
+  renderNaicsAutocomplete('comp-naics', 'comp-naics-suggest', () => fetchCompetitors());
+  renderNaicsAutocomplete('school-naics', 'school-naics-suggest', () => loadSchools());
+  renderNaicsAutocomplete('college-naics', 'college-naics-suggest', () => loadColleges());
+  renderNaicsAutocomplete('county-naics', 'county-naics-suggest', () => loadCounties());
 };
 </script>
 </body>

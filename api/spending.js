@@ -45,8 +45,8 @@ export default async function handler(req, res) {
               naics_codes: [naics],
               award_type_codes: ['A', 'B', 'C', 'D']
             },
-            fields: ['Recipient Name', 'Award Amount', 'Awarding Agency Name',
-              'Place of Performance State Code', 'Award Date'],
+            fields: ['Recipient Name', 'Award Amount', 'Awarding Agency',
+              'Place of Performance State Code', 'Start Date'],
             sort: 'Award Amount',
             order: 'desc',
             limit: 30,
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
         if (!byVendor[n]) byVendor[n] = { total: 0, count: 0, agency: '' };
         byVendor[n].total += Number(a['Award Amount'] || 0);
         byVendor[n].count++;
-        byVendor[n].agency = a['Awarding Agency Name'] || '—';
+        byVendor[n].agency = a['Awarding Agency'] || '—';
       });
 
       result = {
@@ -99,10 +99,10 @@ export default async function handler(req, res) {
           })),
         recentContracts: awards.slice(0, 20).map(a => ({
           recipient: a['Recipient Name'],
-          agency: a['Awarding Agency Name'],
+          agency: a['Awarding Agency'],
           state: a['Place of Performance State Code'],
           amount: Number(a['Award Amount'] || 0),
-          date: a['Award Date']
+          date: a['Start Date']
         }))
       };
     }
@@ -119,8 +119,8 @@ export default async function handler(req, res) {
             place_of_performance_locations: [{ country: 'USA', state }],
             award_type_codes: ['A', 'B', 'C', 'D']
           },
-          fields: ['Recipient Name', 'Award Amount', 'Awarding Agency Name',
-            'Place of Performance City Name', 'Award Date'],
+          fields: ['Recipient Name', 'Award Amount', 'Awarding Agency',
+            'Place of Performance City Name', 'Start Date'],
           sort: 'Award Amount',
           order: 'desc',
           limit: 25,
@@ -138,10 +138,10 @@ export default async function handler(req, res) {
         contractCount: awards.length,
         contracts: awards.map(a => ({
           recipient: a['Recipient Name'],
-          agency: a['Awarding Agency Name'],
+          agency: a['Awarding Agency'],
           city: a['Place of Performance City Name'],
           amount: Number(a['Award Amount'] || 0),
-          date: a['Award Date']
+          date: a['Start Date']
         }))
       };
     }
@@ -158,8 +158,8 @@ export default async function handler(req, res) {
             place_of_performance_locations: [{ country: 'USA', state }],
             award_type_codes: ['A', 'B', 'C', 'D']
           },
-          fields: ['Recipient Name', 'Award Amount', 'Awarding Agency Name',
-            'Place of Performance City Name', 'Award Date'],
+          fields: ['Recipient Name', 'Award Amount', 'Awarding Agency',
+            'Place of Performance City Name', 'Start Date'],
           sort: 'Award Amount',
           order: 'desc',
           limit: 50,
@@ -176,7 +176,7 @@ export default async function handler(req, res) {
         if (!byVendor[n]) byVendor[n] = { total: 0, count: 0, agencies: new Set(), cities: new Set() };
         byVendor[n].total += Number(a['Award Amount'] || 0);
         byVendor[n].count++;
-        if (a['Awarding Agency Name']) byVendor[n].agencies.add(a['Awarding Agency Name']);
+        if (a['Awarding Agency']) byVendor[n].agencies.add(a['Awarding Agency']);
         if (a['Place of Performance City Name']) byVendor[n].cities.add(a['Place of Performance City Name']);
       });
 
