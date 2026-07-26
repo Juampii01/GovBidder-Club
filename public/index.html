@@ -2842,6 +2842,7 @@ function oppRow(o) {
 
 function openModal(o) {
   const isAwarded = o.resultType === 'awarded';
+  window.currentModalOpp = o;
   document.getElementById('modal').classList.add('open');
   document.getElementById('modal-title').textContent = o.title || 'Oportunidad';
   document.getElementById('modal-body').innerHTML = `
@@ -2853,9 +2854,37 @@ function openModal(o) {
     <div class="modal-field"><label>NAICS</label><p>${escapeHtml(o.naics)}</p></div>
     ${!isAwarded ? `<div class="modal-field"><label>UBICACIÓN</label><p>${escapeHtml(o.city)}, ${escapeHtml(o.state)}</p></div>` : ''}
     ${o.setAside?`<div class="modal-field"><label>SET-ASIDE</label><p>${escapeHtml(o.setAside)}</p></div>`:''}
-    <div class="modal-field"><label>DESCRIPCIÓN</label><p>${escapeHtml(o.desc)||'No disponible'}</p></div>`;
-  document.getElementById('modal-link').onclick = () => window.open(o.link, '_blank');
+    <div class="modal-field"><label>DESCRIPCIÓN</label><p>${escapeHtml(o.desc)||'No disponible'}</p></div>
+    <div class="modal-field">
+      <label>RESUMEN IA</label>
+      <div id="modal-ai-summary-body" style="font-size:14.5px;color:var(--muted);">
+        ${o.desc ? `<button class="btn-dark" type="button" onclick="generateOppAiSummary()" id="modal-ai-summary-btn">✨ Generar resumen en lenguaje simple</button>` : 'No hay descripción disponible para resumir.'}
+      </div>
+    </div>`;
+  document.getElementById('modal-link').onclick = () => {
+    const host = (() => { try { return new URL(o.link).hostname; } catch { return 'la fuente original'; } })();
+    if (confirm(`Vas a salir de GovBidder Club hacia ${host}. ¿Continuar?`)) window.open(o.link, '_blank');
+  };
   document.getElementById('modal-support').onclick = () => goToSupportFromModal(o);
+}
+
+async function generateOppAiSummary() {
+  const o = window.currentModalOpp;
+  const body = document.getElementById('modal-ai-summary-body');
+  if (!o || !body) return;
+  body.innerHTML = '<div class="spinner" style="width:16px;height:16px;display:inline-block;"></div> Generando resumen...';
+  try {
+    const prompt = `Resumí en lenguaje simple y en español, en 2-3 oraciones, de qué trata esta licitación para que un dueño de PyME entienda rápido qué está buscando comprar el gobierno: "${o.title}" — Entidad: ${o.org}. NAICS: ${o.naics}. ${o.setAside ? `Set-aside: ${o.setAside}.` : ''} Descripción original: ${o.desc}`;
+    const res = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Resumen de oportunidad individual' })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'No se pudo generar el resumen.');
+    body.textContent = data.response;
+  } catch (e) {
+    body.innerHTML = `<span style="color:var(--red);">${escapeHtml(e.message)}</span>`;
+  }
 }
 
 function goToSupportFromModal(o) {
