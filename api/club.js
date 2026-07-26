@@ -376,6 +376,15 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, deposit: data });
     }
 
+    if (action === 'update_profile_name') {
+      const name = String(body.name || '').trim();
+      if (!name) return res.status(400).json({ success: false, error: 'El nombre no puede estar vacío.' });
+      if (name.length > 100) return res.status(400).json({ success: false, error: 'Nombre demasiado largo.' });
+      const { error: updErr } = await supabase.from('profiles').update({ name }).eq('id', profile.id);
+      if (updErr) return safeError(res, updErr, 'club.js error');
+      return res.status(200).json({ success: true, name });
+    }
+
     // ── ADMIN ────────────────────────────────────────────
     if (action.startsWith('admin_')) {
       if (profile.role !== 'admin') return res.status(403).json({ success: false, error: 'Solo administradores' });
