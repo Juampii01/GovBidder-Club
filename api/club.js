@@ -385,6 +385,28 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, name });
     }
 
+    if (action === 'update_company_profile') {
+      const clip = (v, max) => String(v || '').trim().substring(0, max);
+      const update = {
+        company_name: clip(body.companyName, 150),
+        company_dba: clip(body.companyDba, 150),
+        ein: clip(body.ein, 20),
+        uei: clip(body.uei, 20),
+        cage_code: clip(body.cageCode, 20),
+        business_address: clip(body.businessAddress, 250),
+        company_phone: clip(body.companyPhone, 30),
+        company_website: clip(body.companyWebsite, 200),
+        cert_8a: body.cert8a === true,
+        cert_hubzone: body.certHubzone === true,
+        cert_women_owned: body.certWomenOwned === true,
+        cert_veteran_owned: body.certVeteranOwned === true,
+        cert_small_business: body.certSmallBusiness === true,
+      };
+      const { error: updErr } = await supabase.from('profiles').update(update).eq('id', profile.id);
+      if (updErr) return safeError(res, updErr, 'club.js error');
+      return res.status(200).json({ success: true });
+    }
+
     // ── ADMIN ────────────────────────────────────────────
     if (action.startsWith('admin_')) {
       if (profile.role !== 'admin') return res.status(403).json({ success: false, error: 'Solo administradores' });

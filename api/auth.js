@@ -26,6 +26,19 @@ function shapeMember(profile) {
     avatar: profile.avatar || (profile.name || '').substring(0, 2).toUpperCase(),
     isTrial: profile.is_trial,
     isInvestor: profile.is_investor === true,
+    companyName: profile.company_name || '',
+    companyDba: profile.company_dba || '',
+    ein: profile.ein || '',
+    uei: profile.uei || '',
+    cageCode: profile.cage_code || '',
+    businessAddress: profile.business_address || '',
+    companyPhone: profile.company_phone || '',
+    companyWebsite: profile.company_website || '',
+    cert8a: profile.cert_8a === true,
+    certHubzone: profile.cert_hubzone === true,
+    certWomenOwned: profile.cert_women_owned === true,
+    certVeteranOwned: profile.cert_veteran_owned === true,
+    certSmallBusiness: profile.cert_small_business === true,
   };
   if (profile.is_trial) {
     out.trialStart = profile.trial_start;

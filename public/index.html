@@ -2258,7 +2258,83 @@ function showMyProfile() {
     </div>
     ${trialRow}
     ${rows}
+    <button class="btn-outline" style="width:100%;margin-top:14px;" type="button" onclick="showCompanyProfileForm()">🏢 Datos de la empresa</button>
   `);
+}
+
+function showCompanyProfileForm() {
+  const m = currentMember;
+  if (!m) return;
+  const certRow = (id, label, checked) => `
+    <label style="display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink);">
+      <input type="checkbox" id="${id}" ${checked ? 'checked' : ''}/> ${label}
+    </label>`;
+  showSimpleModal('Datos de la empresa', `
+    <div class="modal-field"><label>RAZÓN SOCIAL</label><input class="search-input" id="cp-company-name" style="width:100%;" value="${escapeHtml(m.companyName || '')}"/></div>
+    <div class="modal-field"><label>NOMBRE COMERCIAL (DBA)</label><input class="search-input" id="cp-company-dba" style="width:100%;" value="${escapeHtml(m.companyDba || '')}"/></div>
+    <div style="display:flex;gap:10px;">
+      <div class="modal-field" style="flex:1;"><label>EIN</label><input class="search-input" id="cp-ein" style="width:100%;" value="${escapeHtml(m.ein || '')}"/></div>
+      <div class="modal-field" style="flex:1;"><label>UEI</label><input class="search-input" id="cp-uei" style="width:100%;" value="${escapeHtml(m.uei || '')}"/></div>
+      <div class="modal-field" style="flex:1;"><label>CAGE CODE</label><input class="search-input" id="cp-cage" style="width:100%;" value="${escapeHtml(m.cageCode || '')}"/></div>
+    </div>
+    <div class="modal-field"><label>DIRECCIÓN</label><input class="search-input" id="cp-address" style="width:100%;" value="${escapeHtml(m.businessAddress || '')}"/></div>
+    <div style="display:flex;gap:10px;">
+      <div class="modal-field" style="flex:1;"><label>TELÉFONO</label><input class="search-input" id="cp-phone" style="width:100%;" value="${escapeHtml(m.companyPhone || '')}"/></div>
+      <div class="modal-field" style="flex:1;"><label>WEBSITE</label><input class="search-input" id="cp-website" style="width:100%;" value="${escapeHtml(m.companyWebsite || '')}"/></div>
+    </div>
+    <div class="modal-field">
+      <label>CERTIFICACIONES</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+        ${certRow('cp-cert-8a', '8(a)', m.cert8a)}
+        ${certRow('cp-cert-hubzone', 'HUBZone', m.certHubzone)}
+        ${certRow('cp-cert-women', 'Women-Owned', m.certWomenOwned)}
+        ${certRow('cp-cert-veteran', 'Veteran-Owned', m.certVeteranOwned)}
+        ${certRow('cp-cert-sb', 'Small Business', m.certSmallBusiness)}
+      </div>
+    </div>
+    <div id="company-profile-error" style="display:none;color:var(--red);font-size:13.5px;margin:8px 0;"></div>
+    <button class="btn-red" style="width:100%;padding:10px;margin-top:6px;" type="button" onclick="saveCompanyProfile()">Guardar</button>
+  `);
+}
+
+async function saveCompanyProfile() {
+  const errEl = document.getElementById('company-profile-error');
+  const val = id => document.getElementById(id)?.value?.trim() || '';
+  const checked = id => document.getElementById(id)?.checked === true;
+  const payload = {
+    token: clubToken(),
+    companyName: val('cp-company-name'),
+    companyDba: val('cp-company-dba'),
+    ein: val('cp-ein'),
+    uei: val('cp-uei'),
+    cageCode: val('cp-cage'),
+    businessAddress: val('cp-address'),
+    companyPhone: val('cp-phone'),
+    companyWebsite: val('cp-website'),
+    cert8a: checked('cp-cert-8a'),
+    certHubzone: checked('cp-cert-hubzone'),
+    certWomenOwned: checked('cp-cert-women'),
+    certVeteranOwned: checked('cp-cert-veteran'),
+    certSmallBusiness: checked('cp-cert-sb'),
+  };
+  try {
+    const res = await fetch('/api/club?action=update_company_profile', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.success) { errEl.textContent = data.error || 'No se pudo guardar el perfil de empresa.'; errEl.style.display = 'block'; return; }
+    Object.assign(currentMember, {
+      companyName: payload.companyName, companyDba: payload.companyDba, ein: payload.ein, uei: payload.uei,
+      cageCode: payload.cageCode, businessAddress: payload.businessAddress, companyPhone: payload.companyPhone,
+      companyWebsite: payload.companyWebsite, cert8a: payload.cert8a, certHubzone: payload.certHubzone,
+      certWomenOwned: payload.certWomenOwned, certVeteranOwned: payload.certVeteranOwned, certSmallBusiness: payload.certSmallBusiness
+    });
+    closeSimpleModal();
+    showToast('Datos de la empresa actualizados.', 'success');
+  } catch (e) {
+    errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block';
+  }
 }
 
 async function saveProfileName() {
