@@ -21,11 +21,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { token } = req.body || {};
+  const { token, feature } = req.body || {};
   const { error: authErr, status: authStatus, profile } = await requireActiveMember(supabase, token);
   if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
 
-  const { error: rlErr, status: rlStatus } = await checkRateLimit(supabase, profile.id, 'ai_prompt', 30, 60);
+  // Los usos pesados de un admin (ej. sugerir respuestas de tickets en cadena) no deben
+  // comerle la cuota de IA a los miembros — cada `feature` tiene su propio balde.
+  const rateLimitAction = feature ? `ai_prompt:${feature}` : 'ai_prompt';
+  const { error: rlErr, status: rlStatus } = await checkRateLimit(supabase, profile.id, rateLimitAction, 30, 60);
   if (rlErr) return res.status(rlStatus).json({ success: false, error: rlErr });
 
   const CLAUDE_KEY = process.env.ANTHROPIC_API_KEY;

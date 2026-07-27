@@ -1826,6 +1826,14 @@ tr:hover td{background:var(--line-soft) !important;}
         <div class="geo-tab"        id="tab-admin-members"      onclick="adminTab('members')">👥 Miembros</div>
       </div>
 
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title" style="display:flex;align-items:center;">
+          <span>🤖 Resumen de IA — qué necesita tu atención</span>
+          <button class="btn-dark" style="margin-left:auto;padding:6px 12px;font-size:13px;" onclick="generateAdminOpsSummary()">Generar resumen</button>
+        </div>
+        <div id="admin-ops-summary-body" style="font-size:14px;color:var(--muted);margin-top:8px;line-height:1.6;">Hacé clic en "Generar resumen" para ver qué necesita tu atención hoy.</div>
+      </div>
+
       <!-- TAB: TAREAS -->
       <div id="admin-panel-jobs" class="geo-panel active">
         <div class="grid-2b">
@@ -4764,11 +4772,54 @@ async function reviewApplication(applicationId, decision, btn) {
   loadAdminJobs();
 }
 
+async function generateAdminOpsSummary() {
+  const el = document.getElementById('admin-ops-summary-body');
+  el.innerHTML = '<div class="spinner" style="width:14px;height:14px;display:inline-block;"></div> Analizando...';
+  try {
+    const [tickets, alliance, membership, investors] = await Promise.all([
+      clubAdminFetch('admin_ticket_list'),
+      clubAdminFetch('admin_alliance_list'),
+      clubAdminFetch('admin_membership_list'),
+      clubAdminFetch('admin_investor_list'),
+    ]);
+    const pendingTickets = (tickets.tickets || []).filter(t => t.status !== 'resolved');
+    const pendingAlliance = (alliance.requests || []).filter(r => r.status === 'pending');
+    const pendingMembership = (membership.requests || []).filter(r => r.status === 'pending');
+    const behindInvestors = (investors.investors || []).filter(i => i.behind > 0 && i.status === 'active');
+
+    if (!pendingTickets.length && !pendingAlliance.length && !pendingMembership.length && !behindInvestors.length) {
+      el.textContent = '✅ No hay nada pendiente ahora mismo.';
+      return;
+    }
+
+    const summaryText = [
+      `Tickets de soporte sin resolver: ${pendingTickets.length}.${pendingTickets.length ? ' ' + pendingTickets.slice(0, 3).map(t => `[${t.type}: "${(t.message || '').substring(0, 80)}"]`).join(' ') : ''}`,
+      `Solicitudes de Alliance (Funding Access) pendientes: ${pendingAlliance.length}.`,
+      `Solicitudes de membresía pendientes: ${pendingMembership.length}.`,
+      `Inversionistas atrasados con su aporte: ${behindInvestors.length}.${behindInvestors.length ? ' ' + behindInvestors.slice(0, 3).map(i => i.name).join(', ') : ''}`
+    ].join('\n');
+
+    const prompt = `Sos el asistente del panel de administración de GovBidder Club. Con este resumen de lo pendiente, armá una lista corta (máximo 5 puntos, con bullets) priorizada de qué debería atender primero el administrador y por qué:\n${summaryText}`;
+    const res = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Resumen de operaciones para admin', feature: 'admin_ops_summary' })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'No se pudo generar el resumen.');
+    el.textContent = data.response;
+  } catch (e) {
+    el.innerHTML = `<span style="color:var(--red);">${escapeHtml(e.message)}</span>`;
+  }
+}
+
+let adminTicketsData = [];
+
 async function loadAdminTickets() {
   const body = document.getElementById('admin-tickets-body');
   if (!body) return;
   const data = await clubAdminFetch('admin_ticket_list');
   if (!data.success) return;
+  adminTicketsData = data.tickets || [];
   body.innerHTML = data.tickets.length ? data.tickets.map(t => {
     const badge = STATUS_BADGE[t.status] || ['bm', escapeHtml(t.status)];
     const action = t.status !== 'resolved'
@@ -4786,6 +4837,7 @@ async function loadAdminTickets() {
       <td style="min-width:200px;">
         <textarea id="ticket-response-${t.id}" rows="2" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:6px;font-size:13px;font-family:inherit;resize:none;outline:none;color:var(--text);background:var(--card);" placeholder="Escribir respuesta...">${escapeHtml(t.admin_response || '')}</textarea>
         <button class="btn-outline" style="padding:3px 8px;font-size:12px;margin-top:4px;" onclick="saveTicketResponse('${t.id}','${t.status}')">Guardar y notificar</button>
+        <button class="btn-outline" style="padding:3px 8px;font-size:12px;margin-top:4px;" onclick="suggestTicketResponse('${t.id}',this)" id="ticket-suggest-${t.id}">✨ Sugerir</button>
       </td>
     </tr>`;
   }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">No hay tickets.</td></tr>';
@@ -4804,6 +4856,26 @@ async function saveTicketResponse(ticketId, currentStatus) {
   const data = await clubAdminFetch('admin_ticket_review', { ticketId, status, response });
   if (!data.success) { showToast(data.error || 'No se pudo guardar la respuesta.'); return; }
   loadAdminTickets();
+}
+
+async function suggestTicketResponse(ticketId, btn) {
+  const ticket = adminTicketsData.find(t => t.id === ticketId);
+  const textarea = document.getElementById(`ticket-response-${ticketId}`);
+  if (!ticket || !textarea) return;
+  if (btn) btn.disabled = true;
+  try {
+    const prompt = `Redactá en español una respuesta breve y profesional (no más de 4-5 oraciones) para este ticket de soporte de un miembro de GovBidder Club. Tipo de solicitud: ${ticket.type}. ${ticket.opportunity_link ? `Link de oportunidad: ${ticket.opportunity_link}. ` : ''}Mensaje del miembro: "${ticket.message}"`;
+    const res = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Borrador de respuesta a ticket de soporte', feature: 'admin_ticket_suggest' })
+    });
+    const data = await res.json();
+    if (!data.success) { showToast(data.error || 'No se pudo generar la sugerencia.'); return; }
+    textarea.value = data.response;
+  } catch (e) {
+    showToast('Error de conexión: ' + e.message);
+  }
+  if (btn) btn.disabled = false;
 }
 
 async function viewAdminTicketDocument(ticketId) {
