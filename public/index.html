@@ -3275,12 +3275,26 @@ async function runAI(page, btn) {
   const el = document.getElementById(`ai-${page}`);
   el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
   if (btn) { btn.classList.add('spinning'); btn.disabled = true; }
+
+  const m = currentMember || {};
+  const myIndustry = m.industry || 'servicios generales';
+  const myState    = m.state || 'NJ';
+  const myNaics    = m.naics || '561720';
+  const myPlan     = m.plan || 'Elevate';
+  const context = `Plan ${myPlan}, industria ${myIndustry}, NAICS ${myNaics}, estado ${myState}`;
+
+  const mktNaics  = document.getElementById('mkt-naics')?.value  || myNaics;
+  const mktYear   = document.getElementById('mkt-year')?.value   || new Date().getFullYear();
+  const compNaics = document.getElementById('comp-naics')?.value || myNaics;
+  const compState = document.getElementById('comp-state')?.value || myState;
+  const compYear  = document.getElementById('comp-year')?.value  || new Date().getFullYear();
+
   const prompts = {
-    home:    `Soy negocio cleaning/janitorial NJ plan Legacy GovBidder. ${liveOpps.length} opps vía GovBidder Connect, ${liveGrants.length} grants activos. Dame brief estratégico de hoy.`,
-    opps:    `Tengo ${liveOpps.length} oportunidades live vía GovBidder Connect cleaning NJ. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
-    grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy cleaning/janitorial NJ bajo 10 empleados plan Legacy. ¿Cuáles aplican?`,
-    market:  `Analiza mercado contratos gubernamentales cleaning/janitorial NAICS 561720 NJ 2024. Tendencias, top buyers y oportunidades.`,
-    compete: `Analiza la competencia de contratistas gubernamentales cleaning/janitorial NAICS 561720 en NJ 2024. ¿Quiénes son los principales competidores, qué participación de mercado tienen y cómo puede diferenciarse un negocio chico plan Legacy?`
+    home:    `Soy un negocio de ${myIndustry} (NAICS ${myNaics}) en ${myState}, plan ${myPlan} de GovBidder Club. ${liveOpps.length} oportunidades vía GovBidder Connect, ${liveGrants.length} grants activos. Dame un brief estratégico de hoy.`,
+    opps:    `Tengo ${liveOpps.length} oportunidades live vía GovBidder Connect para NAICS ${myNaics} en ${myState}. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
+    grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy ${myIndustry} en ${myState}, plan ${myPlan}. ¿Cuáles aplican?`,
+    market:  `Analiza el mercado de contratos gubernamentales para NAICS ${mktNaics} en ${mktYear}. Tendencias, top buyers y oportunidades.`,
+    compete: `Analiza la competencia de contratistas gubernamentales para NAICS ${compNaics} en ${compState} en ${compYear}. ¿Quiénes son los principales competidores, qué participación de mercado tienen y cómo puede diferenciarse un negocio plan ${myPlan}?`
   };
   const minDelay = new Promise(r => setTimeout(r, 1400));
   try {
@@ -3288,7 +3302,7 @@ async function runAI(page, btn) {
       fetch(`${API}/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: clubToken(), prompt: prompts[page], context: 'Plan Legacy, Cleaning/Janitorial, New Jersey' })
+        body: JSON.stringify({ token: clubToken(), prompt: prompts[page], context })
       }),
       minDelay
     ]);
