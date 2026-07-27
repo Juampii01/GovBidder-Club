@@ -4656,7 +4656,8 @@ async function loadAdminMembership() {
   body.innerHTML = data.requests.length ? data.requests.map(r => {
     const badge = r.status === 'contacted' ? ['bg','Contactada'] : r.status === 'rejected' ? ['br','Rechazada'] : ['by','Pendiente'];
     const action = r.status === 'pending'
-      ? `<div style="display:flex;gap:4px;margin-top:4px;">
+      ? `<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">
+          <button class="btn-outline membership-convert-btn" style="padding:3px 7px;font-size:12.5px;" data-request-id="${escapeHtml(r.id)}" data-name="${escapeHtml(r.name)}" data-email="${escapeHtml(r.email)}">📈 Convertir en inversionista</button>
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="reviewMembership('${r.id}','contacted',this)">Marcar contactada</button>
           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="reviewMembership('${r.id}','rejected',this)">Rechazar</button>
         </div>` : '';
@@ -4671,6 +4672,10 @@ async function loadAdminMembership() {
       <td><span class="badge ${badge[0]}">${badge[1]}</span>${action}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);">No hay solicitudes.</td></tr>';
+  body.onclick = (e) => {
+    const btn = e.target.closest('.membership-convert-btn');
+    if (btn) convertMembershipToInvestor(btn.dataset.requestId, btn.dataset.name, btn.dataset.email);
+  };
 }
 
 async function reviewMembership(requestId, status, btn) {
@@ -4684,6 +4689,7 @@ async function reviewMembership(requestId, status, btn) {
 // ── INVESTMENT CLUB (admin) ──────────────────────────────
 const INVESTOR_STATUS_ADMIN_BADGE = { active: ['bg','Activo'], withdrawn: ['bm','Retirado'], completed: ['bg','Completado'] };
 let addInvestorSelectedMemberId = null;
+let convertingMembershipRequestId = null;
 
 async function loadAdminInvestors() {
   const depBody = document.getElementById('admin-investor-deposits-body');
@@ -4781,6 +4787,7 @@ function filterInvestorMemberList(value) {
 }
 
 async function openAddInvestorModal() {
+  convertingMembershipRequestId = null;
   if (!adminMemberData.length) {
     const data = await clubAdminFetch('admin_member_list');
     if (data.success) adminMemberData = data.members;
@@ -4814,6 +4821,15 @@ function pickInvestorMember(memberId, memberName) {
     <div id="investor-create-error" style="display:none;color:var(--red);font-size:13.5px;margin-bottom:8px;"></div>
     <button class="btn-red" style="width:100%;padding:10px;" onclick="confirmCreateInvestor()">Confirmar</button>
   `);
+}
+
+function convertMembershipToInvestor(requestId, name, email) {
+  convertingMembershipRequestId = requestId;
+  showNewInvestorMemberForm();
+  const nameInput = document.getElementById('investor-new-name');
+  const emailInput = document.getElementById('investor-new-email');
+  if (nameInput) nameInput.value = name;
+  if (emailInput) emailInput.value = email;
 }
 
 function showNewInvestorMemberForm() {
@@ -4867,6 +4883,11 @@ async function confirmCreateInvestor() {
   }
   const data = await clubAdminFetch('admin_investor_create', payload);
   if (!data.success) { errEl.textContent = data.error || 'No se pudo crear el inversionista.'; errEl.style.display = 'block'; return; }
+  if (convertingMembershipRequestId) {
+    await clubAdminFetch('admin_membership_review', { requestId: convertingMembershipRequestId, status: 'contacted' });
+    convertingMembershipRequestId = null;
+    loadAdminMembership();
+  }
   closeSimpleModal();
   showToast('Inversionista agregado.', 'success');
   loadAdminInvestors();
