@@ -1488,6 +1488,13 @@ tr:hover td{background:var(--line-soft) !important;}
               <span>He leído y acepto los <a href="javascript:void(0)" onclick="event.preventDefault();showAllianceTerms()" style="color:var(--accent);text-decoration:underline;">Términos y Condiciones de GovBidder Alliance</a>.</span>
             </label>
 
+            <!-- IA: revisión de consistencia, opcional y no bloqueante -->
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <button class="btn-outline" type="button" style="font-size:13px;padding:6px 12px;" onclick="checkAllianceConsistency()" id="alliance-ai-check-btn">🤖 Revisar con IA antes de enviar</button>
+              <span style="font-size:12px;color:var(--muted);">Opcional — no bloquea el envío.</span>
+            </div>
+            <div id="alliance-ai-check-body" style="display:none;background:var(--line-soft);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px;color:var(--ink);"></div>
+
             <!-- Error / Success -->
             <div id="alliance-error" style="display:none;background:var(--red-soft);border:1px solid var(--red-soft);border-radius:8px;padding:10px 14px;color:var(--red);font-size:14px;"></div>
             <div id="alliance-success" style="display:none;background:var(--green-soft);border:1px solid var(--green-soft);border-radius:10px;padding:16px;text-align:center;">
@@ -3967,6 +3974,34 @@ function readFileAsBase64(file) {
   });
 }
 
+async function checkAllianceConsistency() {
+  const bodyEl = document.getElementById('alliance-ai-check-body');
+  const btn = document.getElementById('alliance-ai-check-btn');
+  const po = (document.getElementById('alliance-po')?.value || '').trim();
+  const cost = (document.getElementById('alliance-cost')?.value || '').trim();
+  const desc = (document.getElementById('alliance-desc')?.value || '').trim();
+  bodyEl.style.display = 'block';
+  if (!po || !cost || !desc) {
+    bodyEl.textContent = 'Completá el valor de la PO, el costo y la descripción para poder revisarlo.';
+    return;
+  }
+  btn.disabled = true;
+  bodyEl.innerHTML = '<div class="spinner" style="width:14px;height:14px;display:inline-block;"></div> Revisando...';
+  try {
+    const prompt = `Revisá si esta solicitud de financiamiento parece consistente y completa. Valor de la PO: $${po}. Costo de mercancía: $${cost}. Descripción: "${desc}". Si algo no cierra (ej. la descripción no explica para qué es la PO, o los montos parecen incoherentes con lo descripto), avisá en una o dos oraciones qué convendría revisar antes de enviar. Si parece razonable, decilo brevemente. Nunca sugieras si aprobar o rechazar la solicitud — esa decisión es de GovBidder Club.`;
+    const res = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Revisión de consistencia de solicitud Alliance', feature: 'alliance_consistency_check' })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'No se pudo revisar la solicitud.');
+    bodyEl.textContent = '🤖 ' + data.response;
+  } catch (e) {
+    bodyEl.innerHTML = `<span style="color:var(--red);">${escapeHtml(e.message)}</span>`;
+  }
+  btn.disabled = false;
+}
+
 async function submitAllianceApp() {
   const name        = (document.getElementById('alliance-name')?.value        || '').trim();
   const company     = (document.getElementById('alliance-company')?.value     || '').trim();
@@ -3997,6 +4032,10 @@ async function submitAllianceApp() {
 
   if (!name || !company || !po || !cost || !desc) {
     if (errEl) { errEl.textContent = 'Por favor completa todos los campos requeridos.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (poIssueDate && deliveryDate && poIssueDate > deliveryDate) {
+    if (errEl) { errEl.textContent = 'La fecha estimada de entrega no puede ser anterior a la fecha de emisión de la PO.'; errEl.style.display = 'block'; }
     return;
   }
   if (!docFile) {

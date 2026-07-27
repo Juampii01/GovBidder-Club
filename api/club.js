@@ -212,6 +212,9 @@ export default async function handler(req, res) {
       if (cost > poValue) {
         return res.status(400).json({ success: false, error: 'El costo de mercancía no puede ser mayor al valor de la PO.' });
       }
+      if (poIssueDate && estimatedDeliveryDate && poIssueDate > estimatedDeliveryDate) {
+        return res.status(400).json({ success: false, error: 'La fecha estimada de entrega no puede ser anterior a la fecha de emisión de la PO.' });
+      }
       if (!poDocumentBase64 || !poDocumentName || !/\.pdf$/i.test(poDocumentName)) {
         return res.status(400).json({ success: false, error: 'Adjuntá la orden de compra (PDF) para continuar.' });
       }
