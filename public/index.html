@@ -1267,6 +1267,13 @@ tr:hover td{background:var(--line-soft) !important;}
           <button class="btn-red" onclick="searchCodes()">Buscar</button>
         </div>
       </div>
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:20px;margin-bottom:16px;box-shadow:var(--sh-sm);">
+        <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px;">🤖 ¿No sabés tu NAICS? Describí tu negocio en tus palabras</div>
+        <div style="font-size:13.5px;color:var(--muted);margin-bottom:10px;">La IA identifica palabras clave y busca los códigos reales que coinciden — nunca inventa un código.</div>
+        <textarea id="code-describe-input" class="search-input" style="width:100%;min-height:64px;resize:vertical;" placeholder="Ej: limpio oficinas y edificios de gobierno, hago mantenimiento general de instalaciones..."></textarea>
+        <button class="btn-dark" style="margin-top:8px;" type="button" onclick="suggestNaicsFromDescription()" id="code-describe-btn">✨ Sugerir NAICS</button>
+        <div id="code-describe-results" style="margin-top:10px;"></div>
+      </div>
       <div id="codes-container">
         <div style="text-align:center;padding:40px;color:var(--muted);">
           <div style="font-size:40px;margin-bottom:12px;">🔢</div>
@@ -3406,6 +3413,61 @@ async function searchCodes() {
   } catch(e) {
     el.innerHTML = `<div class="error-box">❌ Error: ${e.message}</div>`;
   }
+}
+
+async function suggestNaicsFromDescription() {
+  const desc = document.getElementById('code-describe-input')?.value?.trim();
+  const resultsEl = document.getElementById('code-describe-results');
+  const btn = document.getElementById('code-describe-btn');
+  if (!desc) { resultsEl.innerHTML = `<div style="color:var(--red);font-size:13.5px;">Describí tu negocio primero.</div>`; return; }
+  btn.disabled = true;
+  resultsEl.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Identificando palabras clave...</div></div>`;
+  try {
+    const prompt = `Un usuario describe su negocio así: "${desc}". Dame ÚNICAMENTE una lista de 3 a 5 palabras clave o frases cortas EN INGLÉS (el catálogo NAICS está en inglés) que probablemente aparezcan en la descripción oficial de su código NAICS. Separalas por comas, sin numeración, sin texto adicional, sin explicación.`;
+    const aiRes = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Sugerencia de NAICS por descripción libre' })
+    });
+    const aiData = await aiRes.json();
+    if (!aiData.success) throw new Error(aiData.error || 'No se pudo interpretar la descripción.');
+    const keywords = aiData.response.split(',').map(k => k.trim()).filter(Boolean).slice(0, 5);
+    if (!keywords.length) throw new Error('No se identificaron palabras clave.');
+
+    // La IA solo sugiere palabras clave — la búsqueda real corre contra la base
+    // de códigos real (api/codes.js), nunca dejamos que invente un código.
+    const searches = await Promise.all(keywords.map(kw =>
+      fetch(`${API}/codes?query=${encodeURIComponent(kw)}&type=search&token=${encodeURIComponent(clubToken())}`).then(r => r.json())
+    ));
+    const seen = new Set();
+    const merged = [];
+    for (const s of searches) {
+      if (!s.success) continue;
+      for (const r of (s.results || [])) {
+        if (seen.has(r.naics)) continue;
+        seen.add(r.naics);
+        merged.push(r);
+      }
+    }
+
+    if (!merged.length) {
+      resultsEl.innerHTML = `<div style="color:var(--muted);font-size:13.5px;">No encontramos códigos para: ${keywords.map(escapeHtml).join(', ')}. Probá con otras palabras.</div>`;
+    } else {
+      resultsEl.innerHTML = `
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;">Buscado por: ${keywords.map(k => escapeHtml(k)).join(', ')}</div>
+        ${merged.slice(0, 8).map(r => `
+          <div onclick="quickCrosswalk('${r.naics}')" style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.2s;"
+               onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--line)'">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="background:var(--red);color:#fff;padding:3px 10px;border-radius:6px;font-size:15px;font-weight:900;font-family:monospace;">${r.naics}</span>
+              <span style="font-size:14.5px;font-weight:700;color:var(--ink);">${escapeHtml(r.title)}</span>
+              <span style="margin-left:auto;font-size:12.5px;color:var(--red);font-weight:700;">Ver crosswalk →</span>
+            </div>
+          </div>`).join('')}`;
+    }
+  } catch (e) {
+    resultsEl.innerHTML = `<div class="error-box">❌ ${escapeHtml(e.message)}</div>`;
+  }
+  btn.disabled = false;
 }
 
 function quickCrosswalk(code) {
