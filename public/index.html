@@ -1974,6 +1974,7 @@ tr:hover td{background:var(--line-soft) !important;}
 <script>
 const API = '/api';
 let liveOpps = [], liveGrants = [], currentMember = null, allStates = [], allCounties = [];
+let oppSortByMatch = false;
 let investorBehindCount = 0, investorReminderIntervalId = null, lastInvestorReminderAt = 0;
 
 // ── NAVIGATION ────────────────────────────────────────────
@@ -2797,13 +2798,25 @@ function renderOppsList(kw) {
   const resultsLine = oppTotalIsExact
     ? `<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">Resultados: ${totalCount}</div>`
     : `<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">Resultados: ${shownCount} cargados <span style="font-weight:400;color:var(--muted);font-size:13px;">(puede haber más — Cargar más)</span></div>`;
+  const sortToggle = `<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:10px;cursor:pointer;">
+    <input type="checkbox" onchange="toggleOppSortByMatch(this.checked)" ${oppSortByMatch ? 'checked' : ''}/> Ordenar por compatibilidad
+  </label>`;
+  const certNudge = !memberHasAnyCert(currentMember || {})
+    ? `<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;">💡 Completá tu <a href="#" onclick="showMyProfile();setTimeout(showCompanyProfileForm,50);return false;" style="color:var(--red);">perfil de empresa</a> para un match más preciso.</div>`
+    : '';
+  const items = oppSortByMatch ? [...liveOpps].sort((a, b) => matchScore(b) - matchScore(a)) : liveOpps;
   const footer = oppHasMore
     ? `<div style="text-align:center;margin-top:16px;">
          <button class="btn-dark" id="opp-load-more-btn" onclick="loadMoreOpps()">Cargar más resultados</button>
          <div style="margin-top:8px;font-size:13px;color:var(--muted);">${oppTotalIsExact ? `Mostrando ${shownCount} de ${totalCount}` : `Mostrando ${shownCount} cargados`}</div>
        </div>`
     : `<div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">${oppTotalIsExact ? `Mostrando ${shownCount} de ${totalCount}` : `Mostrando ${shownCount} cargados`} — no hay más resultados</div>`;
-  listEl.innerHTML = resultsLine + liveOpps.map(o => oppCard(o)).join('') + footer;
+  listEl.innerHTML = resultsLine + certNudge + sortToggle + items.map(o => oppCard(o)).join('') + footer;
+}
+
+function toggleOppSortByMatch(checked) {
+  oppSortByMatch = checked;
+  renderOppsList(document.getElementById('opp-kw')?.value || '');
 }
 
 async function loadMoreOpps() {
@@ -2851,6 +2864,60 @@ function samKeyEmptyState() {
 const OPP_TYPE_LABELS = { active: 'Activa', pending_award: 'Pending Award', awarded: 'Adjudicado' };
 const OPP_TYPE_BADGES = { active: 'bb', pending_award: 'by', awarded: 'bg' };
 
+// ── SCORE DE COMPATIBILIDAD ──────────────────────────────
+// "Qué tan bien encaja" con el perfil del usuario — nunca una determinación
+// legal de elegibilidad. Cálculo 100% local, sin llamada a IA ni al backend.
+const OPP_SETASIDE_TO_CERT = [
+  ['8(a)', 'cert8a'],
+  ['hubzone', 'certHubzone'],
+  ['women-owned', 'certWomenOwned'],
+  ['veteran', 'certVeteranOwned'],
+  ['small business', 'certSmallBusiness']
+];
+
+function memberHasAnyCert(m) {
+  return !!(m.cert8a || m.certHubzone || m.certWomenOwned || m.certVeteranOwned || m.certSmallBusiness);
+}
+
+function matchScore(o) {
+  const m = currentMember || {};
+  let score = 0;
+
+  const myNaics = (m.naics || '').trim();
+  const oNaics = (o.naicsCode || '').trim();
+  if (myNaics && oNaics) {
+    if (oNaics === myNaics) score += 60;
+    else if (oNaics.slice(0, 4) === myNaics.slice(0, 4)) score += 40;
+    else if (oNaics.slice(0, 2) === myNaics.slice(0, 2)) score += 20;
+  }
+
+  if (o.level === 'federal') score += 25;
+  else if (o.resultType === 'awarded') score += 15;
+  else if (o.state && m.state && o.state === m.state) score += 25;
+  else if (o.state) score += 5;
+
+  if (!o.setAside) {
+    score += 15;
+  } else if (!memberHasAnyCert(m)) {
+    score += 15;
+  } else {
+    // Un set-aside puede combinar varias condiciones a la vez (ej. "Women-Owned
+    // Small Business" matchea DOS etiquetas) — hay que cumplir TODAS las que
+    // matchearon, no alcanza con tener cualquiera de las certificaciones.
+    const saLower = o.setAside.toLowerCase();
+    const matched = OPP_SETASIDE_TO_CERT.filter(([label]) => saLower.includes(label));
+    if (!matched.length || matched.every(([, certKey]) => m[certKey])) score += 15;
+  }
+
+  return Math.min(100, Math.round(score));
+}
+
+function matchBadgeClass(score) {
+  if (score >= 70) return 'bg';
+  if (score >= 40) return 'by';
+  return 'bm';
+}
+
 function fmtAmount(n) {
   return (n == null) ? 'No revelado' : `$${Number(n).toLocaleString('en-US')}`;
 }
@@ -2871,7 +2938,8 @@ function oppCard(o) {
   const amountFull    = isAwarded ? fmtAmount(o.amount) : null;
   const amountCompact = isAwarded ? fmtAmountCompact(o.amount) : null;
   const typeLabel = OPP_TYPE_LABELS[o.resultType] || o.type || '—';
-  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountFull,vendor:o.vendor||''});
+  const score = matchScore(o);
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountFull,vendor:o.vendor||'',score});
   return `<div class="opp-card" onclick='openModal(${escapeHtml(d)})'>
     <div class="opp-title">${escapeHtml(o.title)||'Sin título'}</div>
     <div class="opp-meta">
@@ -2880,6 +2948,7 @@ function oppCard(o) {
       <span><strong style="color:${urgent?'var(--red)':'var(--ink)'};white-space:nowrap;" title="${isAwarded?escapeHtml(amountFull):''}">${isAwarded && amountCompact!=='No revelado' ? amountCompact : dl}</strong></span>
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
+      <span class="badge ${matchBadgeClass(score)}" title="Qué tan bien encaja con tu perfil — no es una determinación de elegibilidad">🎯 ${score}% match</span>
       <span class="badge ${OPP_TYPE_BADGES[o.resultType]||'bb'}">${escapeHtml(typeLabel)}</span>
       ${o.naicsCode?`<span class="badge bm mono">NAICS ${escapeHtml(o.naicsCode)}</span>`:''}
       ${o.setAside?`<span class="badge bg">${escapeHtml(o.setAside)}</span>`:''}
@@ -2898,7 +2967,7 @@ function oppRow(o) {
   const amountFull    = isAwarded ? fmtAmount(o.amount) : null;
   const amountCompact = isAwarded ? fmtAmountCompact(o.amount) : null;
   const typeLabel = OPP_TYPE_LABELS[o.resultType] || o.type || '—';
-  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountFull,vendor:o.vendor||''});
+  const d = JSON.stringify({title:o.title,org:o.organization||'—',type:o.type||typeLabel,deadline:dl,naics:o.naicsCode||'—',desc:o.description||'',state:o.state||'—',city:o.city||'—',setAside:o.setAside||'',link:o.link||'#',resultType:o.resultType,amount:amountFull,vendor:o.vendor||'',score:matchScore(o)});
   return `<a href="#" onclick='openModal(${escapeHtml(d)});return false;' class="grant-row" style="text-decoration:none;">
     <span class="grant-row-dot" style="background:${urgent?'var(--red)':'var(--navy)'};"></span>
     <div style="flex:1;min-width:0;">
@@ -2916,6 +2985,13 @@ function openModal(o) {
   document.getElementById('modal-title').textContent = o.title || 'Oportunidad';
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-field"><label>ENTIDAD</label><p>${escapeHtml(o.org)}</p></div>
+    <div class="modal-field">
+      <label>MATCH CON TU PERFIL</label>
+      <p><span class="badge ${matchBadgeClass(o.score || 0)}">🎯 ${o.score ?? 0}%</span>
+        <button class="btn-outline" style="padding:3px 9px;font-size:12.5px;margin-left:8px;" type="button" onclick="explainMatchScore()" id="modal-match-explain-btn">¿Por qué este score?</button>
+      </p>
+      <div id="modal-match-explain-body" style="font-size:13.5px;color:var(--muted);margin-top:6px;"></div>
+    </div>
     ${isAwarded && o.vendor ? `<div class="modal-field"><label>PROVEEDOR ADJUDICADO</label><p>${escapeHtml(o.vendor)}</p></div>` : ''}
     ${isAwarded ? `<div class="modal-field"><label>MONTO</label><p>${escapeHtml(o.amount)}</p></div>` : ''}
     <div class="modal-field"><label>TIPO</label><p>${escapeHtml(o.type)}</p></div>
@@ -2954,6 +3030,29 @@ async function generateOppAiSummary() {
   } catch (e) {
     body.innerHTML = `<span style="color:var(--red);">${escapeHtml(e.message)}</span>`;
   }
+}
+
+async function explainMatchScore() {
+  const o = window.currentModalOpp;
+  const body = document.getElementById('modal-match-explain-body');
+  const btn = document.getElementById('modal-match-explain-btn');
+  if (!o || !body) return;
+  if (btn) btn.disabled = true;
+  body.innerHTML = '<div class="spinner" style="width:14px;height:14px;display:inline-block;"></div> Analizando...';
+  const m = currentMember || {};
+  try {
+    const prompt = `En una sola oración y en español, explicá por qué esta oportunidad tiene un ${o.score ?? 0}% de compatibilidad con este perfil (qué tan bien encaja, no una determinación de elegibilidad legal): oportunidad con NAICS ${o.naics}, ubicación ${o.state}${o.setAside ? `, set-aside ${o.setAside}` : ''}. Perfil del usuario: industria ${m.industry || 'sin especificar'}, NAICS ${m.naics || 'sin especificar'}, estado ${m.state || 'sin especificar'}, certificaciones: ${memberHasAnyCert(m) ? Object.entries({'8(a)':m.cert8a,'HUBZone':m.certHubzone,'Women-Owned':m.certWomenOwned,'Veteran-Owned':m.certVeteranOwned,'Small Business':m.certSmallBusiness}).filter(([,v])=>v).map(([k])=>k).join(', ') || 'ninguna' : 'sin cargar todavía'}.`;
+    const res = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Explicación de score de compatibilidad' })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'No se pudo generar la explicación.');
+    body.textContent = data.response;
+  } catch (e) {
+    body.innerHTML = `<span style="color:var(--red);">${escapeHtml(e.message)}</span>`;
+  }
+  if (btn) btn.disabled = false;
 }
 
 function goToSupportFromModal(o) {
