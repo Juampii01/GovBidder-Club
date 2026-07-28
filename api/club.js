@@ -44,6 +44,17 @@ async function uploadPdf(bucket, memberId, base64, filename, maxMB = 3) {
   return { path };
 }
 
+// Documentos del perfil de empresa (Fase 20-22): 2 documentos fijos 1:1 en `profiles`,
+// más certificaciones en la tabla hija `profile_documents` (0 a 5 filas por miembro).
+const FIXED_PROFILE_DOC_COLUMNS = { capability_statement: 'capability_statement_path', w9: 'w9_path' };
+const CERT_KEY_TO_COLUMN = {
+  '8a': 'cert_8a',
+  hubzone: 'cert_hubzone',
+  women_owned: 'cert_women_owned',
+  veteran_owned: 'cert_veteran_owned',
+  small_business: 'cert_small_business',
+};
+
 async function getAllianceMaxCap() {
   const { data } = await supabase.from('platform_settings').select('value').eq('key', 'alliance_max_cap').single();
   const val = Number(data?.value);
@@ -408,6 +419,20 @@ export default async function handler(req, res) {
       };
       const { error: updErr } = await supabase.from('profiles').update(update).eq('id', profile.id);
       if (updErr) return safeError(res, updErr, 'club.js error');
+
+      // Si una certificación se desmarca en este mismo guardado, borramos en cascada el
+      // documento que tenía cargado — no tiene sentido dejar un archivo de una cert inactiva.
+      const droppedCertKeys = Object.entries(CERT_KEY_TO_COLUMN)
+        .filter(([, column]) => profile[column] === true && update[column] === false)
+        .map(([certKey]) => certKey);
+      if (droppedCertKeys.length) {
+        const { data: toDelete } = await supabase.from('profile_documents')
+          .select('file_path').eq('member_id', profile.id).in('cert_key', droppedCertKeys);
+        if (toDelete?.length) {
+          await supabase.storage.from('profile-documents').remove(toDelete.map(d => d.file_path));
+          await supabase.from('profile_documents').delete().eq('member_id', profile.id).in('cert_key', droppedCertKeys);
+        }
+      }
       return res.status(200).json({ success: true });
     }
 
@@ -472,6 +497,97 @@ export default async function handler(req, res) {
       } catch (error) {
         return safeError(res, error, 'SAM.gov error');
       }
+    }
+
+    // ── DOCUMENTOS DEL PERFIL DE EMPRESA (Fase 21) ───────
+    if (action === 'profile_document_upload') {
+      const { docType, certKey, base64, filename } = body;
+
+      if (docType === 'capability_statement' || docType === 'w9') {
+        const column = FIXED_PROFILE_DOC_COLUMNS[docType];
+        const { path, error: upErr } = await uploadPdf('profile-documents', profile.id, base64, filename, 3);
+        if (upErr) return res.status(400).json({ success: false, error: upErr });
+        const oldPath = profile[column];
+        const { error: updErr } = await supabase.from('profiles').update({ [column]: path }).eq('id', profile.id);
+        if (updErr) return safeError(res, updErr, 'club.js error');
+        if (oldPath) await supabase.storage.from('profile-documents').remove([oldPath]);
+        return res.status(200).json({ success: true });
+      }
+
+      if (docType === 'certification') {
+        const column = CERT_KEY_TO_COLUMN[certKey];
+        if (!column) return res.status(400).json({ success: false, error: 'Certificación inválida.' });
+        if (profile[column] !== true) {
+          return res.status(400).json({ success: false, error: 'Marcá y guardá esta certificación en tu perfil antes de subir el documento.' });
+        }
+        const { path, error: upErr } = await uploadReceipt('profile-documents', profile.id, base64, filename, 3);
+        if (upErr) return res.status(400).json({ success: false, error: upErr });
+        const { data: existing } = await supabase.from('profile_documents')
+          .select('file_path').eq('member_id', profile.id).eq('cert_key', certKey).maybeSingle();
+        const { error: upsertErr } = await supabase.from('profile_documents').upsert({
+          member_id: profile.id, cert_key: certKey, file_path: path,
+          original_filename: filename, uploaded_at: new Date().toISOString()
+        }, { onConflict: 'member_id,cert_key' });
+        if (upsertErr) return safeError(res, upsertErr, 'club.js error');
+        if (existing?.file_path) await supabase.storage.from('profile-documents').remove([existing.file_path]);
+        return res.status(200).json({ success: true });
+      }
+
+      return res.status(400).json({ success: false, error: 'docType inválido.' });
+    }
+
+    if (action === 'profile_document_list') {
+      const { data: certDocs } = await supabase.from('profile_documents')
+        .select('cert_key, original_filename, uploaded_at').eq('member_id', profile.id);
+      return res.status(200).json({
+        success: true,
+        capabilityStatement: { uploaded: !!profile.capability_statement_path },
+        w9: { uploaded: !!profile.w9_path },
+        certifications: (certDocs || []).map(d => ({ certKey: d.cert_key, filename: d.original_filename, uploadedAt: d.uploaded_at })),
+      });
+    }
+
+    if (action === 'profile_document_get') {
+      const { docType, certKey } = body;
+      let path = null;
+      if (docType === 'capability_statement' || docType === 'w9') {
+        path = profile[FIXED_PROFILE_DOC_COLUMNS[docType]] || null;
+      } else if (docType === 'certification') {
+        const { data } = await supabase.from('profile_documents')
+          .select('file_path').eq('member_id', profile.id).eq('cert_key', certKey).maybeSingle();
+        path = data?.file_path || null;
+      }
+      if (!path) return res.status(404).json({ success: false, error: 'No hay documento subido.' });
+      const { data: signed, error: signErr } = await supabase.storage.from('profile-documents').createSignedUrl(path, 300);
+      if (signErr) return safeError(res, signErr, 'club.js error');
+      return res.status(200).json({ success: true, url: signed.signedUrl });
+    }
+
+    if (action === 'profile_document_delete') {
+      const { docType, certKey } = body;
+
+      if (docType === 'capability_statement' || docType === 'w9') {
+        const column = FIXED_PROFILE_DOC_COLUMNS[docType];
+        const oldPath = profile[column];
+        if (!oldPath) return res.status(404).json({ success: false, error: 'No hay documento para borrar.' });
+        const { error: updErr } = await supabase.from('profiles').update({ [column]: null }).eq('id', profile.id);
+        if (updErr) return safeError(res, updErr, 'club.js error');
+        await supabase.storage.from('profile-documents').remove([oldPath]);
+        return res.status(200).json({ success: true });
+      }
+
+      if (docType === 'certification') {
+        const { data: existing } = await supabase.from('profile_documents')
+          .select('file_path').eq('member_id', profile.id).eq('cert_key', certKey).maybeSingle();
+        if (!existing) return res.status(404).json({ success: false, error: 'No hay documento para borrar.' });
+        const { error: delErr } = await supabase.from('profile_documents')
+          .delete().eq('member_id', profile.id).eq('cert_key', certKey);
+        if (delErr) return safeError(res, delErr, 'club.js error');
+        await supabase.storage.from('profile-documents').remove([existing.file_path]);
+        return res.status(200).json({ success: true });
+      }
+
+      return res.status(400).json({ success: false, error: 'docType inválido.' });
     }
 
     // ── ADMIN ────────────────────────────────────────────
