@@ -3146,7 +3146,7 @@ async function generateOppAiSummary() {
     const prompt = `Resumí en lenguaje simple y en español, en 2-3 oraciones, de qué trata esta licitación para que un dueño de PyME entienda rápido qué está buscando comprar el gobierno: "${o.title}" — Entidad: ${o.org}. NAICS: ${o.naics}. ${o.setAside ? `Set-aside: ${o.setAside}.` : ''} Descripción original: ${o.desc}`;
     const res = await fetch('/api/ai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), prompt, context: 'Resumen de oportunidad individual' })
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Resumen de oportunidad individual', feature: 'opp_summary' })
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'No se pudo generar el resumen.');
@@ -3168,7 +3168,7 @@ async function explainMatchScore() {
     const prompt = `En una sola oración y en español, explicá por qué esta oportunidad tiene un ${o.score ?? 0}% de compatibilidad con este perfil (qué tan bien encaja, no una determinación de elegibilidad legal): oportunidad con NAICS ${o.naics}, ubicación ${o.state}${o.setAside ? `, set-aside ${o.setAside}` : ''}. Perfil del usuario: industria ${m.industry || 'sin especificar'}, NAICS ${m.naics || 'sin especificar'}, estado ${m.state || 'sin especificar'}, certificaciones: ${memberHasAnyCert(m) ? Object.entries({'8(a)':m.cert8a,'HUBZone':m.certHubzone,'Women-Owned':m.certWomenOwned,'Veteran-Owned':m.certVeteranOwned,'Small Business':m.certSmallBusiness}).filter(([,v])=>v).map(([k])=>k).join(', ') || 'ninguna' : 'sin cargar todavía'}.`;
     const res = await fetch('/api/ai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), prompt, context: 'Explicación de score de compatibilidad' })
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Explicación de score de compatibilidad', feature: 'match_score_explain' })
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'No se pudo generar la explicación.');
@@ -3543,7 +3543,7 @@ async function suggestNaicsFromDescription() {
     const prompt = `Un usuario describe su negocio así: "${desc}". Dame ÚNICAMENTE una lista de 3 a 5 palabras clave o frases cortas EN INGLÉS (el catálogo NAICS está en inglés) que probablemente aparezcan en la descripción oficial de su código NAICS. Separalas por comas, sin numeración, sin texto adicional, sin explicación.`;
     const aiRes = await fetch('/api/ai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), prompt, context: 'Sugerencia de NAICS por descripción libre' })
+      body: JSON.stringify({ token: clubToken(), prompt, context: 'Sugerencia de NAICS por descripción libre', feature: 'naics_suggest' })
     });
     const aiData = await aiRes.json();
     if (!aiData.success) throw new Error(aiData.error || 'No se pudo interpretar la descripción.');
@@ -3617,7 +3617,7 @@ async function getCodeAI(naics, title) {
     const res  = await fetch(`${API}/ai`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), prompt: `Para el código NAICS ${naics} (${title}): ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos. Español, máximo 120 palabras.`, context: 'GovBidder Club member, small business' })
+      body: JSON.stringify({ token: clubToken(), prompt: `Para el código NAICS ${naics} (${title}): ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos. Español, máximo 120 palabras.`, context: 'GovBidder Club member, small business', feature: 'naics_tip' })
     });
     const data = await res.json();
     el.innerHTML = data.success ? mdToHtml(data.response) : 'AI no disponible.';
@@ -3656,7 +3656,7 @@ async function runAI(page, btn) {
       fetch(`${API}/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: clubToken(), prompt: prompts[page], context })
+        body: JSON.stringify({ token: clubToken(), prompt: prompts[page], context, feature: page })
       }),
       minDelay
     ]);
