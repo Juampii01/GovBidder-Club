@@ -4,6 +4,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember, checkRateLimit } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
+import { sendBrandedEmail } from './_lib/email.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -701,6 +702,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, error: 'profileId o los datos de un miembro nuevo son requeridos' });
         }
 
+        let inviteEmailWarning = null;
         if (!profileId) {
           // Miembro nuevo (no existía en profiles) — se crea la cuenta desde cero.
           const email = String(newMemberEmail || '').trim().toLowerCase();
@@ -716,8 +718,26 @@ export default async function handler(req, res) {
             return res.status(400).json({ success: false, error: 'Ya existe un miembro con ese email — buscalo en el Paso 1.' });
           }
           const plan = ['Legacy', 'Prime', 'Elevate'].includes(newMemberPlan) ? newMemberPlan : 'Legacy';
-          const { data: invited, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(email);
+          // Generamos el link nosotros (en vez de inviteUserByEmail) para poder mandar
+          // nuestro propio email con el mismo diseño de marca que el resto de los emails del Club.
+          const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({ type: 'invite', email });
           if (inviteErr) return safeError(res, inviteErr, 'club.js error');
+          const inviteLink = invited.properties?.action_link;
+          if (inviteLink) {
+            const emailResult = await sendBrandedEmail({
+              to: email,
+              subject: 'Bienvenido a GovBidder Club',
+              eyebrow: 'Cuenta creada',
+              title: `${name ? `${name}, tu` : 'Tu'} cuenta de GovBidder Club está lista`,
+              bodyHtml: `
+                <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
+                <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Te dimos de alta en GovBidder Club. Para activar tu cuenta y elegir tu contraseña, hacé clic en el siguiente botón.</p>
+                <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Una vez adentro vas a poder ver tu perfil, tu actividad y todo lo que GovBidder Club tiene para tu negocio.</p>`,
+              ctaText: 'Activar mi cuenta',
+              ctaUrl: inviteLink
+            });
+            if (!emailResult.ok) inviteEmailWarning = emailResult.error;
+          }
           const expiry = new Date(startDate);
           expiry.setFullYear(expiry.getFullYear() + 1);
           // upsert (no insert): invitar al usuario dispara un trigger que ya crea una fila
@@ -748,7 +768,7 @@ export default async function handler(req, res) {
           });
         }
 
-        return res.status(200).json({ success: true, investor: data });
+        return res.status(200).json({ success: true, investor: data, inviteEmailWarning });
       }
 
       if (action === 'admin_investor_deposit_list') {
@@ -802,70 +822,26 @@ export default async function handler(req, res) {
       if (action === 'admin_investor_send_reminder_email') {
         const { investorId } = body;
         if (!investorId) return res.status(400).json({ success: false, error: 'investorId requerido' });
-        const RESEND_KEY = process.env.RESEND_API_KEY;
-        if (!RESEND_KEY) {
-          return res.status(500).json({ success: false, error: 'RESEND_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' });
-        }
         const { data: investor } = await supabase.from('investors')
           .select('profiles!investors_profile_id_fkey(name, email)').eq('id', investorId).single();
         const investorEmail = investor?.profiles?.email;
         if (!investorEmail) return res.status(404).json({ success: false, error: 'Inversionista no encontrado o sin email registrado.' });
 
-        const from = process.env.RESEND_FROM_EMAIL || 'GovBidder Club <onboarding@resend.dev>';
-        const appUrl = 'https://dboard.govbidderclub.com';
         const greeting = investor.profiles?.name ? `Hola ${investor.profiles.name},` : 'Hola,';
-        const html = `<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background:#f1f3f7;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f3f7;padding:32px 16px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" style="max-width:520px;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(20,38,79,.08);">
-        <tr>
-          <td style="background:linear-gradient(135deg,#14264F,#0d1c3d);padding:28px 32px;text-align:center;">
-            <img src="${appUrl}/logo-square.png" alt="GovBidder Club" width="48" height="48" style="border-radius:10px;display:block;margin:0 auto 10px;"/>
-            <div style="color:#ffffff;font-size:18px;font-weight:800;letter-spacing:.3px;">GovBidder <span style="color:#E24C5E;">Club</span></div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:36px 32px 28px;">
-            <div style="display:inline-block;background:#fdecee;color:#C42A3D;font-size:11.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:18px;">Acción requerida</div>
-            <h1 style="margin:0 0 18px;font-size:20px;line-height:1.35;color:#14264F;font-weight:800;">Actualiza tu aporte en GovBidder Club</h1>
+        const result = await sendBrandedEmail({
+          to: investorEmail,
+          subject: 'Acción requerida: Actualiza tu aporte en GovBidder Club',
+          eyebrow: 'Acción requerida',
+          title: 'Actualiza tu aporte en GovBidder Club',
+          bodyHtml: `
             <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">${greeting}</p>
             <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Esperamos que te encuentres muy bien.</p>
             <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Nuestros registros muestran que tu aporte mensual en GovBidder Club aparece como <strong>pendiente</strong>.</p>
-            <p style="margin:0 0 26px;font-size:15px;line-height:1.65;color:#374151;">Si ya realizaste el pago, solo debes subir el comprobante en la sección Investor para que nuestro sistema pueda validar tu aporte y actualizar tu cuenta.</p>
-            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 26px;">
-              <tr><td style="border-radius:9px;background:linear-gradient(135deg,#C42A3D,#9e2231);">
-                <a href="${appUrl}" style="display:inline-block;padding:13px 28px;font-size:15px;font-weight:800;color:#ffffff;text-decoration:none;border-radius:9px;">Ir a Investor →</a>
-              </td></tr>
-            </table>
-            <p style="margin:0 0 8px;font-size:13.5px;line-height:1.6;color:#6b7280;">Si aún no has realizado tu aporte, podés hacerlo y posteriormente cargar el comprobante desde la misma sección.</p>
-            <p style="margin:0;font-size:13.5px;line-height:1.6;color:#6b7280;">Si tenés alguna pregunta o necesitás asistencia, nuestro equipo estará encantado de ayudarte.</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:22px 32px;border-top:1px solid #eef0f4;">
-            <p style="margin:0 0 4px;font-size:14px;color:#14264F;font-weight:700;">Saludos,<br/>Equipo de GovBidder Club</p>
-            <p style="margin:14px 0 0;font-size:12.5px;color:#9ca3af;font-style:italic;">Toma acción hoy para ser un GovBidder mañana.</p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
-        const emailRes = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_KEY}` },
-          body: JSON.stringify({
-            from, to: investorEmail, subject: 'Acción requerida: Actualiza tu aporte en GovBidder Club',
-            html
-          })
+            <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Si ya realizaste el pago, solo debes subir el comprobante en la sección Investor para que nuestro sistema pueda validar tu aporte y actualizar tu cuenta.</p>`,
+          ctaText: 'Ir a Investor',
+          ctaUrl: 'https://dboard.govbidderclub.com'
         });
-        if (!emailRes.ok) {
-          const errText = await emailRes.text();
-          return res.status(502).json({ success: false, error: `No se pudo enviar el email: ${errText.substring(0, 200)}` });
-        }
+        if (!result.ok) return res.status(502).json({ success: false, error: result.error });
         return res.status(200).json({ success: true });
       }
 
