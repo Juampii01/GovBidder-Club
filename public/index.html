@@ -256,12 +256,12 @@ td{font-size:13.5px;padding:11px 12px;border-bottom:1px solid var(--line-soft);c
 tbody tr:nth-child(even) td{background:rgba(12,20,37,.025);}
 [data-theme="dark"] tbody tr:nth-child(even) td{background:rgba(255,255,255,.025);}
 tr:hover td{background:var(--line-soft) !important;}
-.geo-tab{flex:1 0 auto;white-space:nowrap;padding:13px 12px;text-align:center;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
-.geo-tab:last-child{border-right:none;}
-.geo-tab:hover{background:var(--line-soft);color:var(--text);}
-.geo-tab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
-.geo-panel{display:none;}
-.geo-panel.active{display:block;animation:fadeIn .2s ease;}
+.geo-tab,.admin-subtab{flex:1 0 auto;white-space:nowrap;padding:13px 12px;text-align:center;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s ease,color .18s ease;border-right:1px solid var(--border);}
+.geo-tab:last-child,.admin-subtab:last-child{border-right:none;}
+.geo-tab:hover,.admin-subtab:hover{background:var(--line-soft);color:var(--text);}
+.geo-tab.active,.admin-subtab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:inset 0 -2px 0 var(--accent);}
+.geo-panel,.admin-subpanel{display:none;}
+.geo-panel.active,.admin-subpanel.active{display:block;animation:fadeIn .2s ease;}
 .state-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;text-align:center;box-shadow:var(--sh-sm);}
 .state-card:hover{border-color:var(--accent);box-shadow:var(--sh-md);transform:translateY(-3px);}
 .state-card.my-state{border-color:var(--navy);border-width:2px;background:var(--red-soft);}
@@ -394,8 +394,8 @@ tr:hover td{background:var(--line-soft) !important;}
   #content{padding:16px 14px;}
   .kpi-grid,.grid-2,.grid-2b{grid-template-columns:1fr !important;}
   div[style*="grid-template-columns"]{grid-template-columns:1fr !important;}
-  div:has(> .geo-tab){flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .geo-tab{flex:0 0 auto;font-size:12px;padding:10px 14px;white-space:nowrap;}
+  div:has(> .geo-tab),div:has(> .admin-subtab){flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .geo-tab,.admin-subtab{flex:0 0 auto;font-size:12px;padding:10px 14px;white-space:nowrap;}
   table{display:block;overflow-x:auto;white-space:nowrap;}
   thead,tbody{display:table;width:100%;}
 }
@@ -1852,7 +1852,6 @@ tr:hover td{background:var(--line-soft) !important;}
         <div class="geo-tab"        id="tab-admin-applications" onclick="adminTab('applications')">📥 Postulaciones</div>
         <div class="geo-tab"        id="tab-admin-tickets"      onclick="adminTab('tickets')">🎯 Tickets de Soporte</div>
         <div class="geo-tab"        id="tab-admin-alliance"     onclick="adminTab('alliance')">🤝 Solicitudes Alliance</div>
-        <div class="geo-tab"        id="tab-admin-membership"   onclick="adminTab('membership')">📋 Solicitudes de Membresía</div>
         <div class="geo-tab"        id="tab-admin-investors"    onclick="adminTab('investors')">📈 Inversionistas</div>
         <div class="geo-tab"        id="tab-admin-members"      onclick="adminTab('members')">👥 Miembros</div>
       </div>
@@ -1947,17 +1946,6 @@ tr:hover td{background:var(--line-soft) !important;}
         </div>
       </div>
 
-      <!-- TAB: SOLICITUDES DE MEMBRESÍA -->
-      <div id="admin-panel-membership" class="geo-panel">
-        <div class="card">
-          <div class="card-title">📋 Solicitudes de Membresía</div>
-          <div class="table-scroll">
-          <table><thead><tr><th>NOMBRE</th><th>EMPRESA</th><th>CONTACTO</th><th>PLAN DE INTERÉS</th><th>ACADEMY</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
-          <tbody id="admin-membership-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
-          </div>
-        </div>
-      </div>
-
       <!-- TAB: INVERSIONISTAS -->
       <div id="admin-panel-investors" class="geo-panel">
         <div class="card" style="margin-bottom:14px;">
@@ -1978,12 +1966,29 @@ tr:hover td{background:var(--line-soft) !important;}
 
       <!-- TAB: MIEMBROS -->
       <div id="admin-panel-members" class="geo-panel">
-        <div class="card">
-          <div class="card-title">👥 Miembros</div>
-          <input class="search-input" id="admin-members-search" placeholder="🔍 Buscar por nombre o email..." style="width:100%;max-width:320px;margin-bottom:12px;" oninput="renderAdminMembers()"/>
-          <div class="table-scroll">
-          <table><thead><tr><th>NOMBRE</th><th>EMAIL</th><th>PLAN</th><th>INVERSIONISTA</th><th>ACCIÓN</th></tr></thead>
-          <tbody id="admin-members-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+        <div style="display:flex;gap:0;margin-bottom:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;overflow-y:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+          <div class="admin-subtab active" id="tab-admin-members-requests" onclick="adminMembersSubTab('requests')">📋 Nuevas solicitudes de miembros</div>
+          <div class="admin-subtab"        id="tab-admin-members-list"     onclick="adminMembersSubTab('list')">👥 Nuevos miembros</div>
+        </div>
+
+        <div id="admin-subpanel-members-requests" class="admin-subpanel active">
+          <div class="card">
+            <div class="card-title">📋 Nuevas solicitudes de miembros</div>
+            <div class="table-scroll">
+            <table><thead><tr><th>NOMBRE</th><th>EMPRESA</th><th>CONTACTO</th><th>PLAN DE INTERÉS</th><th>ACADEMY</th><th>MENSAJE</th><th>ESTADO</th></tr></thead>
+            <tbody id="admin-membership-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <div id="admin-subpanel-members-list" class="admin-subpanel">
+          <div class="card">
+            <div class="card-title">👥 Nuevos miembros</div>
+            <input class="search-input" id="admin-members-search" placeholder="🔍 Buscar por nombre o email..." style="width:100%;max-width:320px;margin-bottom:12px;" oninput="renderAdminMembers()"/>
+            <div class="table-scroll">
+            <table><thead><tr><th>NOMBRE</th><th>EMAIL</th><th>PLAN</th><th>INVERSIONISTA</th><th>ACCIÓN</th></tr></thead>
+            <tbody id="admin-members-body"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Cargando...</td></tr></tbody></table>
+            </div>
           </div>
         </div>
       </div>
@@ -4794,6 +4799,13 @@ function adminTab(tab) {
   document.getElementById('admin-panel-' + tab).classList.add('active');
 }
 
+function adminMembersSubTab(sub) {
+  document.querySelectorAll('#admin-panel-members .admin-subtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#admin-panel-members .admin-subpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-admin-members-' + sub).classList.add('active');
+  document.getElementById('admin-subpanel-members-' + sub).classList.add('active');
+}
+
 async function loadAdminPanel() {
   if (!isAdmin()) return;
   loadAdminCatalog();
@@ -5354,7 +5366,11 @@ async function confirmCreateInvestor() {
     loadAdminMembership();
   }
   closeSimpleModal();
-  showToast('Inversionista agregado.', 'success');
+  if (data.inviteEmailWarning) {
+    showToast(`Inversionista agregado, pero no se pudo enviar el email de bienvenida: ${data.inviteEmailWarning}`, 'error');
+  } else {
+    showToast('Inversionista agregado.', 'success');
+  }
   loadAdminInvestors();
   loadAdminMembers();
 }
