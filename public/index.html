@@ -2025,6 +2025,7 @@ tr:hover td{background:var(--line-soft) !important;}
 <script>
 const API = '/api';
 let liveOpps = [], liveGrants = [], currentMember = null, allStates = [], allCounties = [];
+let lastMarketData = null, lastCompetitorData = null;
 let oppSortByMatch = false;
 let investorBehindCount = 0, investorReminderIntervalId = null, lastInvestorReminderAt = 0;
 
@@ -3316,6 +3317,7 @@ async function fetchMarket() {
     const res  = await fetch(`${API}/spending?type=market&naics=${naics}&year=${year}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
+    lastMarketData = { ...data, naics, year };
     const maxS = data.byState?.[0]?.amount || 1;
     const maxV = data.topVendors?.[0]?.total || 1;
     document.getElementById('market-container').innerHTML = `
@@ -3366,6 +3368,7 @@ async function fetchCompetitors() {
     const res  = await fetch(`${API}/spending?type=competitors&state=${state}&naics=${naics}&year=${year}&token=${encodeURIComponent(clubToken())}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error);
+    lastCompetitorData = { ...data, state, naics, year };
     const vendors = data.vendors || [];
     const maxT    = vendors[0]?.total || 1;
     document.getElementById('comp-container').innerHTML = vendors.length ? `
@@ -3625,6 +3628,21 @@ async function getCodeAI(naics, title) {
 }
 
 // ── AI ───────────────────────────────────────────────────
+function formatMarketDataForPrompt(d) {
+  if (!d) return 'No hay datos de USASpending disponibles para este NAICS/año — respondé en base a conocimiento general de la industria, aclarando que no son cifras concretas.';
+  const states  = (d.byState || []).slice(0, 5).map(s => `${s.state || s.code}: $${(s.amount/1e6).toFixed(1)}M`).join('; ') || 'sin datos por estado';
+  const vendors = (d.topVendors || []).slice(0, 5).map(v => `${v.name} ($${(v.total/1e3).toFixed(0)}K)`).join('; ') || 'sin vendors registrados';
+  return `Gasto total $${(d.totalSpend/1e6).toFixed(1)}M en ${d.contractCount} contratos. Top estados por gasto: ${states}. Top vendors: ${vendors}.`;
+}
+
+function formatCompetitorDataForPrompt(d) {
+  if (!d) return 'No hay datos de USASpending disponibles para este NAICS/estado/año — respondé en base a conocimiento general de la industria, aclarando que no son cifras concretas.';
+  const vendors = (d.vendors || []).slice(0, 5)
+    .map(v => `${v.name}: $${(v.total/1e3).toFixed(0)}K en ${v.count} contratos, comprador principal ${v.topAgency || 'sin datos'}`)
+    .join('; ');
+  return vendors ? `Top vendors reales: ${vendors}.` : 'No se encontraron vendors para este NAICS/estado/año.';
+}
+
 async function runAI(page, btn) {
   const el = document.getElementById(`ai-${page}`);
   el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
@@ -3643,12 +3661,22 @@ async function runAI(page, btn) {
   const compState = document.getElementById('comp-state')?.value || myState;
   const compYear  = document.getElementById('comp-year')?.value  || new Date().getFullYear();
 
+  // market/compete necesitan las cifras reales de USASpending que la página ya carga —
+  // normalmente ya están cacheadas porque nav() dispara fetchMarket()/fetchCompetitors()
+  // al entrar a esa página; esto solo cubre un click inmediato o un filtro recién cambiado.
+  if (page === 'market' && (!lastMarketData || lastMarketData.naics !== mktNaics || String(lastMarketData.year) !== String(mktYear))) {
+    await fetchMarket();
+  }
+  if (page === 'compete' && (!lastCompetitorData || lastCompetitorData.naics !== compNaics || lastCompetitorData.state !== compState || String(lastCompetitorData.year) !== String(compYear))) {
+    await fetchCompetitors();
+  }
+
   const prompts = {
     home:    `Soy un negocio de ${myIndustry} (NAICS ${myNaics}) en ${myState}, plan ${myPlan} de GovBidder Club. ${liveOpps.length} oportunidades vía GovBidder Connect, ${liveGrants.length} grants activos. Dame un brief estratégico de hoy.`,
     opps:    `Tengo ${liveOpps.length} oportunidades live vía GovBidder Connect para NAICS ${myNaics} en ${myState}. Top: ${liveOpps.slice(0,3).map(o=>o.title).join(', ')||'ninguna aún'}. ¿Cuáles priorizo?`,
     grants:  `${liveGrants.length} grants de Grants.gov para "small business". Soy ${myIndustry} en ${myState}, plan ${myPlan}. ¿Cuáles aplican?`,
-    market:  `Analiza el mercado de contratos gubernamentales para NAICS ${mktNaics} en ${mktYear}. Tendencias, top buyers y oportunidades.`,
-    compete: `Analiza la competencia de contratistas gubernamentales para NAICS ${compNaics} en ${compState} en ${compYear}. ¿Quiénes son los principales competidores, qué participación de mercado tienen y cómo puede diferenciarse un negocio plan ${myPlan}?`
+    market:  `Con estos datos reales de USASpending.gov para NAICS ${mktNaics} en ${mktYear} — ${formatMarketDataForPrompt(lastMarketData)} — analizá el mercado: tendencias concretas, quiénes son los compradores principales (citá los que aparecen arriba) y una oportunidad concreta para un negocio plan ${myPlan}.`,
+    compete: `Con estos datos reales de USASpending.gov para NAICS ${compNaics} en ${compState}, ${compYear} — ${formatCompetitorDataForPrompt(lastCompetitorData)} — analizá la competencia citando esos vendors reales: quién domina, qué participación de mercado aproximada tienen, y cómo puede diferenciarse un negocio plan ${myPlan} frente a ellos.`
   };
   const minDelay = new Promise(r => setTimeout(r, 1400));
   try {
