@@ -2372,6 +2372,135 @@ function applySamData() {
   showToast('Datos aplicados — revisá y hacé clic en Guardar para confirmar.', 'success');
 }
 
+// Documentos del perfil de empresa (Fase 22): 2 filas fijas + 1 por certificación
+// activa. rowId = docType para los fijos, `cert-${certKey}` para certificaciones.
+const PROFILE_DOC_DEFS = [
+  { docType: 'capability_statement', label: 'Capability Statement', accept: 'application/pdf' },
+  { docType: 'w9', label: 'W9', accept: 'application/pdf' },
+];
+const PROFILE_CERT_DOC_DEFS = [
+  { field: 'cert8a', certKey: '8a', label: '8(a)' },
+  { field: 'certHubzone', certKey: 'hubzone', label: 'HUBZone' },
+  { field: 'certWomenOwned', certKey: 'women_owned', label: 'Women-Owned' },
+  { field: 'certVeteranOwned', certKey: 'veteran_owned', label: 'Veteran-Owned' },
+  { field: 'certSmallBusiness', certKey: 'small_business', label: 'Small Business' },
+];
+
+function parseProfileDocRowId(rowId) {
+  return rowId.startsWith('cert-') ? { docType: 'certification', certKey: rowId.slice(5) } : { docType: rowId, certKey: null };
+}
+
+function profileDocActionsHtml(rowId, hasFile) {
+  if (!hasFile) {
+    return `<button class="btn-outline" style="padding:5px 10px;font-size:12.5px;" type="button" onclick="document.getElementById('pd-file-${rowId}').click()">Subir</button>`;
+  }
+  return `<button class="btn-outline" style="padding:5px 10px;font-size:12.5px;" type="button" onclick="viewProfileDocument('${rowId}')">Ver</button>
+    <button class="btn-outline" style="padding:5px 10px;font-size:12.5px;" type="button" onclick="document.getElementById('pd-file-${rowId}').click()">Reemplazar</button>
+    <button class="btn-outline" style="padding:5px 10px;font-size:12.5px;color:var(--red);" type="button" onclick="deleteProfileDocument('${rowId}')">Quitar</button>`;
+}
+
+function profileDocRowHtml(rowId, label, accept) {
+  return `<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--line-soft);border-radius:8px;">
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13.5px;font-weight:700;color:var(--ink);">${escapeHtml(label)}</div>
+      <div id="pd-status-${rowId}" style="font-size:12.5px;color:var(--muted);">Cargando…</div>
+    </div>
+    <input type="file" id="pd-file-${rowId}" accept="${accept}" style="display:none;" onchange="onProfileDocFileChosen('${rowId}')"/>
+    <div id="pd-actions-${rowId}" style="display:flex;gap:6px;flex-shrink:0;"></div>
+  </div>`;
+}
+
+async function loadProfileDocuments() {
+  const res = await fetch('/api/club?action=profile_document_list', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: clubToken() })
+  });
+  const data = await res.json();
+  if (!data.success) return;
+
+  const setRow = (rowId, hasFile, statusText) => {
+    const statusEl = document.getElementById(`pd-status-${rowId}`);
+    const actionsEl = document.getElementById(`pd-actions-${rowId}`);
+    if (statusEl) statusEl.textContent = hasFile ? (statusText || 'Archivo subido') : 'Sin subir';
+    if (actionsEl) actionsEl.innerHTML = profileDocActionsHtml(rowId, hasFile);
+  };
+
+  setRow('capability_statement', data.capabilityStatement?.uploaded);
+  setRow('w9', data.w9?.uploaded);
+
+  const byCertKey = {};
+  (data.certifications || []).forEach(c => { byCertKey[c.certKey] = c; });
+  PROFILE_CERT_DOC_DEFS.forEach(({ certKey }) => {
+    const rowId = `cert-${certKey}`;
+    if (!document.getElementById(`pd-status-${rowId}`)) return; // esta cert no está marcada, no tiene fila en el modal
+    const c = byCertKey[certKey];
+    setRow(rowId, !!c, c ? `${c.filename || 'archivo'} · ${new Date(c.uploadedAt).toLocaleDateString('en-US')}` : null);
+  });
+}
+
+async function onProfileDocFileChosen(rowId) {
+  const input = document.getElementById(`pd-file-${rowId}`);
+  const file = input?.files?.[0];
+  if (!file) return;
+  const statusEl = document.getElementById(`pd-status-${rowId}`);
+  const isCert = rowId.startsWith('cert-');
+  const allowedTypes = isCert ? ['application/pdf', 'image/jpeg', 'image/png'] : ['application/pdf'];
+  if (!allowedTypes.includes(file.type)) {
+    if (statusEl) statusEl.innerHTML = `<span style="color:var(--red);">Formato inválido — debe ser ${isCert ? 'PDF, JPG o PNG' : 'PDF'}.</span>`;
+    input.value = '';
+    return;
+  }
+  if (file.size > 3 * 1024 * 1024) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--red);">El archivo no puede superar los 3MB.</span>';
+    input.value = '';
+    return;
+  }
+  if (statusEl) statusEl.textContent = 'Subiendo...';
+  const { docType, certKey } = parseProfileDocRowId(rowId);
+  try {
+    const base64 = await readFileAsBase64(file);
+    const res = await fetch('/api/club?action=profile_document_upload', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), docType, certKey, filename: file.name, base64 })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:var(--red);">${escapeHtml(data.error)}</span>`;
+      input.value = '';
+      return;
+    }
+    showToast('Documento subido.', 'success');
+  } catch (e) {
+    if (statusEl) statusEl.innerHTML = `<span style="color:var(--red);">Error de conexión: ${escapeHtml(e.message)}</span>`;
+  }
+  input.value = '';
+  loadProfileDocuments();
+}
+
+async function viewProfileDocument(rowId) {
+  const { docType, certKey } = parseProfileDocRowId(rowId);
+  const res = await fetch('/api/club?action=profile_document_get', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: clubToken(), docType, certKey })
+  });
+  const data = await res.json();
+  if (!data.success) { showToast(data.error || 'No se pudo abrir el documento.'); return; }
+  window.open(data.url, '_blank');
+}
+
+async function deleteProfileDocument(rowId) {
+  if (!confirm('¿Borrar este documento?')) return;
+  const { docType, certKey } = parseProfileDocRowId(rowId);
+  const res = await fetch('/api/club?action=profile_document_delete', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: clubToken(), docType, certKey })
+  });
+  const data = await res.json();
+  if (!data.success) { showToast(data.error || 'No se pudo borrar el documento.'); return; }
+  showToast('Documento eliminado.', 'success');
+  loadProfileDocuments();
+}
+
 function showCompanyProfileForm() {
   const m = currentMember;
   if (!m) return;
@@ -2379,6 +2508,10 @@ function showCompanyProfileForm() {
     <label style="display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink);">
       <input type="checkbox" id="${id}" ${checked ? 'checked' : ''}/> ${label}
     </label>`;
+  const docRowsHtml = [
+    ...PROFILE_DOC_DEFS.map(d => profileDocRowHtml(d.docType, d.label, d.accept)),
+    ...PROFILE_CERT_DOC_DEFS.filter(c => m[c.field]).map(c => profileDocRowHtml(`cert-${c.certKey}`, c.label, 'application/pdf,image/jpeg,image/png')),
+  ].join('');
   showSimpleModal('Datos de la empresa', `
     <div class="modal-field" style="background:var(--line-soft);border-radius:8px;padding:12px;margin-bottom:14px;">
       <label>🔎 BUSCAR EN SAM.GOV (opcional)</label>
@@ -2410,9 +2543,16 @@ function showCompanyProfileForm() {
         ${certRow('cp-cert-sb', 'Small Business', m.certSmallBusiness)}
       </div>
     </div>
+    <div class="modal-field">
+      <label>DOCUMENTOS</label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+        ${docRowsHtml}
+      </div>
+    </div>
     <div id="company-profile-error" style="display:none;color:var(--red);font-size:13.5px;margin:8px 0;"></div>
     <button class="btn-red" style="width:100%;padding:10px;margin-top:6px;" type="button" onclick="saveCompanyProfile()">Guardar</button>
   `);
+  loadProfileDocuments();
 }
 
 async function saveCompanyProfile() {
