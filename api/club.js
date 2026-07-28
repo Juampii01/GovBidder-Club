@@ -2,7 +2,7 @@
 // GovBidder Club — Support Desk, Funding Access (Alliance) y Task Work (bolsa de trabajo)
 
 import { createClient } from '@supabase/supabase-js';
-import { requireActiveMember } from './_lib/auth.js';
+import { requireActiveMember, checkRateLimit } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
 
 const supabase = createClient(
@@ -410,6 +410,69 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
+    if (action === 'lookup_sam_entity') {
+      const SAM_KEY = process.env.SAM_GOV_API_KEY;
+      if (!SAM_KEY) {
+        return res.status(500).json({ success: false, error: 'SAM_GOV_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' });
+      }
+      const { error: rlErr, status: rlStatus } = await checkRateLimit(supabase, profile.id, 'sam_lookup', 5, 60);
+      if (rlErr) return res.status(rlStatus).json({ success: false, error: rlErr });
+
+      const uei = String(body.uei || '').trim();
+      const legalBusinessName = String(body.companyName || '').trim();
+      if (!uei && !legalBusinessName) {
+        return res.status(400).json({ success: false, error: 'Ingresá un UEI o el nombre de la empresa para buscar.' });
+      }
+      const params = new URLSearchParams({ api_key: SAM_KEY });
+      if (uei) params.set('ueiSAM', uei);
+      else params.set('legalBusinessName', legalBusinessName);
+
+      try {
+        const samRes = await fetch(`https://api.sam.gov/entity-information/v3/entities?${params}`);
+        if (!samRes.ok) {
+          const errText = await samRes.text();
+          throw new Error(`SAM.gov API error ${samRes.status}: ${errText.substring(0, 200)}`);
+        }
+        const samData = await samRes.json();
+        const entity = samData.entityData?.[0];
+        if (!entity) {
+          return res.status(404).json({ success: false, error: 'No se encontró ninguna empresa registrada en SAM.gov con esos datos.' });
+        }
+
+        const reg = entity.entityRegistration || {};
+        const core = entity.coreData || {};
+        const addr = core.physicalAddress || {};
+        const naicsList = entity.assertions?.goodsAndServices?.naicsList || [];
+        // Mapeo de certificaciones por TEXTO de la descripción (sbaBusinessTypeDesc), no por
+        // código — SAM.gov no documenta públicamente todos los códigos de certificación, así
+        // que anclamos en el texto (mismo patrón que el mapeo de set-aside de la Fase 13).
+        const sbaCerts = core.businessTypes?.sbaBusinessTypeList || [];
+        const certDescs = sbaCerts.map(c => (c.sbaBusinessTypeDesc || '').toLowerCase());
+        const hasCert = (needle) => certDescs.some(d => d.includes(needle));
+
+        return res.status(200).json({
+          success: true,
+          entity: {
+            legalBusinessName: reg.legalBusinessName || '',
+            dbaName: reg.dbaName || '',
+            uei: reg.ueiSAM || '',
+            cageCode: reg.cageCode || '',
+            registrationStatus: reg.registrationStatus || '',
+            registrationExpirationDate: reg.registrationExpirationDate || '',
+            businessAddress: [addr.addressLine1, addr.city, addr.stateOrProvinceCode, addr.zipCode].filter(Boolean).join(', '),
+            naicsCodes: naicsList.map(n => n.naicsCode).filter(Boolean),
+            cert8a: hasCert('8(a)'),
+            certHubzone: hasCert('hubzone'),
+            certWomenOwned: hasCert('woman owned') || hasCert('women owned') || hasCert('women-owned'),
+            certVeteranOwned: hasCert('veteran'),
+            certSmallBusiness: hasCert('small business'),
+          }
+        });
+      } catch (error) {
+        return safeError(res, error, 'SAM.gov error');
+      }
+    }
+
     // ── ADMIN ────────────────────────────────────────────
     if (action.startsWith('admin_')) {
       if (profile.role !== 'admin') return res.status(403).json({ success: false, error: 'Solo administradores' });
@@ -749,13 +812,54 @@ export default async function handler(req, res) {
         if (!investorEmail) return res.status(404).json({ success: false, error: 'Inversionista no encontrado o sin email registrado.' });
 
         const from = process.env.RESEND_FROM_EMAIL || 'GovBidder Club <onboarding@resend.dev>';
+        const appUrl = 'https://dboard.govbidderclub.com';
+        const greeting = investor.profiles?.name ? `Hola ${investor.profiles.name},` : 'Hola,';
+        const html = `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f1f3f7;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f3f7;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" style="max-width:520px;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(20,38,79,.08);">
+        <tr>
+          <td style="background:linear-gradient(135deg,#14264F,#0d1c3d);padding:28px 32px;text-align:center;">
+            <img src="${appUrl}/logo-square.png" alt="GovBidder Club" width="48" height="48" style="border-radius:10px;display:block;margin:0 auto 10px;"/>
+            <div style="color:#ffffff;font-size:18px;font-weight:800;letter-spacing:.3px;">GovBidder <span style="color:#E24C5E;">Club</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:36px 32px 28px;">
+            <div style="display:inline-block;background:#fdecee;color:#C42A3D;font-size:11.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:18px;">Acción requerida</div>
+            <h1 style="margin:0 0 18px;font-size:20px;line-height:1.35;color:#14264F;font-weight:800;">Actualiza tu aporte en GovBidder Club</h1>
+            <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">${greeting}</p>
+            <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Esperamos que te encuentres muy bien.</p>
+            <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Nuestros registros muestran que tu aporte mensual en GovBidder Club aparece como <strong>pendiente</strong>.</p>
+            <p style="margin:0 0 26px;font-size:15px;line-height:1.65;color:#374151;">Si ya realizaste el pago, solo debes subir el comprobante en la sección Investor para que nuestro sistema pueda validar tu aporte y actualizar tu cuenta.</p>
+            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 26px;">
+              <tr><td style="border-radius:9px;background:linear-gradient(135deg,#C42A3D,#9e2231);">
+                <a href="${appUrl}" style="display:inline-block;padding:13px 28px;font-size:15px;font-weight:800;color:#ffffff;text-decoration:none;border-radius:9px;">Ir a Investor →</a>
+              </td></tr>
+            </table>
+            <p style="margin:0 0 8px;font-size:13.5px;line-height:1.6;color:#6b7280;">Si aún no has realizado tu aporte, podés hacerlo y posteriormente cargar el comprobante desde la misma sección.</p>
+            <p style="margin:0;font-size:13.5px;line-height:1.6;color:#6b7280;">Si tenés alguna pregunta o necesitás asistencia, nuestro equipo estará encantado de ayudarte.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:22px 32px;border-top:1px solid #eef0f4;">
+            <p style="margin:0 0 4px;font-size:14px;color:#14264F;font-weight:700;">Saludos,<br/>Equipo de GovBidder Club</p>
+            <p style="margin:14px 0 0;font-size:12.5px;color:#9ca3af;font-style:italic;">Toma acción hoy para ser un GovBidder mañana.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
         const emailRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_KEY}` },
           body: JSON.stringify({
-            from, to: investorEmail, subject: 'Recordatorio de aporte — GovBidder Club',
-            html: `<p>Hola ${investor.profiles?.name || ''},</p>
-              <p>Hemos notado que estás atrasado con tu aporte en GovBidder Club. Si ya hiciste tu aporte, subí la captura en la sección Investor para actualizar el sistema.</p>`
+            from, to: investorEmail, subject: 'Acción requerida: Actualiza tu aporte en GovBidder Club',
+            html
           })
         });
         if (!emailRes.ok) {
