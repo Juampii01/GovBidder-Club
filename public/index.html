@@ -3617,10 +3617,14 @@ async function getCodeAI(naics, title) {
   const el = document.getElementById('code-ai-tip');
   el.innerHTML = '<span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>';
   try {
+    const year = new Date().getFullYear();
+    const spendRes  = await fetch(`${API}/spending?type=market&naics=${naics}&year=${year}&token=${encodeURIComponent(clubToken())}`);
+    const spendData = await spendRes.json();
+    const dataSummary = spendData.success ? formatMarketDataForPrompt(spendData) : 'No hay datos de USASpending disponibles para este NAICS/año — respondé en base a conocimiento general de la industria, aclarando que no son cifras concretas.';
     const res  = await fetch(`${API}/ai`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), prompt: `Para el código NAICS ${naics} (${title}): ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos. Español, máximo 120 palabras.`, context: 'GovBidder Club member, small business', feature: 'naics_tip' })
+      body: JSON.stringify({ token: clubToken(), prompt: `Para el código NAICS ${naics} (${title}) — datos reales de USASpending.gov ${year}: ${dataSummary} — citando esas cifras: ¿Qué compradores gubernamentales lo usan más? ¿Qué estados tienen más demanda? ¿Qué set-asides aplican? 3 tips estratégicos.`, context: 'GovBidder Club member, small business', feature: 'naics_tip' })
     });
     const data = await res.json();
     el.innerHTML = data.success ? mdToHtml(data.response) : 'AI no disponible.';
