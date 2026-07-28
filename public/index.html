@@ -2285,6 +2285,63 @@ function showMyProfile() {
   `);
 }
 
+async function samLookupAndPreview() {
+  const q = document.getElementById('cp-sam-query')?.value?.trim();
+  const previewEl = document.getElementById('cp-sam-preview');
+  const btn = document.getElementById('cp-sam-search-btn');
+  if (!q) { previewEl.innerHTML = '<span style="color:var(--red);font-size:13px;">Ingresá un UEI o razón social.</span>'; return; }
+  btn.disabled = true;
+  previewEl.innerHTML = '<div class="spinner" style="width:14px;height:14px;display:inline-block;"></div> Buscando en SAM.gov...';
+  try {
+    const isUei = /^[A-Za-z0-9]{12}$/.test(q);
+    const payload = { token: clubToken() };
+    if (isUei) payload.uei = q; else payload.companyName = q;
+    const res = await fetch('/api/club?action=lookup_sam_entity', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.success) {
+      previewEl.innerHTML = `<span style="color:var(--red);font-size:13px;">${escapeHtml(data.error)}</span>`;
+      btn.disabled = false; return;
+    }
+    window.samPreviewEntity = data.entity;
+    const e = data.entity;
+    const certs = [
+      e.cert8a && '8(a)', e.certHubzone && 'HUBZone', e.certWomenOwned && 'Women-Owned',
+      e.certVeteranOwned && 'Veteran-Owned', e.certSmallBusiness && 'Small Business'
+    ].filter(Boolean).join(', ') || 'ninguna detectada';
+    previewEl.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;">
+        <div style="font-weight:800;color:var(--ink);">${escapeHtml(e.legalBusinessName || '—')}</div>
+        <div style="color:var(--muted);margin-top:2px;">UEI: ${escapeHtml(e.uei || '—')} · CAGE: ${escapeHtml(e.cageCode || '—')} · ${escapeHtml(e.registrationStatus || '—')}</div>
+        <div style="color:var(--muted);margin-top:2px;">${escapeHtml(e.businessAddress || '—')}</div>
+        <div style="color:var(--muted);margin-top:2px;">Certificaciones detectadas: ${escapeHtml(certs)}</div>
+        <button class="btn-dark" style="margin-top:8px;padding:6px 12px;font-size:13px;" type="button" onclick="applySamData()">Usar estos datos</button>
+      </div>`;
+  } catch (e) {
+    previewEl.innerHTML = `<span style="color:var(--red);font-size:13px;">Error de conexión: ${escapeHtml(e.message)}</span>`;
+  }
+  btn.disabled = false;
+}
+
+function applySamData() {
+  const e = window.samPreviewEntity;
+  if (!e) return;
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  const setChecked = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
+  setVal('cp-company-name', e.legalBusinessName);
+  setVal('cp-company-dba', e.dbaName);
+  setVal('cp-uei', e.uei);
+  setVal('cp-cage', e.cageCode);
+  setVal('cp-address', e.businessAddress);
+  setChecked('cp-cert-8a', e.cert8a);
+  setChecked('cp-cert-hubzone', e.certHubzone);
+  setChecked('cp-cert-women', e.certWomenOwned);
+  setChecked('cp-cert-veteran', e.certVeteranOwned);
+  setChecked('cp-cert-sb', e.certSmallBusiness);
+  showToast('Datos aplicados — revisá y hacé clic en Guardar para confirmar.', 'success');
+}
+
 function showCompanyProfileForm() {
   const m = currentMember;
   if (!m) return;
@@ -2293,6 +2350,14 @@ function showCompanyProfileForm() {
       <input type="checkbox" id="${id}" ${checked ? 'checked' : ''}/> ${label}
     </label>`;
   showSimpleModal('Datos de la empresa', `
+    <div class="modal-field" style="background:var(--line-soft);border-radius:8px;padding:12px;margin-bottom:14px;">
+      <label>🔎 BUSCAR EN SAM.GOV (opcional)</label>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <input class="search-input" id="cp-sam-query" style="width:100%;" placeholder="UEI (12 caracteres) o razón social..."/>
+        <button class="btn-outline" style="flex-shrink:0;" type="button" onclick="samLookupAndPreview()" id="cp-sam-search-btn">Buscar</button>
+      </div>
+      <div id="cp-sam-preview" style="margin-top:8px;"></div>
+    </div>
     <div class="modal-field"><label>RAZÓN SOCIAL</label><input class="search-input" id="cp-company-name" style="width:100%;" value="${escapeHtml(m.companyName || '')}"/></div>
     <div class="modal-field"><label>NOMBRE COMERCIAL (DBA)</label><input class="search-input" id="cp-company-dba" style="width:100%;" value="${escapeHtml(m.companyDba || '')}"/></div>
     <div style="display:flex;gap:10px;">
