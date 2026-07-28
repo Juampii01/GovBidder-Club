@@ -4692,10 +4692,10 @@ function maybeShowInvestorReminder() {
   const now = Date.now();
   if (now - lastInvestorReminderAt < INVESTOR_REMINDER_MIN_GAP_MS) return;
   lastInvestorReminderAt = now;
-  showSimpleModal('Aporte atrasado', `
+  showSimpleModal('Aporte pendiente', `
     <p style="color:var(--ink);font-size:14.5px;line-height:1.5;margin-bottom:16px;">
-      Los registros indican que estás atrasado con tu aporte en GovBidder Club. Si ya hiciste tu aporte,
-      subí la captura en la sección Investor para actualizar el sistema.
+      Nuestros registros muestran que tu aporte mensual se encuentra pendiente. Si ya realizaste el pago,
+      sube el comprobante en la sección Investor para actualizar tu cuenta.
     </p>
     <button class="btn-red" style="width:100%;padding:10px;" type="button"
       onclick="closeSimpleModal();nav(document.querySelector('.nav-item[onclick*=investor]'),'investor')">Ir a Investor</button>
