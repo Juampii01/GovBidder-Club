@@ -763,7 +763,7 @@ tr:hover td{background:var(--line-soft) !important;}
       <div id="forgot-success" style="display:none;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:14px;text-align:center;">
         <div style="font-size:24px;margin-bottom:6px;">📧</div>
         <div style="color:#86efac;font-size:15px;font-weight:700;margin-bottom:4px;">¡Listo!</div>
-        <div style="color:rgba(255,255,255,.6);font-size:14px;line-height:1.6;">Si el email está registrado, te va a llegar un link para restablecer tu contraseña.</div>
+        <div id="forgot-success-msg" style="color:rgba(255,255,255,.6);font-size:14px;line-height:1.6;">Si el email está registrado, te va a llegar un link para restablecer tu contraseña.</div>
       </div>
       <div style="text-align:center;margin-top:16px;">
         <a href="#" onclick="hideForgotPassword();return false;" style="color:rgba(255,255,255,.35);font-size:14px;text-decoration:none;">← Volver al login</a>
@@ -2996,6 +2996,8 @@ async function doForgotPassword() {
 
     if (data.success) {
       document.getElementById('forgot-form').style.display = 'none';
+      const msgEl = document.getElementById('forgot-success-msg');
+      if (msgEl) msgEl.textContent = data.message || 'Si el email está registrado, te va a llegar un link para restablecer tu contraseña.';
       document.getElementById('forgot-success').style.display = 'block';
     } else {
       if (errorEl) { errorEl.textContent = data.error || 'No se pudo procesar el pedido.'; errorEl.style.display = 'block'; }

@@ -119,7 +119,7 @@ export default async function handler(req, res) {
 
       const profile = await getProfileByEmail(email);
       if (profile && profile.active) {
-        const { error: rlErr } = await checkRateLimit(supabase, profile.id, 'forgot_password', 5, 30);
+        const { error: rlErr } = await checkRateLimit(supabase, profile.id, 'forgot_password', 20, 30);
         if (rlErr) {
           // Mensaje honesto acá (no genérico): si no le llegó el anterior, "éxito" de nuevo
           // solo lo iba a confundir más. No es un riesgo real de enumeración de cuentas —
