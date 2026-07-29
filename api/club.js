@@ -57,7 +57,9 @@ const CERT_KEY_TO_COLUMN = {
 
 // Genera un link fresco y manda el email con marca — lo usan tanto el alta de un inversionista
 // nuevo como el reenvío manual. Un link tipo 'invite' falla con "already registered" si la
-// cuenta ya está confirmada, así que ahí generamos un 'magiclink' (acceso directo) en su lugar.
+// cuenta ya está confirmada — en ese caso mandamos un 'recovery' en su lugar, que también
+// lleva a la pantalla de elegir contraseña (necesario: una cuenta ya confirmada puede seguir
+// sin tener contraseña real si nunca completó ese paso, que es justo el bug que esto arregla).
 async function sendInvestorWelcomeEmail(email, name, profileId) {
   let alreadyConfirmed = false;
   if (profileId) {
@@ -65,7 +67,7 @@ async function sendInvestorWelcomeEmail(email, name, profileId) {
     alreadyConfirmed = !!userData?.user?.email_confirmed_at;
   }
   const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({
-    type: alreadyConfirmed ? 'magiclink' : 'invite',
+    type: alreadyConfirmed ? 'recovery' : 'invite',
     email, options: { redirectTo: 'https://dboard.govbidderclub.com' }
   });
   if (inviteErr) return { ok: false, error: inviteErr.message, invited: null };
@@ -73,18 +75,18 @@ async function sendInvestorWelcomeEmail(email, name, profileId) {
   if (!inviteLink) return { ok: false, error: 'No se pudo generar el link.', invited };
   const emailResult = await sendBrandedEmail({
     to: email,
-    subject: alreadyConfirmed ? 'Tu acceso a GovBidder Club' : 'Bienvenido a GovBidder Club',
-    eyebrow: alreadyConfirmed ? 'Acceso directo' : 'Cuenta creada',
+    subject: alreadyConfirmed ? 'Recuperá el acceso a tu cuenta' : 'Bienvenido a GovBidder Club',
+    eyebrow: alreadyConfirmed ? 'Restablecer acceso' : 'Cuenta creada',
     title: alreadyConfirmed
-      ? `${name ? `${name}, ingresá` : 'Ingresá'} a tu cuenta de GovBidder Club`
+      ? `${name ? `${name}, restablecé` : 'Restablecé'} tu acceso a GovBidder Club`
       : `${name ? `${name}, tu` : 'Tu'} cuenta de GovBidder Club está lista`,
     bodyHtml: alreadyConfirmed ? `
       <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
-      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Este es tu link de acceso directo a GovBidder Club — hacé clic en el siguiente botón para entrar a tu cuenta.</p>` : `
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Para volver a entrar a tu cuenta de GovBidder Club, elegí una contraseña nueva haciendo clic en el siguiente botón.</p>` : `
       <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
       <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Te dimos de alta en GovBidder Club. Para activar tu cuenta y elegir tu contraseña, hacé clic en el siguiente botón.</p>
       <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Una vez adentro vas a poder ver tu perfil, tu actividad y todo lo que GovBidder Club tiene para tu negocio.</p>`,
-    ctaText: alreadyConfirmed ? 'Ingresar a mi cuenta' : 'Activar mi cuenta',
+    ctaText: alreadyConfirmed ? 'Elegir mi contraseña' : 'Activar mi cuenta',
     ctaUrl: inviteLink
   });
   return { ok: emailResult.ok, error: emailResult.ok ? null : emailResult.error, invited };

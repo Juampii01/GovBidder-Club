@@ -455,7 +455,7 @@ tr:hover td{background:var(--line-soft) !important;}
     </div>
 
     <!-- TABS -->
-    <div style="display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:4px;margin-bottom:22px;gap:4px;">
+    <div id="login-tabs-switcher" style="display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:4px;margin-bottom:22px;gap:4px;">
       <button id="tab-login-btn" onclick="switchTab('login')"
         style="flex:1;padding:9px;border:none;border-radius:7px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;">
         🔑 Ingresar
@@ -691,6 +691,44 @@ tr:hover td{background:var(--line-soft) !important;}
           style="background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;border:none;border-radius:9px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
           <span id="reg-btn-text">Enviar Solicitud →</span>
         </button>
+      </div>
+    </div>
+
+    <!-- ══ TAB: SET PASSWORD (llega vía link de invitación/recuperación del email) ══ -->
+    <div id="tab-set-password" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:#fff;font-size:16.5px;font-weight:700;margin-bottom:3px;">Elegí tu contraseña</div>
+        <div style="color:rgba(255,255,255,.4);font-size:14px;">La vas a usar para entrar a tu cuenta de acá en adelante.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:12.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">NUEVA CONTRASEÑA</label>
+          <input id="setpw-password" type="password" placeholder="Mínimo 8 caracteres"
+            onkeydown="if(event.key==='Enter')doSetPassword()"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:16px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+            onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+          />
+        </div>
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:12.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONFIRMAR CONTRASEÑA</label>
+          <input id="setpw-confirm" type="password" placeholder="Repetí la contraseña"
+            onkeydown="if(event.key==='Enter')doSetPassword()"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:16px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+            onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+          />
+        </div>
+        <div id="setpw-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:14.5px;text-align:center;"></div>
+        <button id="setpw-btn" onclick="doSetPassword()"
+          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:9px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
+          onmouseover="this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.transform='translateY(0)'">
+          <span id="setpw-btn-text">Guardar y entrar →</span>
+        </button>
+        <div style="text-align:center;margin-top:4px;">
+          <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:14px;text-decoration:none;">¿Problemas? Escríbenos</a>
+        </div>
       </div>
     </div>
 
@@ -2646,6 +2684,85 @@ function showLogin() {
   if (overlay) overlay.style.display = 'flex';
   if (main)    main.style.display    = 'none';
   if (sidebar) sidebar.style.display = 'none';
+}
+
+// ── AUTH REDIRECT (link de invitación/recuperación/magic link del email) ──
+// Supabase redirige acá con los tokens en el hash de la URL (#access_token=...&type=...).
+// Antes esto se ignoraba por completo: el link confirmaba el email en Supabase pero la
+// app nunca le daba a la persona una forma de elegir contraseña, así que quedaba tildada
+// en el login normal sin poder entrar nunca. 'invite'/'recovery' → pantalla de elegir
+// contraseña; 'magiclink' → entra directo (ya tiene contraseña, es solo un acceso rápido).
+function parseAuthRedirectHash() {
+  if (!window.location.hash) return null;
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const accessToken = params.get('access_token');
+  if (!accessToken) return null;
+  const result = { accessToken, refreshToken: params.get('refresh_token'), type: params.get('type') };
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  return result;
+}
+
+let pendingAuthToken = null;
+let pendingAuthRefreshToken = null;
+
+function showSetPasswordScreen(accessToken, refreshToken) {
+  pendingAuthToken = accessToken;
+  pendingAuthRefreshToken = refreshToken;
+  showLogin();
+  const tabsSwitcher = document.getElementById('login-tabs-switcher');
+  if (tabsSwitcher) tabsSwitcher.style.display = 'none';
+  document.getElementById('tab-login').style.display = 'none';
+  document.getElementById('tab-register').style.display = 'none';
+  document.getElementById('tab-set-password').style.display = 'block';
+}
+
+async function doSetPassword() {
+  const password = document.getElementById('setpw-password')?.value || '';
+  const confirmPw = document.getElementById('setpw-confirm')?.value || '';
+  const errorEl = document.getElementById('setpw-error');
+  const btn = document.getElementById('setpw-btn');
+  const btnText = document.getElementById('setpw-btn-text');
+
+  if (errorEl) errorEl.style.display = 'none';
+
+  if (password.length < 8) {
+    if (errorEl) { errorEl.textContent = 'La contraseña debe tener al menos 8 caracteres.'; errorEl.style.display = 'block'; }
+    return;
+  }
+  if (password !== confirmPw) {
+    if (errorEl) { errorEl.textContent = 'Las contraseñas no coinciden.'; errorEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  if (btnText) btnText.innerHTML = 'Guardando...';
+
+  try {
+    const res = await fetch('/api/auth?action=set_password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: pendingAuthToken, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      storeSession({ token: pendingAuthToken, refreshToken: pendingAuthRefreshToken });
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+      scheduleSessionRefresh();
+      startInvestorReminderLoop();
+      if (btnText) btnText.innerHTML = '✅ ¡Listo!';
+      setTimeout(() => { hideLogin(); fetchOpps(); fetchGrants(); loadHomeKpis(); }, 500);
+    } else {
+      if (errorEl) { errorEl.textContent = data.error || 'No se pudo guardar la contraseña.'; errorEl.style.display = 'block'; }
+      if (btn) btn.disabled = false;
+      if (btnText) btnText.innerHTML = 'Guardar y entrar →';
+    }
+  } catch (e) {
+    if (errorEl) { errorEl.textContent = 'Error de conexión: ' + e.message; errorEl.style.display = 'block'; }
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.innerHTML = 'Guardar y entrar →';
+  }
 }
 
 function hideLogin() {
@@ -5609,7 +5726,16 @@ function toggleTheme() {
 
 // ── INIT ─────────────────────────────────────────────────
 window.onload = () => {
-  checkSession();
+  const authRedirect = parseAuthRedirectHash();
+  if (authRedirect && (authRedirect.type === 'invite' || authRedirect.type === 'recovery')) {
+    hideBootLoader();
+    showSetPasswordScreen(authRedirect.accessToken, authRedirect.refreshToken);
+  } else if (authRedirect) {
+    storeSession({ token: authRedirect.accessToken, refreshToken: authRedirect.refreshToken });
+    checkSession();
+  } else {
+    checkSession();
+  }
   syncThemeIcon();
   setTimeout(() => loadAllStates(), 1000);
   renderNaicsAutocomplete('opp-naics', 'opp-naics-suggest', () => fetchOpps());

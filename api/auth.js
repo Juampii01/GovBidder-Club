@@ -139,6 +139,44 @@ export default async function handler(req, res) {
       });
     }
 
+    // ── SET PASSWORD (primera vez, vía link de invitación/recuperación) ──
+    // El access_token viene del hash de la URL que arma el link del email — ya es una
+    // sesión válida (Supabase la crea al verificar el link), pero la cuenta todavía no
+    // tiene contraseña. La ponemos acá para que de ahí en más funcione el login normal.
+    if (action === 'set_password') {
+      const body = (req.method === 'POST' && req.body) ? req.body : {};
+      const { token, password } = body;
+
+      if (!token || !password) {
+        return res.status(400).json({ success: false, error: 'Token y contraseña requeridos.' });
+      }
+      if (password.length < 8) {
+        return res.status(400).json({ success: false, error: 'La contraseña debe tener al menos 8 caracteres.' });
+      }
+
+      const { data: { user }, error: userErr } = await supabase.auth.getUser(token);
+      if (userErr || !user) {
+        return res.status(401).json({ success: false, error: 'Link inválido o expirado. Pedí que te reenvíen la invitación.' });
+      }
+
+      const { error: updateErr } = await supabase.auth.admin.updateUserById(user.id, { password });
+      if (updateErr) return safeError(res, updateErr, 'Auth error');
+
+      const profile = await getProfile(user.id);
+      if (!profile || !profile.active) {
+        return res.status(401).json({ success: false, error: 'Miembro no encontrado' });
+      }
+      if (isExpired(profile)) {
+        return res.status(403).json({
+          success: false,
+          error: profile.is_trial ? 'Tu trial de 7 días ha expirado.' : 'Tu membresía ha expirado.',
+          [profile.is_trial ? 'trialExpired' : 'expired']: true
+        });
+      }
+
+      return res.status(200).json({ success: true, member: shapeMember(profile) });
+    }
+
     // ── REFRESH SESSION (renew an expired/expiring access token) ──
     if (action === 'refresh') {
       let refreshToken = '';
