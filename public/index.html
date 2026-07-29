@@ -5857,7 +5857,11 @@ function toggleTheme() {
 }
 
 // ── INIT ─────────────────────────────────────────────────
-window.onload = () => {
+// Si el navegador reusa una pestaña ya abierta en este mismo origen (algunos clientes de
+// email abren el link ahí en vez de una pestaña nueva), cambiar el hash NO dispara
+// window.onload de nuevo — por eso esto vive en su propia función, llamada también desde
+// 'hashchange', para no depender de que el link abra en una pestaña realmente nueva.
+function handleAuthRedirectOrSession() {
   const authRedirect = parseAuthRedirectHash();
   if (authRedirect && (authRedirect.type === 'invite' || authRedirect.type === 'recovery')) {
     hideBootLoader();
@@ -5868,6 +5872,13 @@ window.onload = () => {
   } else {
     checkSession();
   }
+}
+window.addEventListener('hashchange', () => {
+  if (window.location.hash) handleAuthRedirectOrSession();
+});
+
+window.onload = () => {
+  handleAuthRedirectOrSession();
   syncThemeIcon();
   setTimeout(() => loadAllStates(), 1000);
   renderNaicsAutocomplete('opp-naics', 'opp-naics-suggest', () => fetchOpps());
