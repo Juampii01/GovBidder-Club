@@ -391,13 +391,22 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, deposit: data });
     }
 
-    if (action === 'update_profile_name') {
-      const name = String(body.name || '').trim();
-      if (!name) return res.status(400).json({ success: false, error: 'El nombre no puede estar vacío.' });
-      if (name.length > 100) return res.status(400).json({ success: false, error: 'Nombre demasiado largo.' });
-      const { error: updErr } = await supabase.from('profiles').update({ name }).eq('id', profile.id);
+    if (action === 'update_profile') {
+      const update = {};
+      if (body.name !== undefined) {
+        const name = String(body.name || '').trim();
+        if (!name) return res.status(400).json({ success: false, error: 'El nombre no puede estar vacío.' });
+        if (name.length > 100) return res.status(400).json({ success: false, error: 'Nombre demasiado largo.' });
+        update.name = name;
+      }
+      if (body.industry !== undefined) update.industry = String(body.industry || '').trim().substring(0, 100);
+      if (body.state !== undefined) update.state = String(body.state || '').trim().toUpperCase().substring(0, 2);
+      if (body.naics !== undefined) update.naics = String(body.naics || '').trim().substring(0, 10);
+      if (!Object.keys(update).length) return res.status(400).json({ success: false, error: 'Nada para actualizar.' });
+
+      const { error: updErr } = await supabase.from('profiles').update(update).eq('id', profile.id);
       if (updErr) return safeError(res, updErr, 'club.js error');
-      return res.status(200).json({ success: true, name });
+      return res.status(200).json({ success: true, ...update });
     }
 
     if (action === 'update_company_profile') {

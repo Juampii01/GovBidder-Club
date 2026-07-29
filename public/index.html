@@ -2358,18 +2358,19 @@ function showMyProfile() {
     ? `<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted);flex-shrink:0;">Trial</span><span style="font-weight:700;color:var(--accent);text-align:right;word-break:break-word;">${m.daysLeft ?? 0} días restantes</span></div>`
     : '';
   const rows = [
-    ['Nombre completo', escapeHtml(m.name || '—')],
     ['Email', escapeHtml(m.email || '—')],
     ['Rol', m.role === 'admin' ? 'Administrador' : 'Miembro'],
-    ['Industria', escapeHtml(m.industry || '—')],
-    ['Estado', escapeHtml(m.state || '—')],
-    ['NAICS', escapeHtml(m.naics || '—')],
     ['Miembro desde', memberSince],
     ['Antigüedad', daysAsMember !== null ? `${daysAsMember} días` : '—'],
   ].map(([label, value]) => `
     <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);">
       <span style="color:var(--muted);flex-shrink:0;">${label}</span><span style="font-weight:700;color:var(--ink);text-align:right;word-break:break-word;">${value}</span>
     </div>`).join('');
+
+  const stateOptions = ['<option value="">Sin definir</option>']
+    .concat(Object.entries(STATE_NAMES).map(([code, name]) =>
+      `<option value="${code}" ${m.state === code ? 'selected' : ''}>${name} (${code})</option>`))
+    .join('');
 
   showSimpleModal('Mi Perfil', `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
@@ -2379,12 +2380,26 @@ function showMyProfile() {
         <span class="member-badge ${planClass}" style="font-size:12px;padding:2px 9px;">${escapeHtml((m.plan || '').toUpperCase())}</span>
       </div>
     </div>
-    <div class="modal-field" style="margin-bottom:14px;">
+    <div class="modal-field" style="margin-bottom:10px;">
       <label>NOMBRE COMPLETO</label>
-      <div style="display:flex;gap:8px;">
-        <input class="search-input" id="profile-name-input" style="width:100%;" value="${escapeHtml(m.name || '')}"/>
-        <button class="btn-outline" style="flex-shrink:0;padding:8px 14px;" type="button" onclick="saveProfileName()">Guardar</button>
+      <input class="search-input" id="profile-name-input" style="width:100%;" value="${escapeHtml(m.name || '')}"/>
+    </div>
+    <div class="modal-field" style="margin-bottom:10px;">
+      <label>INDUSTRIA</label>
+      <input class="search-input" id="profile-industry-input" style="width:100%;" placeholder="Ej: Cleaning / Janitorial" value="${escapeHtml(m.industry || '')}"/>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="modal-field">
+        <label>ESTADO</label>
+        <select class="search-input" id="profile-state-input" style="width:100%;">${stateOptions}</select>
       </div>
+      <div class="modal-field">
+        <label>NAICS</label>
+        <input class="search-input" id="profile-naics-input" style="width:100%;" placeholder="Ej: 561720" value="${escapeHtml(m.naics || '')}"/>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <button class="btn-outline" style="width:100%;padding:8px 14px;" type="button" onclick="saveProfileFields()">Guardar cambios</button>
       <div id="profile-name-error" style="display:none;color:var(--red);font-size:13px;margin-top:6px;"></div>
     </div>
     ${trialRow}
@@ -2673,23 +2688,25 @@ async function saveCompanyProfile() {
   }
 }
 
-async function saveProfileName() {
-  const input = document.getElementById('profile-name-input');
+async function saveProfileFields() {
   const errEl = document.getElementById('profile-name-error');
-  const name = (input?.value || '').trim();
+  const name     = (document.getElementById('profile-name-input')?.value || '').trim();
+  const industry = (document.getElementById('profile-industry-input')?.value || '').trim();
+  const state    = document.getElementById('profile-state-input')?.value || '';
+  const naics    = (document.getElementById('profile-naics-input')?.value || '').trim();
   if (!name) { errEl.textContent = 'El nombre no puede estar vacío.'; errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
   try {
-    const res = await fetch('/api/club?action=update_profile_name', {
+    const res = await fetch('/api/club?action=update_profile', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: clubToken(), name })
+      body: JSON.stringify({ token: clubToken(), name, industry, state, naics })
     });
     const data = await res.json();
-    if (!data.success) { errEl.textContent = data.error || 'No se pudo guardar el nombre.'; errEl.style.display = 'block'; return; }
-    currentMember.name = name;
+    if (!data.success) { errEl.textContent = data.error || 'No se pudo guardar los cambios.'; errEl.style.display = 'block'; return; }
+    Object.assign(currentMember, { name, industry, state, naics });
     applyMemberProfile(currentMember);
     closeSimpleModal();
-    showToast('Nombre actualizado.', 'success');
+    showToast('Perfil actualizado.', 'success');
   } catch (e) {
     errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block';
   }
@@ -3089,6 +3106,19 @@ async function doRegister() {
   }
 }
 
+const STATE_NAMES = {
+  AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
+  CO:'Colorado',CT:'Connecticut',DC:'Washington DC',DE:'Delaware',FL:'Florida',
+  GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',
+  KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',
+  MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',
+  MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',
+  NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',
+  OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',
+  SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',
+  VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico'
+};
+
 function onGlobalFilter() {
   const naicsVal = (currentMember?.naics || '').trim();
   const stateVal = currentMember?.state || '';
@@ -3102,18 +3132,6 @@ function onGlobalFilter() {
   // ── Update STATE KPI card ──
   const stateKpi  = document.getElementById('kpi-state');
   const stateDesc = document.getElementById('kpi-state-desc');
-  const STATE_NAMES = {
-    AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
-    CO:'Colorado',CT:'Connecticut',DC:'Washington DC',DE:'Delaware',FL:'Florida',
-    GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',
-    KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',
-    MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',
-    MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',
-    NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',
-    OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',
-    SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',
-    VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico'
-  };
   if (stateKpi)  stateKpi.textContent  = stateVal || '—';
   if (stateDesc) stateDesc.textContent = stateVal ? (STATE_NAMES[stateVal] || stateVal) : 'Sin estado en tu perfil';
 
