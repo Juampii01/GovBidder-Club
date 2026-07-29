@@ -55,25 +55,36 @@ const CERT_KEY_TO_COLUMN = {
   small_business: 'cert_small_business',
 };
 
-// Genera un link de invitación fresco y manda el email de bienvenida con marca —
-// lo usan tanto el alta de un inversionista nuevo como el reenvío manual de invitación.
-async function sendInvestorWelcomeEmail(email, name) {
+// Genera un link fresco y manda el email con marca — lo usan tanto el alta de un inversionista
+// nuevo como el reenvío manual. Un link tipo 'invite' falla con "already registered" si la
+// cuenta ya está confirmada, así que ahí generamos un 'magiclink' (acceso directo) en su lugar.
+async function sendInvestorWelcomeEmail(email, name, profileId) {
+  let alreadyConfirmed = false;
+  if (profileId) {
+    const { data: userData } = await supabase.auth.admin.getUserById(profileId);
+    alreadyConfirmed = !!userData?.user?.email_confirmed_at;
+  }
   const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({
-    type: 'invite', email, options: { redirectTo: 'https://dboard.govbidderclub.com' }
+    type: alreadyConfirmed ? 'magiclink' : 'invite',
+    email, options: { redirectTo: 'https://dboard.govbidderclub.com' }
   });
   if (inviteErr) return { ok: false, error: inviteErr.message, invited: null };
   const inviteLink = invited.properties?.action_link;
-  if (!inviteLink) return { ok: false, error: 'No se pudo generar el link de invitación.', invited };
+  if (!inviteLink) return { ok: false, error: 'No se pudo generar el link.', invited };
   const emailResult = await sendBrandedEmail({
     to: email,
-    subject: 'Bienvenido a GovBidder Club',
-    eyebrow: 'Cuenta creada',
-    title: `${name ? `${name}, tu` : 'Tu'} cuenta de GovBidder Club está lista`,
-    bodyHtml: `
+    subject: alreadyConfirmed ? 'Tu acceso a GovBidder Club' : 'Bienvenido a GovBidder Club',
+    eyebrow: alreadyConfirmed ? 'Acceso directo' : 'Cuenta creada',
+    title: alreadyConfirmed
+      ? `${name ? `${name}, ingresá` : 'Ingresá'} a tu cuenta de GovBidder Club`
+      : `${name ? `${name}, tu` : 'Tu'} cuenta de GovBidder Club está lista`,
+    bodyHtml: alreadyConfirmed ? `
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Este es tu link de acceso directo a GovBidder Club — hacé clic en el siguiente botón para entrar a tu cuenta.</p>` : `
       <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
       <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Te dimos de alta en GovBidder Club. Para activar tu cuenta y elegir tu contraseña, hacé clic en el siguiente botón.</p>
       <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Una vez adentro vas a poder ver tu perfil, tu actividad y todo lo que GovBidder Club tiene para tu negocio.</p>`,
-    ctaText: 'Activar mi cuenta',
+    ctaText: alreadyConfirmed ? 'Ingresar a mi cuenta' : 'Activar mi cuenta',
     ctaUrl: inviteLink
   });
   return { ok: emailResult.ok, error: emailResult.ok ? null : emailResult.error, invited };
@@ -909,7 +920,7 @@ export default async function handler(req, res) {
         if (!profileId) return res.status(400).json({ success: false, error: 'profileId requerido' });
         const { data: targetProfile } = await supabase.from('profiles').select('email, name').eq('id', profileId).single();
         if (!targetProfile?.email) return res.status(404).json({ success: false, error: 'Miembro no encontrado.' });
-        const { ok, error: sendErr } = await sendInvestorWelcomeEmail(targetProfile.email, targetProfile.name);
+        const { ok, error: sendErr } = await sendInvestorWelcomeEmail(targetProfile.email, targetProfile.name, profileId);
         if (!ok) return res.status(502).json({ success: false, error: sendErr || 'No se pudo reenviar la invitación.' });
         return res.status(200).json({ success: true });
       }
