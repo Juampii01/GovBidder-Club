@@ -499,6 +499,7 @@ tr:hover td{background:var(--line-soft) !important;}
           </div>
         </div>
         <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:14.5px;text-align:center;"></div>
+        <div id="login-info" style="display:none;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:10px 14px;color:#86efac;font-size:14.5px;text-align:center;"></div>
         <button id="login-btn" onclick="doLogin()"
           style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:9px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
           onmouseover="this.style.transform='translateY(-1px)'"
@@ -2246,8 +2247,10 @@ async function doLogin() {
   const btn     = document.getElementById('login-btn');
   const btnText = document.getElementById('login-btn-text');
   const errorEl = document.getElementById('login-error');
+  const infoEl  = document.getElementById('login-info');
 
   if (errorEl) errorEl.style.display = 'none';
+  if (infoEl)  infoEl.style.display  = 'none';
 
   if (!email || !password) {
     if (errorEl) { errorEl.textContent = 'Ingresa tu email y contraseña.'; errorEl.style.display = 'block'; }
@@ -2783,13 +2786,25 @@ async function doSetPassword() {
     const data = await res.json();
 
     if (data.success) {
-      storeSession({ token: pendingAuthToken, refreshToken: pendingAuthRefreshToken });
-      currentMember = data.member;
-      applyMemberProfile(data.member);
-      scheduleSessionRefresh();
-      startInvestorReminderLoop();
-      if (btnText) btnText.innerHTML = '✅ ¡Listo!';
-      setTimeout(() => { hideLogin(); fetchOpps(); fetchGrants(); loadHomeKpis(); }, 500);
+      // No reusamos el token del link para loguear directo: cambiar la contraseña invalida
+      // esa sesión del lado de Supabase (por seguridad), así que quedaría "logueado" con una
+      // sesión ya muerta. Mejor mandarlo al login normal a entrar con la contraseña que recién eligió.
+      const email = data.member?.email || '';
+      pendingAuthToken = null;
+      pendingAuthRefreshToken = null;
+      if (btnText) btnText.innerHTML = '✅ ¡Contraseña guardada!';
+      setTimeout(() => {
+        const tabsSwitcher = document.getElementById('login-tabs-switcher');
+        if (tabsSwitcher) tabsSwitcher.style.display = 'flex';
+        document.getElementById('tab-set-password').style.display = 'none';
+        switchTab('login');
+        const emailEl = document.getElementById('login-email');
+        if (emailEl) emailEl.value = email;
+        const passEl = document.getElementById('login-password');
+        if (passEl) passEl.value = '';
+        const infoEl = document.getElementById('login-info');
+        if (infoEl) { infoEl.textContent = 'Contraseña guardada — iniciá sesión con tu nueva contraseña.'; infoEl.style.display = 'block'; }
+      }, 600);
     } else {
       if (errorEl) { errorEl.textContent = data.error || 'No se pudo guardar la contraseña.'; errorEl.style.display = 'block'; }
       if (btn) btn.disabled = false;
