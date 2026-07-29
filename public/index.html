@@ -3091,7 +3091,7 @@ async function doRegister() {
 
 function onGlobalFilter() {
   const naicsVal = (currentMember?.naics || '').trim();
-  const stateVal = currentMember?.state || 'NJ';
+  const stateVal = currentMember?.state || '';
 
   // ── Update NAICS KPI card (viene directo del perfil del miembro) ──
   const naicsKpi  = document.getElementById('kpi-naics');
@@ -3115,7 +3115,7 @@ function onGlobalFilter() {
     VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico'
   };
   if (stateKpi)  stateKpi.textContent  = stateVal || '—';
-  if (stateDesc) stateDesc.textContent = STATE_NAMES[stateVal] || stateVal;
+  if (stateDesc) stateDesc.textContent = stateVal ? (STATE_NAMES[stateVal] || stateVal) : 'Sin estado en tu perfil';
 
   // ── Sincronizar los filtros de búsqueda con el perfil real del miembro (antes
   // quedaban fijos en NJ/561720 para cualquier cuenta, en todas las páginas) ──
