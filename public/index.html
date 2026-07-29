@@ -494,6 +494,9 @@ tr:hover td{background:var(--line-soft) !important;}
             <button id="pass-toggle" onclick="togglePass()"
               style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16.5px;">👁️</button>
           </div>
+          <div style="text-align:right;margin-top:6px;">
+            <a href="#" onclick="showForgotPassword();return false;" style="color:rgba(255,255,255,.4);font-size:13px;text-decoration:none;">¿Olvidaste tu contraseña?</a>
+          </div>
         </div>
         <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:14.5px;text-align:center;"></div>
         <button id="login-btn" onclick="doLogin()"
@@ -729,6 +732,40 @@ tr:hover td{background:var(--line-soft) !important;}
         <div style="text-align:center;margin-top:4px;">
           <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:14px;text-decoration:none;">¿Problemas? Escríbenos</a>
         </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: FORGOT PASSWORD ══ -->
+    <div id="tab-forgot-password" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:#fff;font-size:16.5px;font-weight:700;margin-bottom:3px;">Restablecer contraseña</div>
+        <div style="color:rgba(255,255,255,.4);font-size:14px;">Ingresá tu email y te mandamos un link para elegir una nueva.</div>
+      </div>
+      <div id="forgot-form" style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:12.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
+          <input id="forgot-email" type="email" placeholder="tu@email.com"
+            onkeydown="if(event.key==='Enter')doForgotPassword()"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:16px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+            onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+          />
+        </div>
+        <div id="forgot-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:14.5px;text-align:center;"></div>
+        <button id="forgot-btn" onclick="doForgotPassword()"
+          style="background:linear-gradient(135deg,var(--red),var(--accent2));color:#fff;border:none;border-radius:9px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
+          onmouseover="this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.transform='translateY(0)'">
+          <span id="forgot-btn-text">Enviar link de recuperación →</span>
+        </button>
+      </div>
+      <div id="forgot-success" style="display:none;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px;">📧</div>
+        <div style="color:#86efac;font-size:15px;font-weight:700;margin-bottom:4px;">¡Listo!</div>
+        <div style="color:rgba(255,255,255,.6);font-size:14px;line-height:1.6;">Si el email está registrado, te va a llegar un link para restablecer tu contraseña.</div>
+      </div>
+      <div style="text-align:center;margin-top:16px;">
+        <a href="#" onclick="hideForgotPassword();return false;" style="color:rgba(255,255,255,.35);font-size:14px;text-decoration:none;">← Volver al login</a>
       </div>
     </div>
 
@@ -2876,6 +2913,66 @@ function switchTab(tab) {
     btnReg.style.color        = '#fff';
     btnLogin.style.background = 'transparent';
     btnLogin.style.color      = 'rgba(255,255,255,.5)';
+  }
+}
+
+// ── FORGOT PASSWORD ──────────────────────────────────────
+function showForgotPassword() {
+  const tabsSwitcher = document.getElementById('login-tabs-switcher');
+  if (tabsSwitcher) tabsSwitcher.style.display = 'none';
+  document.getElementById('tab-login').style.display = 'none';
+  document.getElementById('tab-register').style.display = 'none';
+  document.getElementById('tab-forgot-password').style.display = 'block';
+  document.getElementById('forgot-form').style.display = 'flex';
+  document.getElementById('forgot-success').style.display = 'none';
+  const errorEl = document.getElementById('forgot-error');
+  if (errorEl) errorEl.style.display = 'none';
+  const emailEl = document.getElementById('forgot-email');
+  if (emailEl) emailEl.value = '';
+}
+
+function hideForgotPassword() {
+  document.getElementById('tab-forgot-password').style.display = 'none';
+  const tabsSwitcher = document.getElementById('login-tabs-switcher');
+  if (tabsSwitcher) tabsSwitcher.style.display = 'flex';
+  switchTab('login');
+}
+
+async function doForgotPassword() {
+  const email = (document.getElementById('forgot-email')?.value || '').trim();
+  const errorEl = document.getElementById('forgot-error');
+  const btn = document.getElementById('forgot-btn');
+  const btnText = document.getElementById('forgot-btn-text');
+
+  if (errorEl) errorEl.style.display = 'none';
+
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    if (errorEl) { errorEl.textContent = 'Ingresá un email válido.'; errorEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  if (btnText) btnText.innerHTML = 'Enviando...';
+
+  try {
+    const res = await fetch('/api/auth?action=forgot_password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('forgot-form').style.display = 'none';
+      document.getElementById('forgot-success').style.display = 'block';
+    } else {
+      if (errorEl) { errorEl.textContent = data.error || 'No se pudo procesar el pedido.'; errorEl.style.display = 'block'; }
+    }
+  } catch (e) {
+    if (errorEl) { errorEl.textContent = 'Error de conexión: ' + e.message; errorEl.style.display = 'block'; }
+  } finally {
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.innerHTML = 'Enviar link de recuperación →';
   }
 }
 

@@ -3,6 +3,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { safeError } from './_lib/errors.js';
+import { sendInvestorWelcomeEmail } from './_lib/email.js';
+import { checkRateLimit } from './_lib/auth.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -53,6 +55,12 @@ async function getProfile(userId) {
   return data;
 }
 
+async function getProfileByEmail(email) {
+  const { data, error } = await supabase.from('profiles').select('*').eq('email', email).maybeSingle();
+  if (error) return null;
+  return data;
+}
+
 function isExpired(profile) {
   return profile.plan_expiry && new Date(profile.plan_expiry) < new Date();
 }
@@ -94,6 +102,28 @@ export default async function handler(req, res) {
       if (insErr) return safeError(res, insErr, 'Auth error');
 
       return res.status(200).json({ success: true, message: 'Solicitud recibida. Te contactaremos en 24-48 horas.' });
+    }
+
+    // ── FORGOT PASSWORD (público, sin sesión) ────────────
+    // Mismo mecanismo que "Reenviar invitación" de Admin (invite si nunca activó, recovery
+    // si ya confirmó pero no recuerda su contraseña), pero autoservicio desde el login.
+    // Respuesta genérica siempre — no revela si el email existe (evita enumeración de cuentas).
+    if (action === 'forgot_password') {
+      const body = (req.method === 'POST' && req.body) ? req.body : {};
+      const email = (body.email || '').trim().toLowerCase();
+      const genericMsg = 'Si el email está registrado, te enviamos un link para restablecer tu contraseña.';
+
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        return res.status(400).json({ success: false, error: 'Ingresá un email válido.' });
+      }
+
+      const profile = await getProfileByEmail(email);
+      if (profile && profile.active) {
+        const { error: rlErr } = await checkRateLimit(supabase, profile.id, 'forgot_password', 3, 60);
+        if (!rlErr) await sendInvestorWelcomeEmail(supabase, profile.email, profile.name, profile.id);
+      }
+
+      return res.status(200).json({ success: true, message: genericMsg });
     }
 
     // ── LOGIN (paid members) ────────────────────────────

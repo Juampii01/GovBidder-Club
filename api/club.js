@@ -4,7 +4,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember, checkRateLimit } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
-import { sendBrandedEmail } from './_lib/email.js';
+import { sendBrandedEmail, sendInvestorWelcomeEmail } from './_lib/email.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -54,43 +54,6 @@ const CERT_KEY_TO_COLUMN = {
   veteran_owned: 'cert_veteran_owned',
   small_business: 'cert_small_business',
 };
-
-// Genera un link fresco y manda el email con marca — lo usan tanto el alta de un inversionista
-// nuevo como el reenvío manual. Un link tipo 'invite' falla con "already registered" si la
-// cuenta ya está confirmada — en ese caso mandamos un 'recovery' en su lugar, que también
-// lleva a la pantalla de elegir contraseña (necesario: una cuenta ya confirmada puede seguir
-// sin tener contraseña real si nunca completó ese paso, que es justo el bug que esto arregla).
-async function sendInvestorWelcomeEmail(email, name, profileId) {
-  let alreadyConfirmed = false;
-  if (profileId) {
-    const { data: userData } = await supabase.auth.admin.getUserById(profileId);
-    alreadyConfirmed = !!userData?.user?.email_confirmed_at;
-  }
-  const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({
-    type: alreadyConfirmed ? 'recovery' : 'invite',
-    email, options: { redirectTo: 'https://dboard.govbidderclub.com' }
-  });
-  if (inviteErr) return { ok: false, error: inviteErr.message, invited: null };
-  const inviteLink = invited.properties?.action_link;
-  if (!inviteLink) return { ok: false, error: 'No se pudo generar el link.', invited };
-  const emailResult = await sendBrandedEmail({
-    to: email,
-    subject: alreadyConfirmed ? 'Recuperá el acceso a tu cuenta' : 'Bienvenido a GovBidder Club',
-    eyebrow: alreadyConfirmed ? 'Restablecer acceso' : 'Cuenta creada',
-    title: alreadyConfirmed
-      ? `${name ? `${name}, restablecé` : 'Restablecé'} tu acceso a GovBidder Club`
-      : `${name ? `${name}, tu` : 'Tu'} cuenta de GovBidder Club está lista`,
-    bodyHtml: alreadyConfirmed ? `
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
-      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Para volver a entrar a tu cuenta de GovBidder Club, elegí una contraseña nueva haciendo clic en el siguiente botón.</p>` : `
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Te dimos de alta en GovBidder Club. Para activar tu cuenta y elegir tu contraseña, hacé clic en el siguiente botón.</p>
-      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Una vez adentro vas a poder ver tu perfil, tu actividad y todo lo que GovBidder Club tiene para tu negocio.</p>`,
-    ctaText: alreadyConfirmed ? 'Elegir mi contraseña' : 'Activar mi cuenta',
-    ctaUrl: inviteLink
-  });
-  return { ok: emailResult.ok, error: emailResult.ok ? null : emailResult.error, invited };
-}
 
 async function getAllianceMaxCap() {
   const { data } = await supabase.from('platform_settings').select('value').eq('key', 'alliance_max_cap').single();
@@ -879,7 +842,7 @@ export default async function handler(req, res) {
           const plan = ['Legacy', 'Prime', 'Elevate'].includes(newMemberPlan) ? newMemberPlan : 'Legacy';
           // Generamos el link nosotros (en vez de inviteUserByEmail) para poder mandar
           // nuestro propio email con el mismo diseño de marca que el resto de los emails del Club.
-          const { ok: emailOk, error: emailErr, invited } = await sendInvestorWelcomeEmail(email, name);
+          const { ok: emailOk, error: emailErr, invited } = await sendInvestorWelcomeEmail(supabase, email, name);
           if (!invited) return safeError(res, new Error(emailErr || 'No se pudo generar la invitación.'), 'club.js error');
           if (!emailOk) inviteEmailWarning = emailErr;
           const expiry = new Date(startDate);
@@ -922,7 +885,7 @@ export default async function handler(req, res) {
         if (!profileId) return res.status(400).json({ success: false, error: 'profileId requerido' });
         const { data: targetProfile } = await supabase.from('profiles').select('email, name').eq('id', profileId).single();
         if (!targetProfile?.email) return res.status(404).json({ success: false, error: 'Miembro no encontrado.' });
-        const { ok, error: sendErr } = await sendInvestorWelcomeEmail(targetProfile.email, targetProfile.name, profileId);
+        const { ok, error: sendErr } = await sendInvestorWelcomeEmail(supabase, targetProfile.email, targetProfile.name, profileId);
         if (!ok) return res.status(502).json({ success: false, error: sendErr || 'No se pudo reenviar la invitación.' });
         return res.status(200).json({ success: true });
       }

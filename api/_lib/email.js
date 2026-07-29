@@ -57,3 +57,41 @@ export async function sendBrandedEmail({ to, subject, eyebrow, title, bodyHtml, 
   }
   return { ok: true };
 }
+
+// Genera un link fresco y manda el email con marca — lo usan el alta de un inversionista
+// nuevo, el reenvío manual desde Admin, y el "olvidé mi contraseña" público del login.
+// Un link tipo 'invite' falla con "already registered" si la cuenta ya está confirmada —
+// en ese caso mandamos un 'recovery' en su lugar, que también lleva a la pantalla de elegir
+// contraseña (necesario: una cuenta confirmada puede seguir sin contraseña real si nunca
+// completó ese paso).
+export async function sendInvestorWelcomeEmail(supabase, email, name, profileId) {
+  let alreadyConfirmed = false;
+  if (profileId) {
+    const { data: userData } = await supabase.auth.admin.getUserById(profileId);
+    alreadyConfirmed = !!userData?.user?.email_confirmed_at;
+  }
+  const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({
+    type: alreadyConfirmed ? 'recovery' : 'invite',
+    email, options: { redirectTo: 'https://dboard.govbidderclub.com' }
+  });
+  if (inviteErr) return { ok: false, error: inviteErr.message, invited: null };
+  const inviteLink = invited.properties?.action_link;
+  if (!inviteLink) return { ok: false, error: 'No se pudo generar el link.', invited };
+  const emailResult = await sendBrandedEmail({
+    to: email,
+    subject: alreadyConfirmed ? 'Recuperá el acceso a tu cuenta' : 'Bienvenido a GovBidder Club',
+    eyebrow: alreadyConfirmed ? 'Restablecer acceso' : 'Cuenta creada',
+    title: alreadyConfirmed
+      ? `${name ? `${name}, restablecé` : 'Restablecé'} tu acceso a GovBidder Club`
+      : `${name ? `${name}, tu` : 'Tu'} cuenta de GovBidder Club está lista`,
+    bodyHtml: alreadyConfirmed ? `
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Para volver a entrar a tu cuenta de GovBidder Club, elegí una contraseña nueva haciendo clic en el siguiente botón.</p>` : `
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Hola${name ? ` ${name}` : ''},</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#374151;">Te dimos de alta en GovBidder Club. Para activar tu cuenta y elegir tu contraseña, hacé clic en el siguiente botón.</p>
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.65;color:#374151;">Una vez adentro vas a poder ver tu perfil, tu actividad y todo lo que GovBidder Club tiene para tu negocio.</p>`,
+    ctaText: alreadyConfirmed ? 'Elegir mi contraseña' : 'Activar mi cuenta',
+    ctaUrl: inviteLink
+  });
+  return { ok: emailResult.ok, error: emailResult.ok ? null : emailResult.error, invited };
+}
