@@ -5369,8 +5369,11 @@ async function loadAdminInvestors() {
       const reminderBtn = (inv.status === 'active' && inv.behind > 0)
         ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="sendInvestorReminderEmail('${inv.id}',this)">✉️ Enviar recordatorio</button>`
         : '';
+      const resendInviteBtn = inv.pendingActivation
+        ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="resendInvestorInvite('${inv.profileId}',this)">🔄 Reenviar invitación</button>`
+        : '';
       const action = inv.status === 'active'
-        ? `${reminderBtn}
+        ? `${resendInviteBtn}${reminderBtn}
            <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="setInvestorStatus('${inv.id}','withdrawn',this)">Marcar retirado</button>
            <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="setInvestorStatus('${inv.id}','completed',this)">Marcar completado</button>`
         : '';
@@ -5407,6 +5410,14 @@ async function sendInvestorReminderEmail(investorId, btn) {
   if (btn) btn.disabled = false;
   if (!data.success) { showToast(data.error || 'No se pudo enviar el recordatorio.'); return; }
   showToast('Recordatorio enviado.', 'success');
+}
+
+async function resendInvestorInvite(profileId, btn) {
+  if (btn) btn.disabled = true;
+  const data = await clubAdminFetch('admin_investor_resend_invite', { profileId });
+  if (btn) btn.disabled = false;
+  if (!data.success) { showToast(data.error || 'No se pudo reenviar la invitación.'); return; }
+  showToast('Invitación reenviada.', 'success');
 }
 
 async function setInvestorStatus(investorId, status, btn) {

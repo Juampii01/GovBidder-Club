@@ -819,10 +819,16 @@ export default async function handler(req, res) {
         const { data: deposits } = await supabase.from('investor_deposits').select('*').in('investor_id', ids);
         const byInvestor = {};
         for (const d of deposits || []) (byInvestor[d.investor_id] ||= []).push(d);
+        // Para saber si todavía no activaron la invitación (para mostrar "Reenviar
+        // invitación" solo cuando corresponde) — un solo listUsers() en vez de N llamadas.
+        const { data: { users: authUsers } } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+        const confirmedById = {};
+        (authUsers || []).forEach(u => { confirmedById[u.id] = !!u.email_confirmed_at; });
         const result = investors.map(inv => ({
-          id: inv.id, name: inv.profiles?.name, email: inv.profiles?.email,
+          id: inv.id, profileId: inv.profile_id, name: inv.profiles?.name, email: inv.profiles?.email,
           startDate: inv.start_date, monthlyAmount: inv.monthly_amount, termMonths: inv.term_months,
           fixedReturn: inv.fixed_return, status: inv.status,
+          pendingActivation: confirmedById[inv.profile_id] === false,
           ...investorSummary(inv, byInvestor[inv.id] || [])
         }));
         return res.status(200).json({ success: true, investors: result });
