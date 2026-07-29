@@ -836,7 +836,12 @@ export default async function handler(req, res) {
           const plan = ['Legacy', 'Prime', 'Elevate'].includes(newMemberPlan) ? newMemberPlan : 'Legacy';
           // Generamos el link nosotros (en vez de inviteUserByEmail) para poder mandar
           // nuestro propio email con el mismo diseño de marca que el resto de los emails del Club.
-          const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({ type: 'invite', email });
+          // Sin redirectTo explícito, Supabase usa el "Site URL" configurado en el
+          // dashboard (Auth → URL Configuration) — que puede seguir apuntando a
+          // localhost desde el desarrollo local si nunca se actualizó ahí.
+          const { data: invited, error: inviteErr } = await supabase.auth.admin.generateLink({
+            type: 'invite', email, options: { redirectTo: 'https://dboard.govbidderclub.com' }
+          });
           if (inviteErr) return safeError(res, inviteErr, 'club.js error');
           const inviteLink = invited.properties?.action_link;
           if (inviteLink) {
