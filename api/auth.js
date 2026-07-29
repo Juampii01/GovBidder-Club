@@ -119,8 +119,14 @@ export default async function handler(req, res) {
 
       const profile = await getProfileByEmail(email);
       if (profile && profile.active) {
-        const { error: rlErr } = await checkRateLimit(supabase, profile.id, 'forgot_password', 3, 60);
-        if (!rlErr) await sendInvestorWelcomeEmail(supabase, profile.email, profile.name, profile.id);
+        const { error: rlErr } = await checkRateLimit(supabase, profile.id, 'forgot_password', 5, 30);
+        if (rlErr) {
+          // Mensaje honesto acá (no genérico): si no le llegó el anterior, "éxito" de nuevo
+          // solo lo iba a confundir más. No es un riesgo real de enumeración de cuentas —
+          // es un club chico de inversionistas, no un producto público masivo.
+          return res.status(200).json({ success: true, message: 'Ya te enviamos un link hace poco — revisá tu casilla (y spam) antes de pedir otro.' });
+        }
+        await sendInvestorWelcomeEmail(supabase, profile.email, profile.name, profile.id);
       }
 
       return res.status(200).json({ success: true, message: genericMsg });
