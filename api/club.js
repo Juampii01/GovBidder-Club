@@ -474,66 +474,54 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
+    // Antes llamaba a api.sam.gov directo (bloqueado por falta de SAM_GOV_API_KEY propia) —
+    // ahora usa el endpoint de entidades de GovBidder Connect, que resuelve el UEI del lado
+    // de ellos con su propia key de SAM.gov. Misma GBC_API_KEY que ya usan /opportunities y
+    // /awards. Esta fuente solo busca por UEI (no por nombre — es ambiguo) y todavía no
+    // devuelve certificaciones/set-asides ni dirección completa (solo ciudad/estado).
     if (action === 'lookup_sam_entity') {
-      const SAM_KEY = process.env.SAM_GOV_API_KEY;
-      if (!SAM_KEY) {
-        return res.status(500).json({ success: false, error: 'SAM_GOV_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' });
+      const GBC_KEY = process.env.GBC_API_KEY;
+      if (!GBC_KEY) {
+        return res.status(500).json({ success: false, error: 'GBC_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' });
       }
       const { error: rlErr, status: rlStatus } = await checkRateLimit(supabase, profile.id, 'sam_lookup', 5, 60);
       if (rlErr) return res.status(rlStatus).json({ success: false, error: rlErr });
 
-      const uei = String(body.uei || '').trim();
-      const legalBusinessName = String(body.companyName || '').trim();
-      if (!uei && !legalBusinessName) {
-        return res.status(400).json({ success: false, error: 'Ingresá un UEI o el nombre de la empresa para buscar.' });
+      const uei = String(body.uei || '').trim().toUpperCase();
+      if (!/^[A-Z0-9]{12}$/.test(uei)) {
+        return res.status(400).json({ success: false, error: 'El UEI debe tener 12 caracteres alfanuméricos.' });
       }
-      const params = new URLSearchParams({ api_key: SAM_KEY });
-      if (uei) params.set('ueiSAM', uei);
-      else params.set('legalBusinessName', legalBusinessName);
 
       try {
-        const samRes = await fetch(`https://api.sam.gov/entity-information/v3/entities?${params}`);
-        if (!samRes.ok) {
-          const errText = await samRes.text();
-          throw new Error(`SAM.gov API error ${samRes.status}: ${errText.substring(0, 200)}`);
+        const gbcRes = await fetch(`https://www.govbidderconnect.com/api/v1/entities?uei=${uei}`, {
+          headers: { Authorization: `Bearer ${GBC_KEY}` }
+        });
+        if (gbcRes.status === 404) {
+          return res.status(404).json({ success: false, error: 'No se encontró ninguna empresa registrada con ese UEI.' });
         }
-        const samData = await samRes.json();
-        const entity = samData.entityData?.[0];
-        if (!entity) {
-          return res.status(404).json({ success: false, error: 'No se encontró ninguna empresa registrada en SAM.gov con esos datos.' });
+        if (!gbcRes.ok) {
+          const errText = await gbcRes.text();
+          throw new Error(`GovBidder Connect error ${gbcRes.status}: ${errText.substring(0, 200)}`);
         }
-
-        const reg = entity.entityRegistration || {};
-        const core = entity.coreData || {};
-        const addr = core.physicalAddress || {};
-        const naicsList = entity.assertions?.goodsAndServices?.naicsList || [];
-        // Mapeo de certificaciones por TEXTO de la descripción (sbaBusinessTypeDesc), no por
-        // código — SAM.gov no documenta públicamente todos los códigos de certificación, así
-        // que anclamos en el texto (mismo patrón que el mapeo de set-aside de la Fase 13).
-        const sbaCerts = core.businessTypes?.sbaBusinessTypeList || [];
-        const certDescs = sbaCerts.map(c => (c.sbaBusinessTypeDesc || '').toLowerCase());
-        const hasCert = (needle) => certDescs.some(d => d.includes(needle));
+        const d = await gbcRes.json();
 
         return res.status(200).json({
           success: true,
           entity: {
-            legalBusinessName: reg.legalBusinessName || '',
-            dbaName: reg.dbaName || '',
-            uei: reg.ueiSAM || '',
-            cageCode: reg.cageCode || '',
-            registrationStatus: reg.registrationStatus || '',
-            registrationExpirationDate: reg.registrationExpirationDate || '',
-            businessAddress: [addr.addressLine1, addr.city, addr.stateOrProvinceCode, addr.zipCode].filter(Boolean).join(', '),
-            naicsCodes: naicsList.map(n => n.naicsCode).filter(Boolean),
-            cert8a: hasCert('8(a)'),
-            certHubzone: hasCert('hubzone'),
-            certWomenOwned: hasCert('woman owned') || hasCert('women owned') || hasCert('women-owned'),
-            certVeteranOwned: hasCert('veteran'),
-            certSmallBusiness: hasCert('small business'),
+            legalBusinessName: d.legalBusinessName || '',
+            dbaName: '',
+            uei: d.ueiSAM || '',
+            cageCode: d.cageCode || '',
+            registrationStatus: '',
+            registrationExpirationDate: '',
+            businessAddress: [d.city, d.state].filter(Boolean).join(', '),
+            naicsCodes: (d.naicsCodes || []).map(n => n.code).filter(Boolean),
+            cert8a: false, certHubzone: false, certWomenOwned: false, certVeteranOwned: false, certSmallBusiness: false,
+            certsUnavailable: true,
           }
         });
       } catch (error) {
-        return safeError(res, error, 'SAM.gov error');
+        return safeError(res, error, 'GovBidder Connect error');
       }
     }
 
