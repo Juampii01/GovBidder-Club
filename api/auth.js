@@ -36,7 +36,7 @@ function shapeMember(profile) {
     memberSince: profile.member_since,
     avatar: computeInitials(profile.name),
     avatarPhotoUrl: profile.avatar_photo_path
-      ? `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-photos/${profile.avatar_photo_path}`
+      ? `${process.env.SUPABASE_URL.trim()}/storage/v1/object/public/profile-photos/${profile.avatar_photo_path}`
       : '',
     isTrial: profile.is_trial,
     isInvestor: profile.is_investor === true,

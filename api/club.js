@@ -426,7 +426,7 @@ export default async function handler(req, res) {
       const { error: updErr } = await supabase.from('profiles').update({ avatar_photo_path: path }).eq('id', profile.id);
       if (updErr) return safeError(res, updErr, 'club.js error');
 
-      const avatarPhotoUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-photos/${path}?v=${Date.now()}`;
+      const avatarPhotoUrl = `${process.env.SUPABASE_URL.trim()}/storage/v1/object/public/profile-photos/${path}?v=${Date.now()}`;
       return res.status(200).json({ success: true, avatarPhotoUrl });
     }
 
