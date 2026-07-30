@@ -515,6 +515,7 @@ export default async function handler(req, res) {
             registrationStatus: '',
             registrationExpirationDate: '',
             businessAddress: [d.city, d.state].filter(Boolean).join(', '),
+            state: String(d.state || '').trim().toUpperCase(),
             naicsCodes: (d.naicsCodes || []).map(n => n.code).filter(Boolean),
             cert8a: false, certHubzone: false, certWomenOwned: false, certVeteranOwned: false, certSmallBusiness: false,
             certsUnavailable: true,

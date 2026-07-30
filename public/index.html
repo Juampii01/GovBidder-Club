@@ -2463,7 +2463,7 @@ async function samLookupAndPreview() {
   btn.disabled = false;
 }
 
-function applySamData() {
+async function applySamData() {
   const e = window.samPreviewEntity;
   if (!e) return;
   const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
@@ -2473,6 +2473,22 @@ function applySamData() {
   setVal('cp-address', e.businessAddress);
   // Certificaciones no vienen de esta fuente todavía — no tocamos esos checkboxes,
   // así no pisamos algo que el usuario ya haya marcado a mano.
+
+  // Estado/NAICS son campos del perfil general (Mi Perfil), no de este formulario —
+  // se guardan aparte y de una, porque esta ventana no comparte inputs con esa otra.
+  const update = {};
+  if (e.state && STATE_NAMES[e.state]) update.state = e.state;
+  if (e.naicsCodes?.[0]) update.naics = e.naicsCodes[0];
+  if (Object.keys(update).length) {
+    try {
+      const res = await fetch('/api/club?action=update_profile', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: clubToken(), ...update })
+      });
+      const data = await res.json();
+      if (data.success) { Object.assign(currentMember, update); applyMemberProfile(currentMember); }
+    } catch (err) { /* no bloquea el resto del autocompletado por esto */ }
+  }
   showToast('Datos aplicados — revisá y hacé clic en Guardar para confirmar.', 'success');
 }
 
