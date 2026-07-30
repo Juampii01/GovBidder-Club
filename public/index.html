@@ -2317,13 +2317,21 @@ function resetLoginBtn() {
   if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
 }
 
+// Foto de perfil si existe; si no, las iniciales (ya vienen calculadas del backend a
+// partir del nombre real — nunca se guarda una foto/inicial vieja que quede desactualizada).
+function avatarInnerHtml(member) {
+  if (member?.avatarPhotoUrl) {
+    return `<img src="${escapeHtml(member.avatarPhotoUrl)}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">`;
+  }
+  return escapeHtml(member?.avatar || '??');
+}
+
 function applyMemberProfile(member) {
   if (!member) return;
 
-  // Avatar initials
-  const initials = member.avatar || member.name?.substring(0,2).toUpperCase() || '??';
+  // Avatar (foto o iniciales)
   const avatarEl = document.getElementById('top-avatar');
-  if (avatarEl) avatarEl.textContent = initials;
+  if (avatarEl) avatarEl.innerHTML = avatarInnerHtml(member);
 
   // Plan → badge variant class (matches .plan-legacy/.plan-prime/.plan-elevate)
   const planClass = 'plan-' + (member.plan || 'elevate').toLowerCase();
@@ -2338,7 +2346,7 @@ function applyMemberProfile(member) {
   const menuName  = document.getElementById('menu-name');
   const menuEmail = document.getElementById('menu-email');
   const menuPlan  = document.getElementById('menu-plan-badge');
-  if (menuName)  menuName.textContent  = member.name  || initials;
+  if (menuName)  menuName.textContent  = member.name  || member.avatar || '??';
   if (menuEmail) menuEmail.textContent = member.email || '—';
   if (menuPlan)  menuPlan.innerHTML    = `<span class="member-badge ${planClass}" style="font-size:13px;padding:3px 10px;">${(member.plan||'').toUpperCase()}</span>`;
 
@@ -2374,10 +2382,16 @@ function showMyProfile() {
 
   showSimpleModal('Mi Perfil', `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-      <div class="top-avatar" style="position:static;">${escapeHtml(m.avatar || '')}</div>
+      <div style="position:relative;width:56px;height:56px;flex-shrink:0;">
+        <div class="top-avatar" id="profile-avatar-display" style="position:static;width:56px;height:56px;font-size:20px;">${avatarInnerHtml(m)}</div>
+        <button type="button" title="Cambiar foto" onclick="document.getElementById('avatar-photo-input').click()"
+          style="position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:var(--red);border:2px solid var(--card);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;">📷</button>
+        <input type="file" id="avatar-photo-input" accept="image/png,image/jpeg,image/webp" style="display:none;" onchange="onAvatarFileChosen(event)"/>
+      </div>
       <div>
         <div style="font-size:17px;font-weight:800;color:var(--ink);">${escapeHtml(m.name || '—')}</div>
         <span class="member-badge ${planClass}" style="font-size:12px;padding:2px 9px;">${escapeHtml((m.plan || '').toUpperCase())}</span>
+        ${m.avatarPhotoUrl ? `<div style="margin-top:4px;"><a href="#" onclick="removeAvatarPhoto();return false;" style="font-size:12px;color:var(--muted);text-decoration:underline;">Quitar foto</a></div>` : ''}
       </div>
     </div>
     <div class="modal-field" style="margin-bottom:10px;">
@@ -2709,6 +2723,165 @@ async function saveProfileFields() {
     showToast('Perfil actualizado.', 'success');
   } catch (e) {
     errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block';
+  }
+}
+
+// ── FOTO DE PERFIL (subida + recorte) ────────────────────
+const AVATAR_MAX_UPLOAD_MB = 10;
+const AVATAR_VIEWPORT = 280;
+const AVATAR_OUTPUT = 400;
+let avatarCrop = null; // { img, naturalW, naturalH, baseScale, scale, offsetX, offsetY }
+
+function onAvatarFileChosen(event) {
+  const file = event.target.files?.[0];
+  event.target.value = ''; // permite re-elegir el mismo archivo más tarde
+  if (!file) return;
+
+  const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!ALLOWED.includes(file.type)) {
+    showToast('La foto debe ser JPG, PNG o WEBP.');
+    return;
+  }
+  if (file.size > AVATAR_MAX_UPLOAD_MB * 1024 * 1024) {
+    showToast(`La imagen no puede superar los ${AVATAR_MAX_UPLOAD_MB}MB.`);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => showAvatarCropperModal(reader.result);
+  reader.onerror = () => showToast('No se pudo leer la imagen. Probá de nuevo.');
+  reader.readAsDataURL(file);
+}
+
+function showAvatarCropperModal(dataUrl) {
+  showSimpleModal('Recortar foto de perfil', `
+    <div style="text-align:center;">
+      <div style="color:var(--muted);font-size:13.5px;margin-bottom:14px;">Arrastrá para mover y usá la barra para acercar o alejar.</div>
+      <div id="crop-viewport" style="position:relative;width:${AVATAR_VIEWPORT}px;height:${AVATAR_VIEWPORT}px;margin:0 auto 14px;border-radius:50%;overflow:hidden;background:#111;cursor:grab;touch-action:none;box-shadow:0 0 0 3px var(--line);">
+        <img id="crop-image" src="${dataUrl}" draggable="false" style="position:absolute;top:0;left:0;transform-origin:0 0;user-select:none;pointer-events:none;"/>
+      </div>
+      <input type="range" id="crop-zoom" min="1" max="3" step="0.01" value="1" style="width:${AVATAR_VIEWPORT}px;" oninput="onCropZoomInput()"/>
+      <div id="crop-error" style="display:none;color:var(--red);font-size:13px;margin-top:8px;"></div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn-outline" style="flex:1;" type="button" onclick="closeSimpleModal()">Cancelar</button>
+        <button class="btn-red" id="crop-save-btn" style="flex:1;" type="button" onclick="saveCroppedAvatar()">Guardar foto</button>
+      </div>
+    </div>
+  `);
+
+  const img = document.getElementById('crop-image');
+  img.onload = () => {
+    const naturalW = img.naturalWidth, naturalH = img.naturalHeight;
+    const baseScale = Math.max(AVATAR_VIEWPORT / naturalW, AVATAR_VIEWPORT / naturalH);
+    avatarCrop = {
+      img, naturalW, naturalH, baseScale, scale: baseScale,
+      offsetX: (AVATAR_VIEWPORT - naturalW * baseScale) / 2,
+      offsetY: (AVATAR_VIEWPORT - naturalH * baseScale) / 2,
+    };
+    renderCropTransform();
+    wireCropDrag();
+  };
+}
+
+function clampCropOffset() {
+  const c = avatarCrop;
+  const dw = c.naturalW * c.scale, dh = c.naturalH * c.scale;
+  c.offsetX = Math.min(0, Math.max(AVATAR_VIEWPORT - dw, c.offsetX));
+  c.offsetY = Math.min(0, Math.max(AVATAR_VIEWPORT - dh, c.offsetY));
+}
+
+function renderCropTransform() {
+  const c = avatarCrop;
+  if (!c) return;
+  clampCropOffset();
+  c.img.style.transform = `translate(${c.offsetX}px, ${c.offsetY}px) scale(${c.scale})`;
+}
+
+function onCropZoomInput() {
+  if (!avatarCrop) return;
+  const z = Number(document.getElementById('crop-zoom').value) || 1;
+  avatarCrop.scale = avatarCrop.baseScale * z;
+  renderCropTransform();
+}
+
+function wireCropDrag() {
+  const viewport = document.getElementById('crop-viewport');
+  if (!viewport) return;
+  let dragging = false, lastX = 0, lastY = 0;
+
+  const start = (x, y) => { dragging = true; lastX = x; lastY = y; viewport.style.cursor = 'grabbing'; };
+  const move = (x, y) => {
+    if (!dragging || !avatarCrop) return;
+    avatarCrop.offsetX += x - lastX;
+    avatarCrop.offsetY += y - lastY;
+    lastX = x; lastY = y;
+    renderCropTransform();
+  };
+  const end = () => { dragging = false; viewport.style.cursor = 'grab'; };
+
+  viewport.onmousedown = (e) => start(e.clientX, e.clientY);
+  window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
+  window.addEventListener('mouseup', end);
+
+  viewport.ontouchstart = (e) => { const t = e.touches[0]; start(t.clientX, t.clientY); };
+  viewport.ontouchmove = (e) => { const t = e.touches[0]; move(t.clientX, t.clientY); e.preventDefault(); };
+  viewport.ontouchend = end;
+}
+
+async function saveCroppedAvatar() {
+  const errEl = document.getElementById('crop-error');
+  const btn = document.getElementById('crop-save-btn');
+  if (!avatarCrop) return;
+  if (errEl) errEl.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+
+  try {
+    const c = avatarCrop;
+    const canvas = document.createElement('canvas');
+    canvas.width = AVATAR_OUTPUT; canvas.height = AVATAR_OUTPUT;
+    const ctx = canvas.getContext('2d');
+    const sx = -c.offsetX / c.scale, sy = -c.offsetY / c.scale;
+    const sSize = AVATAR_VIEWPORT / c.scale;
+    ctx.drawImage(c.img, sx, sy, sSize, sSize, 0, 0, AVATAR_OUTPUT, AVATAR_OUTPUT);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const base64 = dataUrl.split(',')[1];
+
+    const res = await fetch('/api/club?action=upload_avatar_photo', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken(), base64 })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      if (errEl) { errEl.textContent = data.error || 'No se pudo guardar la foto.'; errEl.style.display = 'block'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Guardar foto'; }
+      return;
+    }
+    currentMember.avatarPhotoUrl = data.avatarPhotoUrl;
+    applyMemberProfile(currentMember);
+    closeSimpleModal();
+    showToast('Foto de perfil actualizada.', 'success');
+    showMyProfile();
+  } catch (e) {
+    if (errEl) { errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Guardar foto'; }
+  }
+}
+
+async function removeAvatarPhoto() {
+  if (!confirm('¿Quitar tu foto de perfil?')) return;
+  try {
+    const res = await fetch('/api/club?action=remove_avatar_photo', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: clubToken() })
+    });
+    const data = await res.json();
+    if (!data.success) { showToast(data.error || 'No se pudo quitar la foto.'); return; }
+    currentMember.avatarPhotoUrl = '';
+    applyMemberProfile(currentMember);
+    showToast('Foto de perfil eliminada.', 'success');
+    showMyProfile();
+  } catch (e) {
+    showToast('Error de conexión: ' + e.message);
   }
 }
 

@@ -409,6 +409,35 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, ...update });
     }
 
+    // El frontend siempre manda un JPEG ya recortado y redimensionado (renderizado por
+    // canvas), así que acá no hace falta detectar tipo de archivo — solo validar tamaño.
+    if (action === 'upload_avatar_photo') {
+      const base64 = body.base64;
+      if (!base64) return res.status(400).json({ success: false, error: 'Falta la imagen.' });
+      const buffer = Buffer.from(base64, 'base64');
+      if (buffer.length > 3 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: 'La imagen no puede superar los 3MB.' });
+      }
+      const path = `${profile.id}.jpg`;
+      const { error: upErr } = await supabase.storage.from('profile-photos')
+        .upload(path, buffer, { contentType: 'image/jpeg', upsert: true });
+      if (upErr) return safeError(res, upErr, 'club.js error');
+
+      const { error: updErr } = await supabase.from('profiles').update({ avatar_photo_path: path }).eq('id', profile.id);
+      if (updErr) return safeError(res, updErr, 'club.js error');
+
+      const avatarPhotoUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-photos/${path}?v=${Date.now()}`;
+      return res.status(200).json({ success: true, avatarPhotoUrl });
+    }
+
+    if (action === 'remove_avatar_photo') {
+      if (!profile.avatar_photo_path) return res.status(200).json({ success: true });
+      await supabase.storage.from('profile-photos').remove([profile.avatar_photo_path]);
+      const { error: updErr } = await supabase.from('profiles').update({ avatar_photo_path: null }).eq('id', profile.id);
+      if (updErr) return safeError(res, updErr, 'club.js error');
+      return res.status(200).json({ success: true });
+    }
+
     if (action === 'update_company_profile') {
       const clip = (v, max) => String(v || '').trim().substring(0, max);
       const update = {

@@ -13,6 +13,15 @@ const supabase = createClient(
 );
 
 // ── HELPERS ───────────────────────────────────────────────
+// Primera + primera letra del último nombre ("Santo González" -> "SG"), no las primeras
+// 2 letras del string completo — así coincide con lo que la gente espera ver.
+function computeInitials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '??';
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function shapeMember(profile) {
   const out = {
     id: profile.id,
@@ -25,7 +34,10 @@ function shapeMember(profile) {
     state: profile.state || '',
     naics: profile.naics || '',
     memberSince: profile.member_since,
-    avatar: profile.avatar || (profile.name || '').substring(0, 2).toUpperCase(),
+    avatar: computeInitials(profile.name),
+    avatarPhotoUrl: profile.avatar_photo_path
+      ? `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-photos/${profile.avatar_photo_path}`
+      : '',
     isTrial: profile.is_trial,
     isInvestor: profile.is_investor === true,
     companyName: profile.company_name || '',
