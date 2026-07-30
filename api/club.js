@@ -88,6 +88,35 @@ function expectedPaymentsSoFar(startDateStr, termMonths) {
   return Math.min(termMonths, Math.max(0, months + 1));
 }
 
+// A diferencia de expectedPaymentsSoFar (que llega a su tope un mes antes, porque la cuota
+// N vence el día de inicio del mes N, no al final) — esta responde "¿ya pasaron los
+// term_months meses calendario completos desde el alta?". Mismo cálculo que ya usa el
+// frontend para mostrar la fecha "Vence" en la vista del inversionista.
+function hasTermMatured(startDateStr, termMonths) {
+  const start = new Date(startDateStr);
+  const maturityDate = new Date(start);
+  maturityDate.setMonth(maturityDate.getMonth() + termMonths);
+  return new Date() >= maturityDate;
+}
+
+// Cierre automático: si ya se cumplió el plazo completo, pasa a 'completed' con el mismo
+// efecto que ya tenía la acción manual admin_investor_set_status (revoca is_investor) —
+// "completado" ocurre solo por tiempo transcurrido, no por haber pagado todo por adelantado.
+// Guard .eq('status','active') hace que un doble disparo concurrente sea inofensivo.
+async function autoCompleteIfMatured(inv) {
+  if (inv.status !== 'active' || !hasTermMatured(inv.start_date, inv.term_months)) return inv;
+  const { data: matured, error: matureErr } = await supabase.from('investors')
+    .update({ status: 'completed', withdrawn_at: new Date().toISOString() })
+    .eq('id', inv.id).eq('status', 'active').select();
+  if (matureErr) { console.error('autoCompleteIfMatured investors update error:', matureErr.message); return inv; }
+  if (matured && matured.length) {
+    inv.status = 'completed';
+    const { error: profErr } = await supabase.from('profiles').update({ is_investor: false }).eq('id', inv.profile_id);
+    if (profErr) console.error('autoCompleteIfMatured profiles update error:', profErr.message);
+  }
+  return inv;
+}
+
 function investorSummary(investor, deposits) {
   const approved = (deposits || []).filter(d => d.status === 'approved');
   const totalApproved = approved.reduce((s, d) => s + Number(d.amount), 0);
@@ -356,6 +385,7 @@ export default async function handler(req, res) {
       if (!profile.is_investor) return res.status(403).json({ success: false, error: 'No sos inversionista en este momento.' });
       const { data: investor } = await supabase.from('investors').select('*').eq('profile_id', profile.id).single();
       if (!investor) return res.status(404).json({ success: false, error: 'No se encontró tu registro de inversionista.' });
+      await autoCompleteIfMatured(investor);
       const { data: deposits } = await supabase.from('investor_deposits')
         .select('*').eq('investor_id', investor.id).order('submitted_at', { ascending: false });
       const summary = investorSummary(investor, deposits);
@@ -818,6 +848,7 @@ export default async function handler(req, res) {
         const { data: investors } = await supabase.from('investors')
           .select('*, profiles!investors_profile_id_fkey(name, email)').order('created_at', { ascending: false });
         if (!investors || !investors.length) return res.status(200).json({ success: true, investors: [] });
+        for (const inv of investors) await autoCompleteIfMatured(inv);
         const ids = investors.map(i => i.id);
         const { data: deposits } = await supabase.from('investor_deposits').select('*').in('investor_id', ids);
         const byInvestor = {};

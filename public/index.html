@@ -28,8 +28,10 @@
   --sh-sm:0 1px 3px rgba(12,20,37,.05),0 1px 2px rgba(12,20,37,.03);
   --sh-md:0 10px 24px rgba(12,20,37,.06),0 2px 6px rgba(12,20,37,.03);
   --sh-lg:0 24px 56px rgba(12,20,37,.12),0 6px 14px rgba(12,20,37,.05);
+  color-scheme:light;
 }
 :root[data-theme="dark"]{
+  color-scheme:dark;
   --bg:#0B1428;--card:#101B33;
   --ink:#EEF1F6;--muted:#97A2B8;--faint:#626D85;
   --line:rgba(255,255,255,.09);--line-soft:rgba(255,255,255,.045);
@@ -5802,15 +5804,14 @@ async function loadAdminInvestors() {
         ? `<span class="badge br">Atrasado (${inv.behind})</span>`
         : `<span class="badge bg">Al día</span>`;
       const reminderBtn = (inv.status === 'active' && inv.behind > 0)
-        ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="sendInvestorReminderEmail('${inv.id}',this)">✉️ Enviar recordatorio</button>`
+        ? `<button class="btn-outline btn-sm" onclick="sendInvestorReminderEmail('${inv.id}',this)">✉️ Recordatorio</button>`
         : '';
       const resendInviteBtn = inv.pendingActivation
-        ? `<button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="resendInvestorInvite('${inv.profileId}',this)">🔄 Reenviar invitación</button>`
+        ? `<button class="btn-outline btn-sm" onclick="resendInvestorInvite('${inv.profileId}',this)">🔄 Reenviar</button>`
         : '';
       const action = inv.status === 'active'
-        ? `${resendInviteBtn}${reminderBtn}
-           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;" onclick="setInvestorStatus('${inv.id}','withdrawn',this)">Marcar retirado</button>
-           <button class="btn-outline" style="padding:3px 7px;font-size:12.5px;color:var(--green);" onclick="setInvestorStatus('${inv.id}','completed',this)">Marcar completado</button>`
+        ? `<div style="display:flex;gap:6px;flex-wrap:wrap;">${resendInviteBtn}${reminderBtn}
+           <button class="btn-outline btn-sm" onclick="setInvestorStatus('${inv.id}','withdrawn',this)">Retirar</button></div>`
         : '';
       return `<tr>
         <td>${escapeHtml(inv.name) || '—'}<br><span style="color:var(--muted);font-size:12.5px;">${escapeHtml(inv.email)}</span></td>
