@@ -3522,7 +3522,7 @@ function renderOppsList(kw) {
   const sortToggle = `<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:10px;cursor:pointer;">
     <input type="checkbox" onchange="toggleOppSortByMatch(this.checked)" ${oppSortByMatch ? 'checked' : ''}/> Ordenar por compatibilidad
   </label>`;
-  const certNudge = !memberHasAnyCert(currentMember || {})
+  const certNudge = !(currentMember || {}).certsConfirmed
     ? `<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;">💡 Completá tu <a href="#" onclick="showMyProfile();setTimeout(showCompanyProfileForm,50);return false;" style="color:var(--red);">perfil de empresa</a> para un match más preciso.</div>`
     : '';
   const items = oppSortByMatch ? [...liveOpps].sort((a, b) => matchScore(b) - matchScore(a)) : liveOpps;
