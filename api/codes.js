@@ -6,10 +6,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from './_lib/env.js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 

@@ -4,10 +4,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember, checkRateLimit } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY } from './_lib/env.js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
@@ -50,7 +51,7 @@ export default async function handler(req, res) {
   const { error: rlErr, status: rlStatus } = await checkRateLimit(supabase, profile.id, rateLimitAction, 30, 60);
   if (rlErr) return res.status(rlStatus).json({ success: false, error: rlErr });
 
-  const CLAUDE_KEY = process.env.ANTHROPIC_API_KEY;
+  const CLAUDE_KEY = ANTHROPIC_API_KEY;
 
   if (!CLAUDE_KEY) {
     return res.status(500).json({

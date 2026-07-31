@@ -1,6 +1,8 @@
 // api/_lib/email.js
 // Plantilla HTML compartida para los emails transaccionales de GovBidder Club (vía Resend).
 
+import { RESEND_API_KEY, RESEND_FROM_EMAIL } from './env.js';
+
 const APP_URL = 'https://dboard.govbidderclub.com';
 
 export function brandedEmailHtml({ eyebrow, title, bodyHtml, ctaText, ctaUrl }) {
@@ -42,9 +44,9 @@ export function brandedEmailHtml({ eyebrow, title, bodyHtml, ctaText, ctaUrl }) 
 }
 
 export async function sendBrandedEmail({ to, subject, eyebrow, title, bodyHtml, ctaText, ctaUrl }) {
-  const RESEND_KEY = process.env.RESEND_API_KEY;
+  const RESEND_KEY = RESEND_API_KEY;
   if (!RESEND_KEY) return { ok: false, error: 'RESEND_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' };
-  const from = process.env.RESEND_FROM_EMAIL || 'GovBidder Club <onboarding@resend.dev>';
+  const from = RESEND_FROM_EMAIL;
   const html = brandedEmailHtml({ eyebrow, title, bodyHtml, ctaText, ctaUrl });
   const emailRes = await fetch('https://api.resend.com/emails', {
     method: 'POST',

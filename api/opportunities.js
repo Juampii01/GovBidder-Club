@@ -4,10 +4,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GBC_API_KEY } from './_lib/env.js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
@@ -113,7 +114,7 @@ export default async function handler(req, res) {
   const { error: authErr, status: authStatus } = await requireActiveMember(supabase, body.token);
   if (authErr) return res.status(authStatus).json({ success: false, error: authErr });
 
-  const GBC_KEY = process.env.GBC_API_KEY;
+  const GBC_KEY = GBC_API_KEY;
 
   if (!GBC_KEY) {
     return res.status(500).json({
