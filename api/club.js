@@ -5,10 +5,11 @@ import { createClient } from '@supabase/supabase-js';
 import { requireActiveMember, checkRateLimit } from './_lib/auth.js';
 import { safeError } from './_lib/errors.js';
 import { sendBrandedEmail, sendInvestorWelcomeEmail } from './_lib/email.js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GBC_API_KEY } from './_lib/env.js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
@@ -59,6 +60,20 @@ async function getAllianceMaxCap() {
   const { data } = await supabase.from('platform_settings').select('value').eq('key', 'alliance_max_cap').single();
   const val = Number(data?.value);
   return Number.isFinite(val) && val > 0 ? val : 15000;
+}
+
+// El Content-Type declarado lo elige el código, no el cliente — pero eso no confirma que
+// el contenido subido sea realmente una imagen. Chequeo de magic bytes (no valida que sea
+// una imagen "sana", solo que empieza con la firma correcta de cada formato).
+function looksLikeImage(buffer) {
+  if (buffer.length < 12) return false;
+  const b = buffer;
+  const isJpeg = b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF;
+  const isPng = b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47 &&
+                b[4] === 0x0D && b[5] === 0x0A && b[6] === 0x1A && b[7] === 0x0A;
+  const isWebp = b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
+                 b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50;
+  return isJpeg || isPng || isWebp;
 }
 
 // ── INVESTMENT CLUB ───────────────────────────────────────
@@ -448,16 +463,26 @@ export default async function handler(req, res) {
       if (buffer.length > 3 * 1024 * 1024) {
         return res.status(400).json({ success: false, error: 'La imagen no puede superar los 3MB.' });
       }
-      const path = `${profile.id}.jpg`;
+      if (!looksLikeImage(buffer)) {
+        return res.status(400).json({ success: false, error: 'El archivo no es una imagen válida (JPEG, PNG o WebP).' });
+      }
+      // Path único por subida (no fijo) — el navegador nunca sirve una versión vieja
+      // cacheada bajo la misma URL; la foto anterior se borra explícitamente abajo.
+      const previousPath = profile.avatar_photo_path;
+      const path = `${profile.id}-${Date.now()}.jpg`;
       const { error: upErr } = await supabase.storage.from('profile-photos')
-        .upload(path, buffer, { contentType: 'image/jpeg', upsert: true });
+        .upload(path, buffer, { contentType: 'image/jpeg' });
       if (upErr) return safeError(res, upErr, 'club.js error');
 
       const { error: updErr } = await supabase.from('profiles').update({ avatar_photo_path: path }).eq('id', profile.id);
       if (updErr) return safeError(res, updErr, 'club.js error');
 
-      const avatarPhotoUrl = `${process.env.SUPABASE_URL.trim()}/storage/v1/object/public/profile-photos/${path}?v=${Date.now()}`;
-      return res.status(200).json({ success: true, avatarPhotoUrl });
+      if (previousPath && previousPath !== path) {
+        await supabase.storage.from('profile-photos').remove([previousPath]);
+      }
+
+      const { data: { publicUrl } } = supabase.storage.from('profile-photos').getPublicUrl(path);
+      return res.status(200).json({ success: true, avatarPhotoUrl: publicUrl });
     }
 
     if (action === 'remove_avatar_photo') {
@@ -510,7 +535,7 @@ export default async function handler(req, res) {
     // /awards. Esta fuente solo busca por UEI (no por nombre — es ambiguo) y todavía no
     // devuelve certificaciones/set-asides ni dirección completa (solo ciudad/estado).
     if (action === 'lookup_sam_entity') {
-      const GBC_KEY = process.env.GBC_API_KEY;
+      const GBC_KEY = GBC_API_KEY;
       if (!GBC_KEY) {
         return res.status(500).json({ success: false, error: 'GBC_API_KEY no configurada. Ve a Vercel → Settings → Environment Variables.' });
       }

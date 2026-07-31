@@ -5,10 +5,11 @@ import { createClient } from '@supabase/supabase-js';
 import { safeError } from './_lib/errors.js';
 import { sendInvestorWelcomeEmail } from './_lib/email.js';
 import { checkRateLimit } from './_lib/auth.js';
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from './_lib/env.js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
@@ -36,7 +37,7 @@ function shapeMember(profile) {
     memberSince: profile.member_since,
     avatar: computeInitials(profile.name),
     avatarPhotoUrl: profile.avatar_photo_path
-      ? `${process.env.SUPABASE_URL.trim()}/storage/v1/object/public/profile-photos/${profile.avatar_photo_path}`
+      ? supabase.storage.from('profile-photos').getPublicUrl(profile.avatar_photo_path).data.publicUrl
       : '',
     isTrial: profile.is_trial,
     isInvestor: profile.is_investor === true,
