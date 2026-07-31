@@ -6052,13 +6052,72 @@ function renderAdminMembers() {
       <td style="color:var(--muted);">${escapeHtml(m.email) || '—'}</td>
       <td><span class="badge ${planBadge}">${escapeHtml(m.plan) || '—'}</span></td>
       <td>${investorCell}</td>
-      <td>—</td>
+      <td><button class="btn-outline admin-delete-member-btn" style="padding:3px 8px;font-size:12.5px;color:var(--red);" data-member-id="${escapeHtml(m.id)}">Eliminar</button></td>
     </tr>`;
   }).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);">${q ? 'Sin resultados.' : 'No hay miembros.'}</td></tr>`;
   body.onclick = (e) => {
     const btn = e.target.closest('.admin-mark-investor-btn');
-    if (btn) pickInvestorMember(btn.dataset.memberId, btn.dataset.memberName);
+    if (btn) { pickInvestorMember(btn.dataset.memberId, btn.dataset.memberName); return; }
+    const del = e.target.closest('.admin-delete-member-btn');
+    if (del) openDeleteMemberModal(del.dataset.memberId);
   };
+}
+
+async function openDeleteMemberModal(memberId) {
+  const data = await clubAdminFetch('admin_member_delete_preflight', { memberId });
+  if (!data.success) { showToast(data.error || 'No se pudo preparar la eliminación.'); return; }
+  const { member, summary } = data;
+  const line = (n, label) => n ? `<li>${n} ${label}</li>` : '';
+  const hasFootprint = summary.supportTickets || summary.allianceRequests || summary.jobApplications ||
+    summary.profileDocuments || summary.investorRecords || summary.storageFiles || summary.jobsToUnassign;
+  const investorWarning = summary.investorRecords ? `
+    <div style="background:var(--line-soft);border-left:3px solid var(--red);padding:8px 10px;border-radius:6px;font-size:13px;margin-bottom:10px;">
+      <strong>Atención:</strong> este miembro es/fue inversionista — se borra también su registro de inversión con ${summary.investorDeposits} depósito(s) y sus comprobantes.
+    </div>` : '';
+  showSimpleModal('Eliminar miembro — irreversible', `
+    <div style="font-size:14px;margin-bottom:10px;">Vas a eliminar de forma <strong>permanente</strong> a <strong>${escapeHtml(member.name)}</strong> (${escapeHtml(member.email)}), incluyendo su cuenta de acceso. Esto no se puede deshacer.</div>
+    ${investorWarning}
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">Se borra en cascada:</div>
+    <ul style="font-size:13px;color:var(--muted);margin:0 0 12px 18px;padding:0;">
+      ${line(summary.supportTickets, 'ticket(s) de soporte')}
+      ${line(summary.allianceRequests, 'solicitud(es) de Alliance')}
+      ${line(summary.jobApplications, 'postulación(es) a tareas')}
+      ${line(summary.profileDocuments, 'documento(s) de certificación')}
+      ${line(summary.investorRecords, 'registro(s) de inversionista')}
+      ${line(summary.investorDeposits, 'depósito(s) de inversionista')}
+      ${line(summary.storageFiles, 'archivo(s) en storage')}
+      ${summary.jobsToUnassign ? `<li>${summary.jobsToUnassign} trabajo(s) del pool quedan sin asignar (no se borran)</li>` : ''}
+      ${!hasFootprint ? '<li>Solo el perfil y la cuenta de acceso — no tiene datos asociados.</li>' : ''}
+    </ul>
+    <div class="modal-field">
+      <label>PARA CONFIRMAR, ESCRIBÍ EL NOMBRE EXACTO: <span style="user-select:all;color:var(--ink);">${escapeHtml(member.name)}</span></label>
+      <input class="search-input" id="delete-member-confirm-name" style="width:100%;" autocomplete="off"/>
+    </div>
+    <div id="delete-member-error" style="display:none;color:var(--red);font-size:13.5px;margin-bottom:8px;"></div>
+    <button class="btn-red" id="delete-member-btn" style="width:100%;padding:10px;" disabled onclick="confirmDeleteMember('${member.id}')">Eliminar definitivamente</button>
+  `);
+  const input = document.getElementById('delete-member-confirm-name');
+  const btn = document.getElementById('delete-member-btn');
+  if (input && btn) input.oninput = () => { btn.disabled = input.value.trim() !== (member.name || '').trim(); };
+}
+
+async function confirmDeleteMember(memberId) {
+  const btn = document.getElementById('delete-member-btn');
+  const errEl = document.getElementById('delete-member-error');
+  const confirmName = document.getElementById('delete-member-confirm-name')?.value?.trim() || '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Eliminando...'; }
+  const data = await clubAdminFetch('admin_member_delete', { memberId, confirmName });
+  if (!data.success) {
+    if (errEl) { errEl.textContent = data.error || 'No se pudo eliminar al miembro.'; errEl.style.display = 'block'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Eliminar definitivamente'; }
+    return;
+  }
+  closeSimpleModal();
+  showToast(data.warnings?.length
+    ? `Miembro eliminado, con residuos en: ${data.warnings.join(', ')}. Revisar en Supabase.`
+    : 'Miembro eliminado por completo.', data.warnings?.length ? 'error' : 'success');
+  loadAdminMembers();
+  loadAdminInvestors();
 }
 
 // ── THEME ────────────────────────────────────────────────

@@ -76,6 +76,40 @@ function looksLikeImage(buffer) {
   return isJpeg || isPng || isWebp;
 }
 
+// ── ELIMINACIÓN DE MIEMBRO (admin) ────────────────────────
+// Junta todo lo que existe a nombre de un miembro, para el resumen previo y para el
+// borrado explícito hijo→padre (no dependemos de las delete_rules de las FKs).
+const ALLIANCE_DOC_PATH_COLUMNS = [
+  'po_document_path', 'award_document_path', 'quote_document_path',
+  'schedule_document_path', 'bank_statement_document_path'
+];
+
+async function collectMemberFootprint(memberId) {
+  const [docs, tickets, alliance, applications, jobs, investors] = await Promise.all([
+    supabase.from('profile_documents').select('file_path').eq('member_id', memberId),
+    supabase.from('support_tickets').select('id, document_path').eq('member_id', memberId),
+    supabase.from('alliance_requests')
+      .select(`id, ${ALLIANCE_DOC_PATH_COLUMNS.join(', ')}`)
+      .eq('member_id', memberId),
+    supabase.from('job_applications').select('id').eq('member_id', memberId),
+    supabase.from('work_pool_jobs').select('id, status').eq('claimed_by', memberId),
+    supabase.from('investors').select('id').eq('profile_id', memberId),
+  ]);
+  const investorIds = (investors.data || []).map(i => i.id);
+  const deposits = investorIds.length
+    ? await supabase.from('investor_deposits').select('id, receipt_path').in('investor_id', investorIds)
+    : { data: [] };
+  return {
+    profileDocuments: docs.data || [],
+    supportTickets: tickets.data || [],
+    allianceRequests: alliance.data || [],
+    jobApplications: applications.data || [],
+    claimedJobs: jobs.data || [],
+    investorRecords: investors.data || [],
+    investorDeposits: deposits.data || [],
+  };
+}
+
 // ── INVESTMENT CLUB ───────────────────────────────────────
 // Sube un comprobante de pago (PDF o imagen) a un bucket privado. Devuelve { path } o { error }.
 async function uploadReceipt(bucket, memberId, base64, filename, maxMB = 5) {
@@ -710,6 +744,117 @@ export default async function handler(req, res) {
         const { data } = await supabase.from('profiles')
           .select('id, name, email, plan, is_investor').eq('active', true).order('name');
         return res.status(200).json({ success: true, members: data || [] });
+      }
+
+      // Resumen previo a la eliminación: quién es y qué se lleva puesto el borrado.
+      if (action === 'admin_member_delete_preflight') {
+        const { memberId } = body;
+        if (!memberId) return res.status(400).json({ success: false, error: 'memberId requerido' });
+        const { data: target } = await supabase.from('profiles')
+          .select('id, name, email, plan, role, is_investor, avatar_photo_path, capability_statement_path, w9_path')
+          .eq('id', memberId).single();
+        if (!target) return res.status(404).json({ success: false, error: 'Miembro no encontrado.' });
+        if (target.id === profile.id) return res.status(400).json({ success: false, error: 'No podés eliminar tu propia cuenta de admin.' });
+        if (target.role === 'admin') return res.status(400).json({ success: false, error: 'No se puede eliminar a otro administrador desde acá.' });
+
+        const fp = await collectMemberFootprint(memberId);
+        const storageFiles =
+          (target.avatar_photo_path ? 1 : 0) +
+          (target.capability_statement_path ? 1 : 0) + (target.w9_path ? 1 : 0) +
+          fp.profileDocuments.length +
+          fp.supportTickets.filter(t => t.document_path).length +
+          fp.allianceRequests.reduce((s, r) => s + ALLIANCE_DOC_PATH_COLUMNS.filter(c => r[c]).length, 0) +
+          fp.investorDeposits.filter(d => d.receipt_path).length;
+
+        return res.status(200).json({
+          success: true,
+          member: { id: target.id, name: target.name, email: target.email, plan: target.plan, isInvestor: target.is_investor === true },
+          summary: {
+            supportTickets: fp.supportTickets.length,
+            allianceRequests: fp.allianceRequests.length,
+            jobApplications: fp.jobApplications.length,
+            jobsToUnassign: fp.claimedJobs.length,
+            profileDocuments: fp.profileDocuments.length,
+            investorRecords: fp.investorRecords.length,
+            investorDeposits: fp.investorDeposits.length,
+            storageFiles,
+          }
+        });
+      }
+
+      // Borrado permanente y completo. Orden: filas hijas → perfil → storage → auth.
+      // Filas primero y archivos después: si algo falla a mitad de camino es preferible
+      // un archivo huérfano en storage (invisible) a una fila apuntando a un archivo
+      // que ya no existe. Los trabajos del pool no se borran (son registros del club):
+      // se desasignan, y los que estaban en curso vuelven a 'open'.
+      if (action === 'admin_member_delete') {
+        const { memberId, confirmName } = body;
+        if (!memberId) return res.status(400).json({ success: false, error: 'memberId requerido' });
+        const { data: target } = await supabase.from('profiles').select('*').eq('id', memberId).single();
+        if (!target) return res.status(404).json({ success: false, error: 'Miembro no encontrado.' });
+        if (target.id === profile.id) return res.status(400).json({ success: false, error: 'No podés eliminar tu propia cuenta de admin.' });
+        if (target.role === 'admin') return res.status(400).json({ success: false, error: 'No se puede eliminar a otro administrador desde acá.' });
+        if (String(confirmName || '').trim() !== String(target.name || '').trim()) {
+          return res.status(400).json({ success: false, error: 'El nombre escrito no coincide con el del miembro.' });
+        }
+
+        const fp = await collectMemberFootprint(memberId);
+        const storageByBucket = {
+          'profile-photos': [target.avatar_photo_path].filter(Boolean),
+          'profile-documents': [target.capability_statement_path, target.w9_path, ...fp.profileDocuments.map(d => d.file_path)].filter(Boolean),
+          'support-documents': fp.supportTickets.map(t => t.document_path).filter(Boolean),
+          'alliance-documents': fp.allianceRequests.flatMap(r => ALLIANCE_DOC_PATH_COLUMNS.map(c => r[c])).filter(Boolean),
+          'investor-documents': fp.investorDeposits.map(d => d.receipt_path).filter(Boolean),
+        };
+
+        const steps = [
+          ['postulaciones a tareas', () => supabase.from('job_applications').delete().eq('member_id', memberId)],
+          ['trabajos con postulación huérfana', async () => {
+            // Un job puede estar en 'applied' solo por postulaciones de este miembro:
+            // tras borrarlas, los que quedaron sin ninguna pendiente vuelven a 'open'.
+            const { data: appliedJobs, error } = await supabase.from('work_pool_jobs')
+              .select('id, job_applications(status)').eq('status', 'applied');
+            if (error) return { error };
+            const stuck = (appliedJobs || [])
+              .filter(j => !(j.job_applications || []).some(a => a.status === 'pending'))
+              .map(j => j.id);
+            if (!stuck.length) return {};
+            return supabase.from('work_pool_jobs').update({ status: 'open' }).in('id', stuck);
+          }],
+          ['trabajos asignados', () => supabase.from('work_pool_jobs')
+            .update({ status: 'open', claimed_by: null }).eq('claimed_by', memberId).eq('status', 'assigned')],
+          ['historial de trabajos', () => supabase.from('work_pool_jobs')
+            .update({ claimed_by: null }).eq('claimed_by', memberId)],
+          ['depósitos de inversionista', () => fp.investorRecords.length
+            ? supabase.from('investor_deposits').delete().in('investor_id', fp.investorRecords.map(i => i.id))
+            : Promise.resolve({})],
+          ['registro de inversionista', () => supabase.from('investors').delete().eq('profile_id', memberId)],
+          ['tickets de soporte', () => supabase.from('support_tickets').delete().eq('member_id', memberId)],
+          ['solicitudes de Alliance', () => supabase.from('alliance_requests').delete().eq('member_id', memberId)],
+          ['documentos del perfil', () => supabase.from('profile_documents').delete().eq('member_id', memberId)],
+          ['perfil', () => supabase.from('profiles').delete().eq('id', memberId)],
+        ];
+        for (const [label, run] of steps) {
+          const { error: stepErr } = await run();
+          if (stepErr) {
+            console.error(`admin_member_delete — error en ${label}:`, stepErr.message);
+            return res.status(500).json({ success: false, error: `No se pudo borrar: ${label}. Nada posterior a ese paso se tocó — es seguro reintentar.` });
+          }
+        }
+
+        // Storage y auth al final. Si algo de esto falla las filas ya no existen, así
+        // que se reporta como advertencia (residuo) en vez de error: el miembro ya
+        // quedó fuera de la app y reintentar el borrado completo daría 404.
+        const warnings = [];
+        for (const [bucket, paths] of Object.entries(storageByBucket)) {
+          if (!paths.length) continue;
+          const { error: rmErr } = await supabase.storage.from(bucket).remove(paths);
+          if (rmErr) { console.error(`admin_member_delete — storage ${bucket}:`, rmErr.message); warnings.push(`archivos en ${bucket}`); }
+        }
+        const { error: authErr } = await supabase.auth.admin.deleteUser(memberId);
+        if (authErr) { console.error('admin_member_delete — auth.deleteUser:', authErr.message); warnings.push('cuenta de autenticación'); }
+
+        return res.status(200).json({ success: true, warnings });
       }
 
       if (action === 'admin_job_assign') {
