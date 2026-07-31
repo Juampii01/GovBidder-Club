@@ -2,6 +2,8 @@
 **Fecha:** 2026-07-13
 **Alcance:** Auditoría completa de arquitectura, backend, frontend, seguridad, consistencia de negocio y estado de infraestructura, para servir de base a la siguiente ronda de planificación de desarrollo.
 
+> **Actualización (2026-07-31):** Opportunities **ya no depende de `SAM_API_KEY`** — se migró a GovBidder Connect (`GBC_API_KEY`, ya configurada y funcionando en producción). Las menciones a `SAM_API_KEY`/SAM.gov como bloqueante que siguen más abajo describen el estado en la fecha original de este documento, no el actual — se dejan tal cual para no reescribir el historial. Ver commits de "Fase 12" en adelante.
+
 ---
 
 ## 1. Qué es GovBidder Club — objetivo y funcionalidad del producto
@@ -59,7 +61,7 @@ Además: Command Center (dashboard), Opportunities (SAM.gov), Grants Hub (Grants
 - **Backend**: 8 funciones serverless en `api/*.js` (Vercel), ruteadas vía `vercel.json`:
   - `auth.js` (246 líneas) — autenticación (Supabase Auth).
   - `club.js` (475 líneas) — el corazón del negocio: Alliance, Task Work, Support Desk, Admin (28 acciones).
-  - `opportunities.js` (98 líneas) — proxy a SAM.gov.
+  - `opportunities.js` (98 líneas) — proxy a SAM.gov en la fecha de este documento; **desde la Fase 12 corre sobre GovBidder Connect (`GBC_API_KEY`)**, ver nota de actualización arriba.
   - `grants.js` (67 líneas) — proxy a Grants.gov.
   - `geography.js` (270 líneas) — Buyer Geography (USASpending + datos estáticos curados).
   - `spending.js` (191 líneas) — Market Intelligence / Competitive Intel (USASpending).
@@ -79,7 +81,7 @@ Además: Command Center (dashboard), Opportunities (SAM.gov), Grants Hub (Grants
 | Página | Fuente de datos | Estado |
 |---|---|---|
 | Command Center (Home) | Mixta | KPIs de Opps/Grants/NAICS/Estado son reales; **"Bids Activos: 3", "Win Rate: 36%" están hardcodeados y nunca se actualizan** |
-| Opportunities | SAM.gov (real) | Requiere `SAM_API_KEY` — **no configurada en producción hoy** (ver §6) |
+| Opportunities | SAM.gov (real) en la fecha de este documento | Requería `SAM_API_KEY`, no configurada entonces (ver §6) — **resuelto desde la Fase 12: corre sobre GovBidder Connect, funcionando en producción** |
 | Grants Hub | Grants.gov (real) | Funcional, sin API key necesaria |
 | Market Intelligence / Competitive Intel | USASpending.gov (real) | Funcional |
 | Buyer Geography | Mixta | Gasto por estado/condado es real (USASpending); listas de distritos escolares/universidades son curadas a mano y solo cubren 5 de 52 estados |
@@ -146,7 +148,7 @@ Un agente dedicado revisó línea por línea los 8 archivos de `api/*.js` y rast
 
 ## 6. Brechas de lanzamiento (bloqueantes o casi-bloqueantes)
 
-1. **`SAM_API_KEY` no está configurada en Vercel** (solo hay `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`). Esto significa que **Opportunities — una de las páginas centrales del Command Center — no devuelve resultados reales en producción hoy**. El frontend maneja esto con un empty-state guiado ("configura tu API key"), no rompe, pero el feature está inactivo.
+1. ~~`SAM_API_KEY` no está configurada en Vercel... Opportunities no devuelve resultados reales en producción hoy~~ — **RESUELTO desde la Fase 12 (ver nota de actualización al inicio del documento): Opportunities corre sobre GovBidder Connect (`GBC_API_KEY`), configurada y funcionando en producción.** Se conserva tachado en vez de borrado para no perder el registro de que esto fue una brecha real en su momento.
 2. **`ANTHROPIC_API_KEY` tampoco está configurada** — el "AI Daily Brief" / "AI Strategy Tip" (Claude) no funciona en producción.
 3. **Dominio propio `govbidder.net` no está conectado**: está registrado y aparece en el proyecto de Vercel, pero sus nameservers actuales apuntan a Cloudflare en vez de a Vercel — la app hoy solo es accesible por `govbidder-club.vercel.app`.
 4. **Cero responsive design**: no hay ni un solo `@media query` en todo el CSS. Sidebar fijo de 272px, grids de columnas fijas (ej. Bid Pipeline en 5 columnas). En un celular la app hoy se ve rota/inutilizable.

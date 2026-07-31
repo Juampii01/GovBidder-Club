@@ -4,6 +4,8 @@
 **Base:** `docs/PDA_GovBidder_Club.md` (auditoría completa) + verificación directa contra el código actual + investigación de fuentes públicas de datos.
 **Alcance:** Plan ejecutable **hoy**, sin depender de `SAM_API_KEY`, `ANTHROPIC_API_KEY`, documentos de Santo, acceso a HigherGov, decisión de calendario, ni cambio de nameservers. No se escribió código en esta pasada — solo este documento.
 
+> **Actualización (2026-07-31):** la dependencia de `SAM_API_KEY` mencionada en este documento ya no aplica — Opportunities se migró a GovBidder Connect (`GBC_API_KEY`) desde la Fase 12. Las menciones más abajo describen el estado en la fecha original del plan.
+
 ---
 
 ## 1. Discrepancias encontradas entre el PDA y el código real
@@ -183,7 +185,7 @@ Hoy hay **cero** `@media queries` en todo el CSS (`public/index.html`) — sideb
 
 | Qué falta | De quién | Qué desbloquea |
 |---|---|---|
-| `SAM_API_KEY` | Santo (sin fecha) | Opportunities con resultados reales de SAM.gov |
+| ~~`SAM_API_KEY`~~ | ~~Santo~~ | **Resuelto desde la Fase 12 — Opportunities corre sobre GovBidder Connect (`GBC_API_KEY`), ya no depende de esto** |
 | `ANTHROPIC_API_KEY` | Santo (sin fecha) | AI Daily Brief / AI Strategy Tip funcionando |
 | Documento completo de crosswalk de Santo | Santo | Reconciliar con la versión pública construida en Fase 5, por si Santo tiene una curación propia distinta/prioritaria |
 | Acceso a HigherGov / GovBidder Connect | Santo | Evaluar reemplazar SAM.gov/Grants.gov como fuente de Home |
@@ -219,7 +221,7 @@ La base tiene 7 perfiles de demo/prueba, 2 de ellos con contraseña reseteada a 
 Las Fases 1, 2, 3, 4 y 5.1a de este plan **ya están ejecutadas, deployadas y verificadas en producción** (commits `96b7e5a`, `3c9c66f`, `ca13b45`, `60f8942`). Lo que queda, agrupado por quién tiene que actuar:
 
 ### 7.1 Necesita algo de Santo (información o decisión suya)
-1. `SAM_API_KEY` y `ANTHROPIC_API_KEY` — sin fecha.
+1. ~~`SAM_API_KEY`~~ — resuelto desde la Fase 12 (GovBidder Connect). `ANTHROPIC_API_KEY` — sin fecha, no re-verificado en esta pasada.
 2. Confirmar si **Bid Pipeline** debe reconstruirse de verdad (persistido en Supabase, ~10-14h) — hoy ya no existe ni siquiera como maqueta (se eliminó en la Fase 1). Si lo confirma, es la única fase de desarrollo nueva de tamaño considerable que queda abierta.
 3. Documento propio de crosswalk NAICS↔SIC↔PSC↔UNSPSC↔NIGP, para reconciliar con la lista NAICS que ya se completó con fuente pública (USASpending).
 4. Acceso a HigherGov / GovBidder Connect, si se quiere evaluar como fuente de Home en vez de SAM.gov/Grants.gov.
