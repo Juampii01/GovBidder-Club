@@ -2105,7 +2105,7 @@ const API = '/api';
 let liveOpps = [], liveGrants = [], currentMember = null, allStates = [], allCounties = [];
 let lastMarketData = null, lastCompetitorData = null;
 let oppSortByMatch = false;
-let investorBehindCount = 0, investorReminderIntervalId = null, lastInvestorReminderAt = 0;
+let investorBehindCount = 0, investorPendingCount = 0, investorReminderIntervalId = null, lastInvestorReminderAt = 0;
 
 // ── NAVIGATION ────────────────────────────────────────────
 const TITLES = {
@@ -5151,6 +5151,8 @@ async function loadInvestorStatus() {
     });
     const data = await res.json();
     if (!data.success) { showToast(data.error || 'No se pudo cargar tu inversión.'); return; }
+    investorBehindCount = data.behind || 0;
+    investorPendingCount = data.pendingCount || 0;
 
     const currentValue = data.totalApproved + data.accruedProfit;
     document.getElementById('inv-balance-value').textContent = `$${currentValue.toLocaleString()}`;
@@ -5174,8 +5176,10 @@ async function loadInvestorStatus() {
     document.getElementById('inv-payments').textContent = `${data.paymentsMade}/${data.investor.termMonths}`;
     const paymentsSub = document.getElementById('inv-payments-sub');
     const paymentsTile = document.getElementById('inv-payments-tile');
-    paymentsSub.textContent = data.behind > 0 ? `${data.behind} atrasado${data.behind !== 1 ? 's' : ''}` : 'al día';
-    paymentsTile.classList.toggle('warn', data.behind > 0);
+    paymentsSub.textContent = data.behind > 0
+      ? (data.pendingCount > 0 ? 'comprobante en revisión' : `${data.behind} atrasado${data.behind !== 1 ? 's' : ''}`)
+      : 'al día';
+    paymentsTile.classList.toggle('warn', data.behind > 0 && !data.pendingCount);
     document.getElementById('inv-profit').textContent = `$${data.accruedProfit.toLocaleString()}`;
     document.getElementById('inv-sched-tag').textContent = `${data.paymentsMade}/${data.investor.termMonths} pagos`;
 
@@ -5191,7 +5195,19 @@ async function loadInvestorStatus() {
     const warnEl = document.getElementById('inv-behind-warning');
     if (data.behind > 0 && data.investor.status === 'active') {
       warnEl.style.display = 'block';
-      warnEl.textContent = `Tenés ${data.behind} pago${data.behind !== 1 ? 's' : ''} atrasado${data.behind !== 1 ? 's' : ''}. Subí tu comprobante para ponerte al día.`;
+      if (data.pendingCount > 0) {
+        // Con un comprobante esperando revisión no se le reclama de nuevo — seguir
+        // mostrando "atrasado" acá era lo que provocaba reenvíos duplicados del mismo pago.
+        warnEl.style.background = 'var(--line-soft)';
+        warnEl.style.borderColor = 'var(--border)';
+        warnEl.style.color = 'var(--muted)';
+        warnEl.textContent = 'Recibimos tu comprobante — está en revisión. Te actualizamos el estado apenas lo confirmemos.';
+      } else {
+        warnEl.style.background = '';
+        warnEl.style.borderColor = '';
+        warnEl.style.color = '';
+        warnEl.textContent = `Tenés ${data.behind} pago${data.behind !== 1 ? 's' : ''} atrasado${data.behind !== 1 ? 's' : ''}. Subí tu comprobante para ponerte al día.`;
+      }
     } else {
       warnEl.style.display = 'none';
     }
@@ -5304,6 +5320,9 @@ async function submitInvestorDeposit(btn) {
   if (!file) {
     errEl.textContent = 'Adjuntá el comprobante (imagen o PDF).'; errEl.style.display = 'block'; return;
   }
+  if (investorPendingCount > 0 && !confirm('Ya tenés un comprobante en revisión. Si es el mismo pago, no hace falta reenviarlo. ¿Querés subir otro igual?')) {
+    return;
+  }
   btn.disabled = true;
   try {
     const receiptBase64 = await readFileAsBase64(file);
@@ -5329,19 +5348,20 @@ const INVESTOR_REMINDER_INTERVAL_MS = 10 * 60 * 1000;
 const INVESTOR_REMINDER_MIN_GAP_MS = 2 * 60 * 1000;
 
 async function refreshInvestorBehindStatus() {
-  if (!currentMember || !currentMember.isInvestor) { investorBehindCount = 0; return; }
+  if (!currentMember || !currentMember.isInvestor) { investorBehindCount = 0; investorPendingCount = 0; return; }
   try {
     const res = await fetch('/api/club?action=investor_status', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: clubToken() })
     });
     const data = await res.json();
-    if (data.success) investorBehindCount = data.behind || 0;
+    if (data.success) { investorBehindCount = data.behind || 0; investorPendingCount = data.pendingCount || 0; }
   } catch (e) { /* silencioso — un chequeo fallido no debe interrumpir la sesión */ }
 }
 
 function maybeShowInvestorReminder() {
-  if (!currentMember || !currentMember.isInvestor || investorBehindCount <= 0) return;
+  // Si hay un comprobante en revisión no se lo vuelve a molestar: ya hizo su parte.
+  if (!currentMember || !currentMember.isInvestor || investorBehindCount <= 0 || investorPendingCount > 0) return;
   const now = Date.now();
   if (now - lastInvestorReminderAt < INVESTOR_REMINDER_MIN_GAP_MS) return;
   lastInvestorReminderAt = now;
@@ -5366,6 +5386,7 @@ function startInvestorReminderLoop() {
 function stopInvestorReminderLoop() {
   if (investorReminderIntervalId) { clearInterval(investorReminderIntervalId); investorReminderIntervalId = null; }
   investorBehindCount = 0;
+  investorPendingCount = 0;
   lastInvestorReminderAt = 0;
 }
 

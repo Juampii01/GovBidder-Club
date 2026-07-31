@@ -438,6 +438,9 @@ export default async function handler(req, res) {
       const { data: deposits } = await supabase.from('investor_deposits')
         .select('*').eq('investor_id', investor.id).order('submitted_at', { ascending: false });
       const summary = investorSummary(investor, deposits);
+      // Comprobantes todavía en revisión: el frontend los usa para no reclamarle el
+      // pago a alguien que ya lo envió (eso provocaba reenvíos duplicados del mismo pago).
+      const pendingDeposits = (deposits || []).filter(d => d.status === 'pending');
       return res.status(200).json({
         success: true,
         investor: {
@@ -445,6 +448,8 @@ export default async function handler(req, res) {
           termMonths: investor.term_months, fixedReturn: investor.fixed_return, status: investor.status
         },
         ...summary,
+        pendingCount: pendingDeposits.length,
+        pendingAmount: pendingDeposits.reduce((s, d) => s + Number(d.amount), 0),
         deposits: deposits || []
       });
     }
