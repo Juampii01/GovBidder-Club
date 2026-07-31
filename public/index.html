@@ -2478,9 +2478,30 @@ async function applySamData() {
 
   // Estado/NAICS son campos del perfil general (Mi Perfil), no de este formulario —
   // se guardan aparte y de una, porque esta ventana no comparte inputs con esa otra.
+  // En NAICS especialmente el dato que ya cargó el miembro a mano puede ser
+  // intencional (a qué mercado quiere apuntar) y distinto del que trae el historial
+  // de adjudicaciones del UEI — no lo pisamos sin avisar.
+  const m = currentMember || {};
+  const newState = (e.state && STATE_NAMES[e.state]) ? e.state : '';
+  const newNaics = e.naicsCodes?.[0] || '';
+  const conflicts = [];
+  if (newState && m.state && m.state !== newState) {
+    conflicts.push(`Estado — ya tenías cargado: ${STATE_NAMES[m.state] || m.state}. El UEI trajo: ${STATE_NAMES[newState]}.`);
+  }
+  if (newNaics && m.naics && m.naics !== newNaics) {
+    conflicts.push(`NAICS — ya tenías cargado: ${m.naics}. El UEI trajo: ${e.naicsCodes.join(', ')}.`);
+  }
+  let applyState = !!newState, applyNaics = !!newNaics;
+  if (conflicts.length) {
+    const wantsReplace = confirm(`${conflicts.join('\n')}\n\n¿Reemplazar con los datos del UEI? Cancelar mantiene lo que ya tenías cargado.`);
+    if (!wantsReplace) {
+      if (m.state && m.state !== newState) applyState = false;
+      if (m.naics && m.naics !== newNaics) applyNaics = false;
+    }
+  }
   const update = {};
-  if (e.state && STATE_NAMES[e.state]) update.state = e.state;
-  if (e.naicsCodes?.[0]) update.naics = e.naicsCodes[0];
+  if (applyState) update.state = newState;
+  if (applyNaics) update.naics = newNaics;
   if (Object.keys(update).length) {
     try {
       const res = await fetch('/api/club?action=update_profile', {
