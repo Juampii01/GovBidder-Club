@@ -54,6 +54,7 @@ function shapeMember(profile) {
     certWomenOwned: profile.cert_women_owned === true,
     certVeteranOwned: profile.cert_veteran_owned === true,
     certSmallBusiness: profile.cert_small_business === true,
+    certsConfirmed: profile.certs_confirmed === true,
   };
   if (profile.is_trial) {
     out.trialStart = profile.trial_start;

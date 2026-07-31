@@ -509,6 +509,7 @@ export default async function handler(req, res) {
         cert_women_owned: body.certWomenOwned === true,
         cert_veteran_owned: body.certVeteranOwned === true,
         cert_small_business: body.certSmallBusiness === true,
+        certs_confirmed: body.certsConfirmed === true,
       };
       const { error: updErr } = await supabase.from('profiles').update(update).eq('id', profile.id);
       if (updErr) return safeError(res, updErr, 'club.js error');

@@ -2685,6 +2685,10 @@ function showCompanyProfileForm() {
         ${certRow('cp-cert-veteran', 'Veteran-Owned', m.certVeteranOwned)}
         ${certRow('cp-cert-sb', 'Small Business', m.certSmallBusiness)}
       </div>
+      <label style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--muted);margin-top:9px;cursor:pointer;">
+        <input type="checkbox" id="cp-certs-confirmed" ${m.certsConfirmed ? 'checked' : ''} style="margin-top:2px;"/>
+        <span>Confirmo que esta es mi <strong>lista completa</strong> de certificaciones — las que no marqué, no las tengo. Mientras no confirmes esto, el score de compatibilidad no descuenta puntos por certificaciones sin marcar.</span>
+      </label>
     </div>
     <div class="modal-field">
       <label>DOCUMENTOS</label>
@@ -2717,6 +2721,7 @@ async function saveCompanyProfile() {
     certWomenOwned: checked('cp-cert-women'),
     certVeteranOwned: checked('cp-cert-veteran'),
     certSmallBusiness: checked('cp-cert-sb'),
+    certsConfirmed: checked('cp-certs-confirmed'),
   };
   try {
     const res = await fetch('/api/club?action=update_company_profile', {
@@ -2729,7 +2734,8 @@ async function saveCompanyProfile() {
       companyName: payload.companyName, companyDba: payload.companyDba, ein: payload.ein, uei: payload.uei,
       cageCode: payload.cageCode, businessAddress: payload.businessAddress, companyPhone: payload.companyPhone,
       companyWebsite: payload.companyWebsite, cert8a: payload.cert8a, certHubzone: payload.certHubzone,
-      certWomenOwned: payload.certWomenOwned, certVeteranOwned: payload.certVeteranOwned, certSmallBusiness: payload.certSmallBusiness
+      certWomenOwned: payload.certWomenOwned, certVeteranOwned: payload.certVeteranOwned, certSmallBusiness: payload.certSmallBusiness,
+      certsConfirmed: payload.certsConfirmed
     });
     closeSimpleModal();
     showToast('Datos de la empresa actualizados.', 'success');
@@ -3590,10 +3596,6 @@ const OPP_SETASIDE_TO_CERT = [
   ['small business', 'certSmallBusiness']
 ];
 
-function memberHasAnyCert(m) {
-  return !!(m.cert8a || m.certHubzone || m.certWomenOwned || m.certVeteranOwned || m.certSmallBusiness);
-}
-
 function matchScore(o) {
   const m = currentMember || {};
   let score = 0;
@@ -3613,7 +3615,11 @@ function matchScore(o) {
 
   if (!o.setAside) {
     score += 15;
-  } else if (!memberHasAnyCert(m)) {
+  } else if (!m.certsConfirmed) {
+    // Un checkbox sin marcar puede significar "no tengo esa cert" o "todavía no la
+    // cargué" — hasta que el miembro confirme su lista como completa (checkbox en
+    // Datos de la empresa), crédito neutro: nunca se descuenta por una certificación
+    // que quizás tiene sin cargar.
     score += 15;
   } else {
     // Un set-aside puede combinar varias condiciones a la vez (ej. "Women-Owned
@@ -3763,8 +3769,15 @@ async function explainMatchScore() {
   if (btn) btn.disabled = true;
   body.innerHTML = '<div class="spinner" style="width:14px;height:14px;display:inline-block;"></div> Analizando...';
   const m = currentMember || {};
+  // La distinción confirmada/sin-confirmar viaja también al prompt: si la lista no
+  // está confirmada como completa, la IA no debe afirmar que al miembro le "faltan" certs.
+  const certList = Object.entries({ '8(a)': m.cert8a, 'HUBZone': m.certHubzone, 'Women-Owned': m.certWomenOwned, 'Veteran-Owned': m.certVeteranOwned, 'Small Business': m.certSmallBusiness })
+    .filter(([, v]) => v).map(([k]) => k).join(', ');
+  const certDesc = m.certsConfirmed
+    ? (certList || 'ninguna (lista confirmada como completa)')
+    : (certList ? `${certList} (lista sin confirmar como completa — las demás pueden estar sin cargar)` : 'sin cargar todavía');
   try {
-    const prompt = `En una sola oración y en español, explicá por qué esta oportunidad tiene un ${o.score ?? 0}% de compatibilidad con este perfil (qué tan bien encaja, no una determinación de elegibilidad legal): oportunidad con NAICS ${o.naics}, ubicación ${o.state}${o.setAside ? `, set-aside ${o.setAside}` : ''}. Perfil del usuario: industria ${m.industry || 'sin especificar'}, NAICS ${m.naics || 'sin especificar'}, estado ${m.state || 'sin especificar'}, certificaciones: ${memberHasAnyCert(m) ? Object.entries({'8(a)':m.cert8a,'HUBZone':m.certHubzone,'Women-Owned':m.certWomenOwned,'Veteran-Owned':m.certVeteranOwned,'Small Business':m.certSmallBusiness}).filter(([,v])=>v).map(([k])=>k).join(', ') || 'ninguna' : 'sin cargar todavía'}.`;
+    const prompt = `En una sola oración y en español, explicá por qué esta oportunidad tiene un ${o.score ?? 0}% de compatibilidad con este perfil (qué tan bien encaja, no una determinación de elegibilidad legal): oportunidad con NAICS ${o.naics}, ubicación ${o.state}${o.setAside ? `, set-aside ${o.setAside}` : ''}. Perfil del usuario: industria ${m.industry || 'sin especificar'}, NAICS ${m.naics || 'sin especificar'}, estado ${m.state || 'sin especificar'}, certificaciones: ${certDesc}.`;
     const res = await fetch('/api/ai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: clubToken(), prompt, context: 'Explicación de score de compatibilidad', feature: 'match_score_explain' })
